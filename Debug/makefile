@@ -9,9 +9,11 @@ RM := rm -rf
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include startup/subdir.mk
--include Src/subdir.mk
--include Middlewares/ST/STM32_USB_Host_Library/Core/Src/subdir.mk
--include Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/subdir.mk
+-include Src/HWM/USB/subdir.mk
+-include Src/HWM/HAL/subdir.mk
+-include Src/APP/subdir.mk
+-include Drivers/STM32_USB_Host_Library/Core/Src/subdir.mk
+-include Drivers/STM32_USB_Host_Library/Class/CDC/Src/subdir.mk
 -include Drivers/STM32F4xx_HAL_Driver/Src/subdir.mk
 -include subdir.mk
 -include objects.mk
@@ -33,23 +35,22 @@ endif
 all: STM32_discovery_test.elf
 
 # Tool invocations
-STM32_discovery_test.elf: $(OBJS) $(USER_OBJS) ../STM32F407VGTx_FLASH.ld
+STM32_discovery_test.elf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: MCU GCC Linker'
-	arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -specs=nosys.specs -specs=nano.specs -T"../STM32F407VGTx_FLASH.ld" -Wl,-Map=output.map -Wl,--gc-sections -o "STM32_discovery_test.elf" @"objects.list" $(USER_OBJS) $(LIBS) -lm
+	arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -specs=nosys.specs -specs=nano.specs -T"../STM32F407VGTx_FLASH.ld" -Wl,-Map=output.map -Wl,--gc-sections -lm -o "STM32_discovery_test.elf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build
 
 # Other Targets
 clean:
-	-$(RM) *
+	-$(RM) $(EXECUTABLES)$(OBJS)$(S_UPPER_DEPS)$(C_DEPS) STM32_discovery_test.elf
 	-@echo ' '
 
 post-build:
 	-@echo 'Generating hex and Printing size information:'
-	arm-none-eabi-objcopy -O ihex "STM32_discovery_test.elf" "STM32_discovery_test.hex"
-	arm-none-eabi-size "STM32_discovery_test.elf"
+	-arm-none-eabi-objcopy -O ihex "STM32_discovery_test.elf" "STM32_discovery_test.hex" && arm-none-eabi-size "STM32_discovery_test.elf"
 	-@echo ' '
 
 .PHONY: all clean dependents

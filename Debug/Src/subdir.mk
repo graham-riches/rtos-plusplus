@@ -38,8 +38,7 @@ C_DEPS += \
 Src/%.o: ../Src/%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: MCU GCC Compiler'
-	@echo $(PWD)
-	arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -DUSE_HAL_DRIVER -DSTM32F407xx -I"D:/Code/C/stm32-discovery/Inc" -I"D:/Code/C/stm32-discovery/Drivers/STM32F4xx_HAL_Driver/Inc" -I"D:/Code/C/stm32-discovery/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy" -I"D:/Code/C/stm32-discovery/Middlewares/ST/STM32_USB_Host_Library/Core/Inc" -I"D:/Code/C/stm32-discovery/Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Inc" -I"D:/Code/C/stm32-discovery/Drivers/CMSIS/Device/ST/STM32F4xx/Include" -I"D:/Code/C/stm32-discovery/Drivers/CMSIS/Include"  -Og -g3 -Wall -fmessage-length=0 -ffunction-sections -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -o "$@" "$<"
+	arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -DUSE_HAL_DRIVER -DSTM32F407xx -I../Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32_USB_Host_Library/Class/CDC/Inc -I../Drivers/STM32_USB_Host_Library/Core/Inc -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -Og -g3 -Wall -Wextra -Wconversion -fmessage-length=0 -ffunction-sections -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

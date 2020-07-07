@@ -16,8 +16,10 @@ C_DEPS :=
 # Every subdirectory with source files must be described here
 SUBDIRS := \
 Drivers/STM32F4xx_HAL_Driver/Src \
-Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src \
-Middlewares/ST/STM32_USB_Host_Library/Core/Src \
-Src \
+Drivers/STM32_USB_Host_Library/Class/CDC/Src \
+Drivers/STM32_USB_Host_Library/Core/Src \
+Src/APP \
+Src/HWM/HAL \
+Src/HWM/USB \
 startup \
 
