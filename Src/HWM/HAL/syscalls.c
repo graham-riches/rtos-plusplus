@@ -13,7 +13,7 @@
 **
 **  Target      : STMicroelectronics STM32
 **
-**  Distribution: The file is distributed “as is,” without any warranty
+**  Distribution: The file is distributed ï¿½as is,ï¿½ without any warranty
 **                of any kind.
 **
 *****************************************************************************
@@ -47,6 +47,7 @@
 */
 
 /* Includes */
+#include "common.h"
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -81,6 +82,8 @@ int _getpid(void)
 
 int _kill(int pid, int sig)
 {
+    PARAMETER_NOT_USED( pid );
+    PARAMETER_NOT_USED( sig );
 	errno = EINVAL;
 	return -1;
 }
@@ -93,11 +96,12 @@ void _exit (int status)
 
 __attribute__((weak)) int _read(int file, char *ptr, int len)
 {
+    PARAMETER_NOT_USED( file );
 	int DataIdx;
 
 	for (DataIdx = 0; DataIdx < len; DataIdx++)
 	{
-		*ptr++ = __io_getchar();
+		*ptr++ = (char)__io_getchar();
 	}
 
 return len;
@@ -105,6 +109,7 @@ return len;
 
 __attribute__((weak)) int _write(int file, char *ptr, int len)
 {
+    PARAMETER_NOT_USED( file );
 	int DataIdx;
 
 	for (DataIdx = 0; DataIdx < len; DataIdx++)
@@ -139,57 +144,72 @@ caddr_t _sbrk(int incr)
 
 int _close(int file)
 {
+    PARAMETER_NOT_USED( file );
 	return -1;
 }
 
 
 int _fstat(int file, struct stat *st)
 {
+    PARAMETER_NOT_USED( file );
 	st->st_mode = S_IFCHR;
 	return 0;
 }
 
 int _isatty(int file)
 {
+    PARAMETER_NOT_USED( file );
 	return 1;
 }
 
 int _lseek(int file, int ptr, int dir)
 {
+    PARAMETER_NOT_USED( file );
+    PARAMETER_NOT_USED( ptr );
+    PARAMETER_NOT_USED( dir );
 	return 0;
 }
 
 int _open(char *path, int flags, ...)
 {
+    PARAMETER_NOT_USED( path );
+    PARAMETER_NOT_USED( flags );
 	/* Pretend like we always fail */
 	return -1;
 }
 
 int _wait(int *status)
 {
+    PARAMETER_NOT_USED( status );
 	errno = ECHILD;
 	return -1;
 }
 
 int _unlink(char *name)
 {
+    PARAMETER_NOT_USED( name );
 	errno = ENOENT;
 	return -1;
 }
 
 int _times(struct tms *buf)
 {
+    PARAMETER_NOT_USED( buf );
 	return -1;
 }
 
 int _stat(char *file, struct stat *st)
 {
+    PARAMETER_NOT_USED( file );
+    PARAMETER_NOT_USED( st );
 	st->st_mode = S_IFCHR;
 	return 0;
 }
 
 int _link(char *old, char *new)
 {
+    PARAMETER_NOT_USED( old );
+    PARAMETER_NOT_USED( new );
 	errno = EMLINK;
 	return -1;
 }
@@ -202,6 +222,9 @@ int _fork(void)
 
 int _execve(char *name, char **argv, char **env)
 {
+    PARAMETER_NOT_USED( name );
+    PARAMETER_NOT_USED( argv );
+    PARAMETER_NOT_USED( env );
 	errno = ENOMEM;
 	return -1;
 }
