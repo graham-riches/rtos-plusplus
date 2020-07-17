@@ -1,34 +1,22 @@
-/* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * @file           : main.h
-  * @brief          : Header for main.c file.
-  *                   This file contains the common defines of the application.
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
-  *
-  ******************************************************************************
-  */
+/*! \file board.h
+*
+*  \brief contains board pin mappings
+*
+*
+*  \author Graham Riches
+*/
 
-#ifndef __MAIN_H
-#define __MAIN_H
+#ifndef __BOARD_H
+#define __BOARD_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-
+/********************************** Includes *******************************************/
 #include "stm32f4xx_hal.h"
 
-
+/*********************************** Consts ********************************************/
 #define CS_I2C_SPI_Pin GPIO_PIN_3
 #define CS_I2C_SPI_GPIO_Port GPIOE
 #define PC14_OSC32_IN_Pin GPIO_PIN_14
@@ -97,9 +85,17 @@ extern "C" {
 #define MEMS_INT2_GPIO_Port GPIOE
 
 
+/* USART3 - Debug port setup */
+#define DEBUG_USART_PORT USART3
+#define DEBUG_USART_TX_PORT GPIOD
+#define DEBUG_USART_RX_PORT GPIOD
+#define DEBUG_USART_TX_PIN GPIO_PIN_8
+#define DEBUG_USART_RX_PIN GPIO_PIN_9
+
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __MAIN_H */
+#endif /* __BOARD_H */
 

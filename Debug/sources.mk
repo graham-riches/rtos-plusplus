@@ -23,5 +23,6 @@ Src/HWM/I2C \
 Src/HWM/I2S \
 Src/HWM/SPI \
 Src/HWM/System \
+Src/HWM/USART \
 startup \
 

@@ -9,6 +9,7 @@ RM := rm -rf
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include startup/subdir.mk
+-include Src/HWM/USART/subdir.mk
 -include Src/HWM/System/subdir.mk
 -include Src/HWM/SPI/subdir.mk
 -include Src/HWM/I2S/subdir.mk

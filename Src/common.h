@@ -23,6 +23,7 @@ extern "C" {
 
 /*********************************** Macros ********************************************/
 #define PARAMETER_NOT_USED(X) (void)(X)
+#define CHECK_ENUM_INPUT(X, MAX) if ( X >= MAX ){ return; }
 
 /******************************* Global Variables **************************************/
 
