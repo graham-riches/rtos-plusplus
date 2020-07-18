@@ -16,6 +16,7 @@ RM := rm -rf
 -include Src/HWM/I2C/subdir.mk
 -include Src/HWM/HAL/subdir.mk
 -include Src/HWM/GPIO/subdir.mk
+-include Src/APP/Utilities/subdir.mk
 -include Src/APP/subdir.mk
 -include Drivers/STM32F4xx_HAL_Driver/Src/subdir.mk
 -include subdir.mk

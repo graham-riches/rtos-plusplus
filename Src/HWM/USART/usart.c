@@ -13,7 +13,8 @@
 #include "board.h"
 
 /*********************************** Consts ********************************************/
-
+#define USART_BUFFER_SIZE 256
+#define USART_RX_SIZE 1
 
 /************************************ Types ********************************************/
 
@@ -27,8 +28,16 @@
 /******************************** Local Variables **************************************/
 static USART_handler_t usartHandlersArray[USART_TOTAL_DEVICES];
 
-/****************************** Functions Prototype ************************************/
 
+/* create a local buffer for each USART peripheral and create a ring buffer handler to manage it */
+static uint8_t debugRxData[USART_BUFFER_SIZE] = {0};
+static uint8_t debugTxData[USART_BUFFER_SIZE] = {0};
+static UTILITIES_ringBuffer_t debugRxBuffer = { .head = 0, .tail = 0, .size = USART_BUFFER_SIZE, .data = &debugRxData };
+static UTILITIES_ringBuffer_t debugTxBuffer = { .head = 0, .tail = 0, .size = USART_BUFFER_SIZE, .data = &debugTxData };
+
+/****************************** Functions Prototype ************************************/
+static void USART_IRQHandler( USART_handler_t *usart );
+static USART_devices_t USART_getDevice( UART_HandleTypeDef *handle );
 
 /****************************** Functions Definition ***********************************/
 /**
@@ -58,6 +67,10 @@ void USART_init( void )
                 /* enable the usart clock */
                 __HAL_RCC_USART3_CLK_ENABLE();
 
+                /* set the interrupt priority and enable the interrupt */
+                HAL_NVIC_SetPriority( USART3_IRQn, 0, 0 );
+                HAL_NVIC_EnableIRQ( USART3_IRQn );
+
                 /* setup gpio pins */
                 gpio.Pin = DEBUG_USART_TX_PIN | DEBUG_USART_RX_PIN;
                 gpio.Alternate = GPIO_AF7_USART3;
@@ -67,6 +80,11 @@ void USART_init( void )
 
                 /* setup usart specifics */
                 usart->Instance = DEBUG_USART_PORT;
+
+                /* setup the ring buffer structures */
+                usartHandlersArray[device].rxBuffer = &debugRxBuffer;
+                usartHandlersArray[device].txBuffer = &debugTxBuffer;
+
                 break;
 
 
@@ -86,6 +104,9 @@ void USART_init( void )
         {
             /* TODO: hal error handler */
         }
+
+        /* enable the rx interrupt */
+        HAL_UART_Receive_IT( usart, &usartHandlersArray[device].rxDataByte, USART_RX_SIZE );
     }
     return;
 }
@@ -98,11 +119,123 @@ void USART_init( void )
  */
 void USART_send( USART_devices_t device, uint8_t *data, uint16_t size )
 {
-    /* for now, just use the HAL polling mode until interrupts are setup */
-    /* TODO: implement either interrupts or USART DMA */
-    CHECK_ENUM_INPUT( device, USART_TOTAL_DEVICES );
-    UART_HandleTypeDef *usart = &usartHandlersArray[device].handler;
+    USART_handler_t deviceHandler;
+    UTILITIES_ringBufferStatus_t status;
 
-    HAL_UART_Transmit( usart, data, size, HAL_MAX_DELAY );
+    CHECK_ENUM_INPUT( device, USART_TOTAL_DEVICES );
+
+    deviceHandler = usartHandlersArray[device];
+
+    status = UTILITIES_ringBufferAdd( deviceHandler.txBuffer, data, size );
+    if ( status != UTILITIES_RINGBUFFER_OK )
+    {
+        /* TODO: handle error */
+        return;
+    }
+
+    /* set the data available interrupt bit */
+    SET_BIT( deviceHandler.handler.Instance->CR1, USART_CR1_TCIE );
+
+
+    return;
+}
+
+
+/****************************** USART Interrupt Functions ***********************************/
+/**
+ * \brief generic callback for all UART interrupts
+ */
+static void USART_IRQHandler( USART_handler_t *usart )
+{
+    /* pass the peripheral handle pointer to the HAL ISR handler */
+    HAL_UART_IRQHandler( &usart->handler );
+}
+
+
+/**
+ * \brief get the local handler structure given a peripheral handle pointer
+ * \retval index if found, error otherwise
+ */
+static USART_devices_t USART_getDevice( UART_HandleTypeDef *handle )
+{
+    USART_devices_t index;
+    for ( index = 0; index < USART_TOTAL_DEVICES; index++ )
+    {
+        if ( handle == &usartHandlersArray[index].handler )
+        {
+            /* found the corresponding peripheral */
+            return index;
+        }
+    }
+    return USART_INVALID_DEVICE;
+}
+
+
+/**
+ * \brief ISR for USART3
+ * \note this is defined as .weak in startup_stm32f407xx.s
+ */
+void USART3_IRQHandler( void )
+{
+    USART_IRQHandler( &usartHandlersArray[USART_DEBUG] );
+    return;
+}
+
+
+/**
+ * \brief generic HAL callback function for data received interrupt
+ */
+void HAL_UART_RxCpltCallback( UART_HandleTypeDef *handle )
+{
+    UTILITIES_ringBufferStatus_t status;
+
+    /* get the appropriate handler and pass the data to it's ring buffer */
+    USART_devices_t device = USART_getDevice( handle );
+    USART_handler_t deviceHandler;
+    if ( device == USART_INVALID_DEVICE )
+    {
+        return;
+    }
+    deviceHandler = usartHandlersArray[device];
+
+    /* receive the data */
+    status = UTILITIES_ringBufferAdd( deviceHandler.rxBuffer, &deviceHandler.rxDataByte, USART_RX_SIZE );
+    if ( status != UTILITIES_RINGBUFFER_OK )
+    {
+        /* TODO: handle error */
+    }
+
+    /* re-enable the interrupt */
+    HAL_UART_Receive_IT( &deviceHandler.handler, &deviceHandler.rxDataByte, USART_RX_SIZE );
+    return;
+}
+
+
+/**
+ * \brief generic HAL callback function for data transmit interrupt
+ */
+void HAL_UART_TxCpltCallback( UART_HandleTypeDef *handle )
+{
+    USART_devices_t device = USART_getDevice( handle );
+    USART_handler_t deviceHandler;
+    uint8_t buffer[USART_BUFFER_SIZE] = {0};
+    uint16_t size;
+    if ( device == USART_INVALID_DEVICE )
+    {
+        return;
+    }
+    deviceHandler = usartHandlersArray[device];
+
+    size = UTILITIES_ringBufferGetUsedSpace( deviceHandler.txBuffer );
+    if ( size > USART_BUFFER_SIZE )
+    {
+        return;
+    }
+
+    UTILITIES_ringBufferGet( deviceHandler.txBuffer, buffer, size );
+
+    /* send it */
+    HAL_StatusTypeDef retval = HAL_UART_Transmit_IT( &deviceHandler.handler, buffer, size );
+    return;
 }
 

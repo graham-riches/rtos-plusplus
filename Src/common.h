@@ -14,6 +14,7 @@ extern "C" {
 #endif
 /********************************** Includes *******************************************/
 #include <stdint.h>
+#include "utilities.h"
 
 /*********************************** Consts ********************************************/
 
@@ -24,6 +25,10 @@ extern "C" {
 /*********************************** Macros ********************************************/
 #define PARAMETER_NOT_USED(X) (void)(X)
 #define CHECK_ENUM_INPUT(X, MAX) if ( X >= MAX ){ return; }
+
+#ifndef NULL
+#define NULL ((void *)0)
+#endif
 
 /******************************* Global Variables **************************************/
 

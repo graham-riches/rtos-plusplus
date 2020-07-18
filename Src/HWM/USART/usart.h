@@ -21,14 +21,15 @@ extern "C" {
 #define USART_BAUD_115200 115200
 
 /************************************ Types ********************************************/
-
 /**
  * \brief handler structure for USART peripherals
  */
 typedef struct
 {
-    uint8_t id;
-    UART_HandleTypeDef handler;
+    UART_HandleTypeDef handler;       //!< UART HAL handler
+    uint8_t rxDataByte;               //!< store a single RX byte
+    UTILITIES_ringBuffer_t *rxBuffer; //!< pointer to a rx buffer struct for storing the data
+    UTILITIES_ringBuffer_t *txBuffer; //!< pointer to a tx buffer for sending data
 } USART_handler_t;
 
 /**
@@ -36,8 +37,11 @@ typedef struct
  */
 typedef enum
 {
-    USART_DEBUG = 0, //!< debug port (USART3)
-    USART_TOTAL_DEVICES
+    USART_DEBUG = 0,     //!< debug port (USART3)
+    USART_TOTAL_DEVICES, //!< enumeration count limit
+
+    /* define an invalid value for error handling. Note: this caps the number of devices unless modified */
+    USART_INVALID_DEVICE = 0xFF //!< invalid device value
 } USART_devices_t;
 
 /*********************************** Macros ********************************************/
