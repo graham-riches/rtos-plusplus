@@ -1,20 +1,20 @@
-/*! \file common.h
+/*! \file debug.h
 *
-*  \brief common module includes
+*  \brief debug module functions and variables declarations.
 *
 *
 *  \author Graham Riches
+*  \copyright Copyright (c) ATTAbotics Inc. 2020
 */
 
-#ifndef __COMMON_H__
-#define __COMMON_H__
+#ifndef __DEBUG_H__
+#define __DEBUG_H__
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 /********************************** Includes *******************************************/
-#include <stdint.h>
-#include <stdbool.h>
+#include "common.h"
 
 /*********************************** Consts ********************************************/
 
@@ -23,25 +23,19 @@ extern "C" {
 
 
 /*********************************** Macros ********************************************/
-#define PARAMETER_NOT_USED(X) (void)(X)
 
-#ifndef NULL
-    #define NULL ((void *)0)
-#endif
-
-/* NOTE: these macros must exist in pairs! */
-#define DISABLE_INTERRUPTS() uint32_t prim = __get_PRIMASK(); __disable_irq();
-#define ENABLE_INTERRUPTS() if(!prim){__enable_irq();}
 
 /******************************* Global Variables **************************************/
 
 
 /****************************** Functions Prototype ************************************/
-
+void DEBUG_init( void );
+void DEBUG_log( const char *msg, ... );
+void DEBUG_print( const char *msg, ... );
 
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __COMMON_H */
+#endif /* __DEBUG_H__ */

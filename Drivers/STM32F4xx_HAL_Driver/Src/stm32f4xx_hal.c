@@ -390,6 +390,7 @@ __weak void HAL_Delay(uint32_t Delay)
 {
   uint32_t tickstart = HAL_GetTick();
   uint32_t wait = Delay;
+  int tmp = 0;
 
   /* Add a freq to guarantee minimum wait */
   if (wait < HAL_MAX_DELAY)
@@ -399,6 +400,7 @@ __weak void HAL_Delay(uint32_t Delay)
 
   while((HAL_GetTick() - tickstart) < wait)
   {
+      tmp = 1;
   }
 }
 

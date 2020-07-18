@@ -17,7 +17,7 @@ extern "C" {
 #include "common.h"
 
 /*********************************** Consts ********************************************/
-
+#define UTILITIES_MAX_STRSPLIT_LENGTH  512
 
 /************************************ Types ********************************************/
 /**
@@ -50,9 +50,10 @@ typedef enum
 
 /****************************** Functions Prototype ************************************/
 UTILITIES_ringBufferStatus_t UTILITIES_ringBufferAdd( UTILITIES_ringBuffer_t *buffer, uint8_t *data, uint16_t size );
-UTILITIES_ringBufferStatus_t UTILITIES_ringBufferGet( UTILITIES_ringBuffer_t *buffer, uint8_t *data, uint16_t size );
+uint16_t UTILITIES_ringBufferGet( UTILITIES_ringBuffer_t *buffer, uint8_t *data, uint16_t size );
 uint16_t UTILITIES_ringBufferGetFreeSpace( UTILITIES_ringBuffer_t *buffer );
 uint16_t UTILITIES_ringBufferGetUsedSpace( UTILITIES_ringBuffer_t *buffer );
+int32_t UTILITIES_strSplit ( char *inputString, char delimiter, int maxStrings, char *argv[] );
 
 #ifdef __cplusplus
 }

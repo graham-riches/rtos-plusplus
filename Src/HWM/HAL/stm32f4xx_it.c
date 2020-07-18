@@ -45,7 +45,16 @@ void HardFault_Handler( void )
 
   while (1)
   {
-	  // TODO: fill in all ISR routines
+      asm volatile(
+                  "tst lr, #4\t\n" /* Check EXC_RETURN[2] */
+                  "ite eq\t\n"
+                  "mrseq r0, msp\t\n"
+                  "mrsne r0, psp\t\n"
+                  "b HardFault_Handler\t\n"
+                  : /* no output */
+                  : /* no input */
+                  : "r0" /* clobber */
+                  );
   }
 }
 
@@ -121,5 +130,4 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
   HAL_IncTick();
-
 }
