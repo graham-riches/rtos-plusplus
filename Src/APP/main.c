@@ -11,6 +11,7 @@
 #include "usart.h"
 #include "common.h"
 #include "command_line.h"
+#include "gpio.h"
 
 /*********************************** Consts ********************************************/
 #define COMMAND_BUFFER_SIZE 256
@@ -40,10 +41,10 @@ int main(void)
     HAL_moduleInit();
 
     /* light the LEDs */
-    HAL_GPIO_WritePin( GPIOD, GPIO_PIN_12, GPIO_PIN_SET );
-    HAL_GPIO_WritePin( GPIOD, GPIO_PIN_13, GPIO_PIN_SET );
-    HAL_GPIO_WritePin( GPIOD, GPIO_PIN_14, GPIO_PIN_SET );
-    HAL_GPIO_WritePin( GPIOD, GPIO_PIN_15, GPIO_PIN_SET );
+    GPIO_setLED( GPIO_LED_GREEN, GPIO_LED_ON );
+    GPIO_setLED( GPIO_LED_ORANGE, GPIO_LED_ON );
+    GPIO_setLED( GPIO_LED_RED, GPIO_LED_ON );
+    GPIO_setLED( GPIO_LED_BLUE, GPIO_LED_ON );
 
     /* main single-threaded function */
     while (1)
@@ -55,7 +56,7 @@ int main(void)
         {
             in = msgIn;
             count = 0;
-            while ( count < COMMAND_BUFFER_SIZE )
+            while ( count < COMMAND_BUFFER_SIZE - 1 )
             {
                 if ( *in == '\n' )
                 {
@@ -65,8 +66,7 @@ int main(void)
 
                     /* send it to the command line interface module */
                     CLI_executeCommand( msgIn );
-
-                    /* clear the buffer and break out of the loop */
+                    /* clear the buffer and reset */
                     bytesReceived = 0;
                     memset( msgIn, 0, COMMAND_BUFFER_SIZE );
                     break;
@@ -74,14 +74,14 @@ int main(void)
                 count++;
                 in++;
             }
-
+            if ( bytesReceived >= COMMAND_BUFFER_SIZE - 1 )
+            {
+                bytesReceived = 0;
+                memset( msgIn, 0, COMMAND_BUFFER_SIZE );
+            }
         }
 
         HAL_Delay( 500 );
     }
-    HAL_GPIO_WritePin( GPIOD, GPIO_PIN_12, GPIO_PIN_RESET );
-    HAL_GPIO_WritePin( GPIOD, GPIO_PIN_13, GPIO_PIN_RESET );
-    HAL_GPIO_WritePin( GPIOD, GPIO_PIN_14, GPIO_PIN_RESET );
-    HAL_GPIO_WritePin( GPIOD, GPIO_PIN_15, GPIO_PIN_RESET );
     return 0;
 }

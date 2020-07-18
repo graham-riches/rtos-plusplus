@@ -13,7 +13,7 @@
 #include "board.h"
 
 /*********************************** Consts ********************************************/
-
+#define GPIO_LED_BANK GPIOD
 
 /************************************ Types ********************************************/
 
@@ -25,7 +25,7 @@
 
 
 /******************************** Local Variables **************************************/
-
+static const uint16_t ledPins[GPIO_TOTAL_LEDS] = { GPIO_PIN_12, GPIO_PIN_13, GPIO_PIN_14, GPIO_PIN_15 };
 
 /****************************** Functions Prototype ************************************/
 
@@ -122,5 +122,19 @@ void GPIO_init( void )
     GPIO_InitStruct.Mode = GPIO_MODE_EVT_RISING;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(MEMS_INT2_GPIO_Port, &GPIO_InitStruct);
+    return;
+}
+
+
+/**
+ * \brief set an LED pin state
+ */
+void GPIO_setLED( GPIO_LED_t led, GPIO_LED_state_t state )
+{
+    if ( led >= GPIO_TOTAL_LEDS )
+    {
+        return;
+    }
+    HAL_GPIO_WritePin( GPIO_LED_BANK, ledPins[led], state );
     return;
 }

@@ -12,7 +12,7 @@
 #include "command_line.h"
 #include "utilities.h"
 #include "debug.h"
-
+#include "gpio.h"
 
 /*********************************** Local Functions ********************************************/
 int32_t  CLI_parseCommand( char *commandString, int *argc, char *argv[] );
@@ -20,7 +20,7 @@ int32_t  CLI_parseCommand( char *commandString, int *argc, char *argv[] );
 
 /************************************ Command Line Definitions ********************************************/
 
-/******************** Help Command ****************************************/
+/******************** Help Command ********************/
 static const char help_name[] = "help";
 static const char * const help_args[] = {"None", 0};
 static const char help_desc[] = "List CLI commands";
@@ -40,6 +40,33 @@ const CLI_command_t help =
    help_desc
 };
 
+/******************** LED Control Command ********************/
+static const char led_name[] = "led";
+static const char * const led_args[] = {"[COLOR]","[ON/OFF]", 0};
+static const char led_desc[] = "Enable/Disable LEDs";
+static int led_func( int argc, char *argv[] )
+{
+   if ( argc < 2 )
+   {
+       DEBUG_print( "Invalid number of arguments\n" );
+   }
+
+
+   GPIO_LED_t led = strtol( argv[1], NULL, 10 );
+   GPIO_LED_state_t state = strtol( argv[2], NULL, 10 );
+   GPIO_setLED( led, state );
+
+   return 0;
+}
+
+const CLI_command_t led =
+{
+   led_func,
+   led_name,
+   led_args,
+   led_desc
+};
+
 /************************************ Command Line List ********************************************/
 /**
  * \brief contains the entire list of command line options used to initialize the CLI
@@ -47,6 +74,7 @@ const CLI_command_t help =
 static const CLI_command_t *CLI_menuCommands[CLI_MAX_COMMANDS] =
 {
    &help,
+   &led,
    // add new CLI commands here
 };
 
@@ -154,7 +182,7 @@ void CLI_listCommands( void )
             {
                 break;
             }
-            printf("      %s\r\n", currCommand->usage[i] );
+            DEBUG_print("      %s\r\n", currCommand->usage[i] );
             i++;
         }
         DEBUG_print("\r\n");
