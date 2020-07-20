@@ -38,8 +38,8 @@ typedef struct
  */
 typedef enum
 {
-	SPI_DEFAULT_DEVICE = 0,
-	SPI_MAX_DEVICES
+	SPI_ACCELEROMETER = 0,
+	SPI_TOTAL_DEVICES
 } SPI_devices_t;
 
 
@@ -52,6 +52,8 @@ typedef enum
 
 /****************************** Functions Prototype ************************************/
 void SPI_init( void );
+void SPI_write( SPI_devices_t device, uint8_t *data, uint16_t size );
+void SPI_read( SPI_devices_t device, uint8_t *data, uint16_t size );
 
 
 #ifdef __cplusplus

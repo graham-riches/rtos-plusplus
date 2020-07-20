@@ -9,10 +9,12 @@
 /********************************** Includes *******************************************/
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "command_line.h"
 #include "utilities.h"
 #include "debug.h"
 #include "gpio.h"
+#include "accelerometer.h"
 
 /*********************************** Local Functions ********************************************/
 int32_t  CLI_parseCommand( char *commandString, int *argc, char *argv[] );
@@ -51,7 +53,6 @@ static int led_func( int argc, char *argv[] )
        DEBUG_print( "Invalid number of arguments\n" );
    }
 
-
    GPIO_LED_t led = strtol( argv[1], NULL, 10 );
    GPIO_LED_state_t state = strtol( argv[2], NULL, 10 );
    GPIO_setLED( led, state );
@@ -67,6 +68,24 @@ const CLI_command_t led =
    led_desc
 };
 
+/********************Accelerometer Command ********************/
+static const char accel_name[] = "accel";
+static const char * const accel_args[] = {"[TEST]", 0};
+static const char accel_desc[] = "Test the accelerometer";
+static int accel_func( int argc, char *argv[] )
+{
+    ACCEL_test();
+    return 0;
+}
+
+const CLI_command_t accel =
+{
+    accel_func,
+    accel_name,
+    accel_args,
+    accel_desc
+};
+
 /************************************ Command Line List ********************************************/
 /**
  * \brief contains the entire list of command line options used to initialize the CLI
@@ -75,6 +94,7 @@ static const CLI_command_t *CLI_menuCommands[CLI_MAX_COMMANDS] =
 {
    &help,
    &led,
+   &accel,
    // add new CLI commands here
 };
 

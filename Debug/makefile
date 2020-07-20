@@ -18,6 +18,7 @@ RM := rm -rf
 -include Src/HWM/GPIO/subdir.mk
 -include Src/APP/Utilities/subdir.mk
 -include Src/APP/Debug/subdir.mk
+-include Src/APP/Accelerometer/subdir.mk
 -include Src/APP/subdir.mk
 -include Drivers/STM32F4xx_HAL_Driver/Src/subdir.mk
 -include subdir.mk

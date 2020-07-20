@@ -9,6 +9,7 @@
 
 /********************************** Includes *******************************************/
 #include "spi.h"
+#include "board.h"
 
 /*********************************** Consts ********************************************/
 
@@ -22,7 +23,7 @@
 
 
 /******************************** Local Variables **************************************/
-static SPI_handler_t spiHandlersArray[SPI_MAX_DEVICES];
+static SPI_handler_t spiHandlersArray[SPI_TOTAL_DEVICES];
 
 /****************************** Functions Prototype ************************************/
 
@@ -36,15 +37,28 @@ static SPI_handler_t spiHandlersArray[SPI_MAX_DEVICES];
 */
 void SPI_init( void )
 {
-	/* configure the general SPI peripheral parameters */
+	/* configure the general SPI peripheral parameters and any associated GPIO */
 	SPI_HandleTypeDef *hSpi;
-	for ( uint8_t device = 0; device < SPI_MAX_DEVICES; device++ )
+	GPIO_InitTypeDef gpio;
+
+	for ( uint8_t device = 0; device < SPI_TOTAL_DEVICES; device++ )
 	{
 		hSpi = &spiHandlersArray[device].handler;
 
 		switch ( device )
 		{
-			case SPI_DEFAULT_DEVICE:
+			case SPI_ACCELEROMETER:
+			    /* Reset the CS pin */
+			    HAL_GPIO_WritePin(ACCEL_CS_GPIO_BANK, ACCEL_CS_PIN, GPIO_PIN_RESET);
+
+			    /* configure the CS GPIO pin */
+                gpio.Pin = ACCEL_CS_PIN;
+                gpio.Mode = GPIO_MODE_OUTPUT_PP;
+                gpio.Pull = GPIO_NOPULL;
+                gpio.Speed = GPIO_SPEED_FREQ_LOW;
+                HAL_GPIO_Init(ACCEL_CS_GPIO_BANK, &gpio);
+
+                /* configure the SPI parameters */
 				hSpi->Instance = SPI1;
 				hSpi->Init.Mode = SPI_MODE_MASTER;
 				hSpi->Init.Direction = SPI_DIRECTION_2LINES;
@@ -70,4 +84,37 @@ void SPI_init( void )
 		}
 	}
 	return;
+}
+
+
+/**
+ * \brief write to a device over SPI
+ */
+void SPI_write( SPI_devices_t device, uint8_t *data, uint16_t size )
+{
+    if ( device >= SPI_TOTAL_DEVICES )
+    {
+        return;
+    }
+    SPI_handler_t *handler = &spiHandlersArray[device];
+
+    /* for now use the blocking HAL write */
+    HAL_SPI_Transmit( &handler->handler, data, size, HAL_MAX_DELAY );
+    return;
+}
+
+
+/**
+ * \brief read from a device over SPI
+ */
+void SPI_read( SPI_devices_t device, uint8_t *data, uint16_t size )
+{
+    if ( device >= SPI_TOTAL_DEVICES )
+    {
+        return;
+    }
+    SPI_handler_t *handler = &spiHandlersArray[device];
+
+    /* for now use the blocking HAL read */
+    HAL_SPI_Receive( &handler->handler, data, size, HAL_MAX_DELAY );
 }

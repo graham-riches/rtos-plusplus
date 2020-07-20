@@ -17,8 +17,6 @@ extern "C" {
 #include "stm32f4xx_hal.h"
 
 /*********************************** Consts ********************************************/
-#define CS_I2C_SPI_Pin GPIO_PIN_3
-#define CS_I2C_SPI_GPIO_Port GPIOE
 #define PC14_OSC32_IN_Pin GPIO_PIN_14
 #define PC14_OSC32_IN_GPIO_Port GPIOC
 #define PC15_OSC32_OUT_Pin GPIO_PIN_15
@@ -35,12 +33,6 @@ extern "C" {
 #define B1_GPIO_Port GPIOA
 #define I2S3_WS_Pin GPIO_PIN_4
 #define I2S3_WS_GPIO_Port GPIOA
-#define SPI1_SCK_Pin GPIO_PIN_5
-#define SPI1_SCK_GPIO_Port GPIOA
-#define SPI1_MISO_Pin GPIO_PIN_6
-#define SPI1_MISO_GPIO_Port GPIOA
-#define SPI1_MOSI_Pin GPIO_PIN_7
-#define SPI1_MOSI_GPIO_Port GPIOA
 #define BOOT1_Pin GPIO_PIN_2
 #define BOOT1_GPIO_Port GPIOB
 #define CLK_IN_Pin GPIO_PIN_10
@@ -92,6 +84,18 @@ extern "C" {
 #define DEBUG_USART_TX_PIN GPIO_PIN_8
 #define DEBUG_USART_RX_PIN GPIO_PIN_9
 
+
+/* MEMS Accelerometer Pin Definitions */
+#define ACCEL_CS_PIN GPIO_PIN_3
+#define ACCEL_CS_GPIO_BANK GPIOE
+
+/* SPI1 Bus */
+#define SPI1_SCK_Pin GPIO_PIN_5
+#define SPI1_SCK_GPIO_Port GPIOA
+#define SPI1_MISO_Pin GPIO_PIN_6
+#define SPI1_MISO_GPIO_Port GPIOA
+#define SPI1_MOSI_Pin GPIO_PIN_7
+#define SPI1_MOSI_GPIO_Port GPIOA
 
 #ifdef __cplusplus
 }
