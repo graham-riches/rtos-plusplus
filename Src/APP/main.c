@@ -47,6 +47,7 @@ int main(void)
     GPIO_setLED( GPIO_LED_BLUE, GPIO_LED_ON );
 
     /* main single-threaded function */
+    /* NOTE: this is a garbage hacky mess until I implement an event handler :D */
     while (1)
     {
         bytesReceived += (uint16_t)USART_recv( USART_DEBUG, (uint8_t *)&msgIn[bytesReceived], (uint16_t)(COMMAND_BUFFER_SIZE - bytesReceived) );
