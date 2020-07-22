@@ -53,8 +53,9 @@ typedef enum
 
 /****************************** Functions Prototype ************************************/
 void SPI_init( void );
-void SPI_write( SPI_devices_t device, uint8_t *data, uint16_t size );
-uint8_t SPI_readWrite( SPI_devices_t device, uint8_t addr );
+void SPI_readWrite( SPI_devices_t device, uint8_t *txBuff, uint8_t *rxBuff, uint16_t size );
+void SPI_write( SPI_devices_t device, uint8_t *txBuff, uint16_t size );
+void SPI_read( SPI_devices_t device, uint8_t *rxBuff, uint16_t size );
 
 
 #ifdef __cplusplus

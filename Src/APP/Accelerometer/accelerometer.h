@@ -26,7 +26,7 @@ extern "C" {
 #define ACCEL_CTRL_REG4 0x20U //!< control register 4
 
 
-/* 0b<D0><D1><D2><D3><D4><D5><D6><D7><AD0><AD1><AD2><AD3><AD4><AD5><MS><RW> */
+
 
 /************************************ Types ********************************************/
 

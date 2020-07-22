@@ -84,10 +84,6 @@ void SPI_init( void )
 				hSpi->Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
 				hSpi->Init.CRCPolynomial = 10;
 
-				/* enable the interrupts */
-				//HAL_NVIC_SetPriority( SPI1_IRQn, 2, 2 );
-                //HAL_NVIC_EnableIRQ( SPI1_IRQn );
-
 				break;
 
 			default:
@@ -110,62 +106,88 @@ void SPI_init( void )
         /* disable the CS for the current handler */
         disableCS( &spiHandlersArray[device] );
 
-		/* enable the interrupts */
-		//__HAL_SPI_ENABLE_IT( hSpi, SPI_IT_RXNE );
-		//__HAL_SPI_ENABLE_IT( hSpi, SPI_IT_TXE );
 	}
 	return;
 }
 
-
 /**
- * \brief write to a device over SPI
+ * \brief read/write over SPI
+ * \param device the SPI peripheral device
+ * \txbuff pointer to the send buffer
+ * \rxBuff pointer to the receive buffer
+ * \size number of bytes to send
  */
-void SPI_write( SPI_devices_t device, uint8_t *data, uint16_t size )
+void SPI_readWrite( SPI_devices_t device, uint8_t *txBuff, uint8_t *rxBuff, uint16_t size )
 {
     if ( device >= SPI_TOTAL_DEVICES )
     {
         return;
     }
     SPI_handler_t *handler = &spiHandlersArray[device];
+    SPI_TypeDef *spi = handler->handler.Instance;
+    uint8_t tmp = 0;
 
-    /* for now use the blocking HAL write */
-    HAL_SPI_Transmit( &handler->handler, data, size, HAL_MAX_DELAY );
-
-    return;
-}
-
-uint8_t SPI_readWrite( SPI_devices_t device, uint8_t addr )
-{
-    if ( device >= SPI_TOTAL_DEVICES )
-    {
-        return 0XFF;
-    }
-    SPI_handler_t *handler = &spiHandlersArray[device];
-    SPI_TypeDef *spi = SPI1;
+    /* enable the SPI peripheral if it's not enabled */
     __HAL_SPI_ENABLE(&handler->handler);
-    uint8_t tmp;
-
-    addr |= (uint8_t)0x80;
-    while ( READ_BIT(spi->SR, SPI_SR_TXE) == 0 ) {}
 
     /* pull the CS low */
     enableCS( handler );
 
-    *((__IO uint8_t *)&(SPI1->DR)) = addr;
+    while ( size > 0 )
+    {
+        /* wait for the transmit buffer to clear */
+        while ( READ_BIT(spi->SR, SPI_SR_TXE) == 0 ) {}
 
-    while ( READ_BIT(spi->SR, SPI_SR_RXNE) == 0 ) {}
+        if ( txBuff )
+        {
+            *((__IO uint8_t *)&(spi->DR)) = *txBuff++;
+        }
+        else
+        {
+            /* send junk for Rx purposes */
+            *((__IO uint8_t *)&(spi->DR)) = (uint8_t)0x00U;
+        }
 
-    tmp = *(__IO uint8_t *)&(spi->DR);
-    while ( READ_BIT(spi->SR, SPI_SR_TXE) == 0 ) {}
+        /* wait for the receive buffer to clear */
+        while ( READ_BIT(spi->SR, SPI_SR_RXNE) == 0 ) {}
 
-    *((__IO uint8_t *)&(SPI1->DR)) = (uint8_t)0x00;
-    while ( READ_BIT(spi->SR, SPI_SR_RXNE) == 0 ) {}
+        /* read data in if required, otherwise throw it away (write) */
+        if ( rxBuff )
+        {
+            *rxBuff++ = *(__IO uint8_t *)&(spi->DR);
+        }
+        else
+        {
+            tmp = *(__IO uint8_t *)&(spi->DR);
+        }
 
-    tmp = *(__IO uint8_t *)&(spi->DR);
+        size--;
+    }
 
     disableCS( handler );
-    return tmp;
+    return;
+}
+
+/**
+ * \brief write data to a SPI peripheral
+ * \param device the SPI peripheral device
+ * \txbuff pointer to the send buffer
+ * \size number of bytes to send
+ */
+void SPI_write( SPI_devices_t device, uint8_t *txBuff, uint16_t size )
+{
+    SPI_readWrite( device, txBuff, NULL, size );
+}
+
+/**
+ * \brief read data from a SPI peripheral
+ * \param device the SPI peripheral device
+ * \rxBuff pointer to the receive buffer
+ * \size number of bytes to send
+ */
+void SPI_read( SPI_devices_t device, uint8_t *rxBuff, uint16_t size )
+{
+    SPI_readWrite( device, NULL, rxBuff, size );
 }
 
 /**

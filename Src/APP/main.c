@@ -62,7 +62,7 @@ int main(void)
                 {
                     /* NULL terminate the string */
                     *in = '\0';
-                    *++in = '0';
+                    *++in = '\0';
 
                     /* send it to the command line interface module */
                     CLI_executeCommand( msgIn );

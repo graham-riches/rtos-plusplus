@@ -30,7 +30,6 @@
 
 
 /****************************** Functions Prototype ************************************/
-void ACCEL_read( uint16_t addr, uint8_t *msg, uint16_t size );
 
 /****************************** Functions Definition ***********************************/
 /**
@@ -43,7 +42,7 @@ void ACCEL_read( uint16_t addr, uint8_t *msg, uint16_t size );
 void ACCEL_init( void )
 {
     uint16_t command = (ACCEL_CTRL_REG4 | ACCEL_WRITE);
-    //SPI_write( SPI_ACCELEROMETER, (uint8_t *)&command, sizeof(command) );
+    SPI_write( SPI_ACCELEROMETER, (uint8_t *)&command, sizeof(command) );
     return;
 }
 
@@ -55,23 +54,9 @@ void ACCEL_init( void )
 void ACCEL_test( void )
 {
     uint16_t command = (ACCEL_WHO_AM_I | ACCEL_READ);
-    uint8_t data = SPI_readWrite( SPI_ACCELEROMETER, (uint8_t)command );
-    DEBUG_print("ACCELEROMETER TEST: received: %d\n", data);
+    uint16_t data = 0;
+    SPI_readWrite( SPI_ACCELEROMETER, (uint8_t *)&command, (uint8_t *)&data, sizeof(command) );
+    /* NOTE: the data we are interested in is in the second received byte */
+    DEBUG_print("ACCELEROMETER TEST: received: %d\n", (uint8_t)(data >> 8));
     return;
 }
-
-
-
-/**
- * \brief read from the device
- */
-void ACCEL_read( uint16_t addr, uint8_t *msg, uint16_t size )
-{
-    /* assemble the read instruction */
-    uint16_t writeMsg = 0;
-    writeMsg |= ACCEL_READ; //!< enable the read bit
-    writeMsg |= addr; //!< pass in the address
-    SPI_write( SPI_ACCELEROMETER, &writeMsg, sizeof(writeMsg) );
-    return;
-}
-
