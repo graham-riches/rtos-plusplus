@@ -18,6 +18,7 @@ SUBDIRS := \
 Drivers/STM32F4xx_HAL_Driver/Src \
 Src/APP/Accelerometer \
 Src/APP/Debug \
+Src/APP/Events \
 Src/APP/Utilities \
 Src/APP \
 Src/HWM/GPIO \

@@ -49,6 +49,7 @@
 									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Core/Include"/>
 									<listOptionValue builtIn="false" value="../Src/APP"/>
 									<listOptionValue builtIn="false" value="../Src/HWM/HAL"/>
+									<listOptionValue builtIn="false" value="../Src/APP/Events"/>
 								</option>
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.1946114596" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="USE_HAL_DRIVER"/>

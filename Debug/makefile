@@ -17,6 +17,7 @@ RM := rm -rf
 -include Src/HWM/HAL/subdir.mk
 -include Src/HWM/GPIO/subdir.mk
 -include Src/APP/Utilities/subdir.mk
+-include Src/APP/Events/subdir.mk
 -include Src/APP/Debug/subdir.mk
 -include Src/APP/Accelerometer/subdir.mk
 -include Src/APP/subdir.mk

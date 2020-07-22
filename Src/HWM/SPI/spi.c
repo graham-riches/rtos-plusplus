@@ -60,9 +60,9 @@ void SPI_init( void )
 		switch ( device )
 		{
 			case SPI_ACCELEROMETER:
-			    /* set the CS pin and bank in the handler structure */
-			    spiHandlersArray[device].bank = ACCEL_CS_GPIO_BANK;
-			    spiHandlersArray[device].cs = ACCEL_CS_PIN;
+                /* set the CS pin and bank in the handler structure */
+                spiHandlersArray[device].bank = ACCEL_CS_GPIO_BANK;
+                spiHandlersArray[device].cs = ACCEL_CS_PIN;
 
                 /* configure the SPI GPIO pins */
                 gpio.Pin = SPI1_MOSI_Pin | SPI1_MISO_Pin | SPI1_SCK_Pin;
@@ -71,20 +71,20 @@ void SPI_init( void )
                 HAL_GPIO_Init( GPIOA, &gpio );
 
                 /* configure the SPI parameters */
-				hSpi->Instance = SPI1;
-				hSpi->Init.Mode = SPI_MODE_MASTER;
-				hSpi->Init.Direction = SPI_DIRECTION_2LINES;
-				hSpi->Init.DataSize = SPI_DATASIZE_8BIT;
-				hSpi->Init.CLKPolarity = SPI_POLARITY_HIGH;
-				hSpi->Init.CLKPhase = SPI_PHASE_2EDGE;
-				hSpi->Init.NSS = SPI_NSS_SOFT;
-				hSpi->Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32;
-				hSpi->Init.FirstBit = SPI_FIRSTBIT_MSB;
-				hSpi->Init.TIMode = SPI_TIMODE_DISABLE;
-				hSpi->Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-				hSpi->Init.CRCPolynomial = 10;
+                hSpi->Instance = SPI1;
+                hSpi->Init.Mode = SPI_MODE_MASTER;
+                hSpi->Init.Direction = SPI_DIRECTION_2LINES;
+                hSpi->Init.DataSize = SPI_DATASIZE_8BIT;
+                hSpi->Init.CLKPolarity = SPI_POLARITY_HIGH;
+                hSpi->Init.CLKPhase = SPI_PHASE_2EDGE;
+                hSpi->Init.NSS = SPI_NSS_SOFT;
+                hSpi->Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32;
+                hSpi->Init.FirstBit = SPI_FIRSTBIT_MSB;
+                hSpi->Init.TIMode = SPI_TIMODE_DISABLE;
+                hSpi->Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+                hSpi->Init.CRCPolynomial = 10;
 
-				break;
+                break;
 
 			default:
 				break;

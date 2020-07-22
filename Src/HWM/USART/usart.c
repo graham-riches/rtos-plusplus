@@ -11,6 +11,7 @@
 /********************************** Includes *******************************************/
 #include "usart.h"
 #include "board.h"
+#include "event.h"
 
 /*********************************** Consts ********************************************/
 #define USART_BUFFER_SIZE 256
@@ -202,6 +203,8 @@ static void USART_IRQHandler( USART_handler_t *usart )
             /* copy the received byte into the handlers ring buffer */
             data = (uint8_t)(dr & 0xFF);
             UTILITIES_ringBufferAdd( usart->rxBuffer, &data, USART_RX_SIZE );
+            /* set the data received event */
+            EVENT_set( &mainEventFlags, EVENT_USART_DEBUG_RX );
         }
         /* handle a data transmit interrupt */
         if ( (cr1its & USART_CR1_TXEIE) && (isrflags & USART_SR_TXE) )
