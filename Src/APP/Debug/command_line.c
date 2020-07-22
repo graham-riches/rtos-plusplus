@@ -74,6 +74,7 @@ static const char * const accel_args[] = {"[TEST]", 0};
 static const char accel_desc[] = "Test the accelerometer";
 static int accel_func( int argc, char *argv[] )
 {
+    ACCEL_init();
     ACCEL_test();
     return 0;
 }

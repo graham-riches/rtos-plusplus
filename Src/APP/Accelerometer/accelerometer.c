@@ -11,6 +11,8 @@
 /********************************** Includes *******************************************/
 #include "accelerometer.h"
 #include "spi.h"
+#include "debug.h"
+#include "board.h"
 
 /*********************************** Consts ********************************************/
 
@@ -40,8 +42,9 @@ void ACCEL_read( uint16_t addr, uint8_t *msg, uint16_t size );
 */
 void ACCEL_init( void )
 {
-   /* Initialize the module here*/
-
+    uint16_t command = (ACCEL_CTRL_REG4 | ACCEL_WRITE);
+    //SPI_write( SPI_ACCELEROMETER, (uint8_t *)&command, sizeof(command) );
+    return;
 }
 
 
@@ -51,8 +54,9 @@ void ACCEL_init( void )
  */
 void ACCEL_test( void )
 {
-    uint16_t data = 0;
-    ACCEL_read( ACCEL_WHO_AM_I, &data, sizeof(data) );
+    uint16_t command = (ACCEL_WHO_AM_I | ACCEL_READ);
+    uint8_t data = SPI_readWrite( SPI_ACCELEROMETER, (uint8_t)command );
+    DEBUG_print("ACCELEROMETER TEST: received: %d\n", data);
     return;
 }
 
@@ -64,12 +68,10 @@ void ACCEL_test( void )
 void ACCEL_read( uint16_t addr, uint8_t *msg, uint16_t size )
 {
     /* assemble the read instruction */
-    uint16_t readMsg = 0;
-    readMsg |= ACCEL_READ; //!< enable the read bit
-    readMsg |= (addr << ACCEL_ADDR_OFFSET); //!< pass in the address
-    SPI_write( SPI_ACCELEROMETER, &readMsg, sizeof(readMsg) );
-    /* wait for the data to come back */
-    SPI_read( SPI_ACCELEROMETER, msg, size );
+    uint16_t writeMsg = 0;
+    writeMsg |= ACCEL_READ; //!< enable the read bit
+    writeMsg |= addr; //!< pass in the address
+    SPI_write( SPI_ACCELEROMETER, &writeMsg, sizeof(writeMsg) );
     return;
 }
 

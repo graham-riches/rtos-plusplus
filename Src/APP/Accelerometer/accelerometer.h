@@ -19,12 +19,11 @@ extern "C" {
 /*********************************** Consts ********************************************/
 /* LIS302DL API definitions */
 #define ACCEL_WRITE       0x00U //!< write bit
-#define ACCEL_READ        0x01U //!< read bit
-#define ACCEL_INC_ADDRESS 0x02U //!< increment the address for successive readings
-#define ACCEL_ADDR_OFFSET 2 //!< address is bit-shifted left two from the start of the packet
+#define ACCEL_READ        0x80U //!< read bit
 
 /* Register Addresses */
-#define ACCEL_WHO_AM_I 0x0FU //!< device ID register
+#define ACCEL_WHO_AM_I  0x0FU //!< device ID register
+#define ACCEL_CTRL_REG4 0x20U //!< control register 4
 
 
 /* 0b<D0><D1><D2><D3><D4><D5><D6><D7><AD0><AD1><AD2><AD3><AD4><AD5><MS><RW> */

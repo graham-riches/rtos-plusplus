@@ -48,9 +48,9 @@ void HAL_moduleInit( void )
 	SYSTEM_init();
 
 	/* Initialize all configured peripherals */
+	GPIO_init();
 	SPI_init();
 	I2C_init();
 	I2S_init();
-	GPIO_init();
 	USART_init();
 }
