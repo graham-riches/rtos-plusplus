@@ -30,6 +30,8 @@ typedef struct
     UART_HandleTypeDef handler;       //!< UART HAL handler
     UTILITIES_ringBuffer_t *rxBuffer; //!< pointer to a rx buffer struct for storing the data
     UTILITIES_ringBuffer_t *txBuffer; //!< pointer to a tx buffer for sending data
+    volatile uint32_t *eventFlagsGroup;        //!< pointer to an events flag group to set an event on RX
+    uint8_t eventFlagBit;             //!< bit to set in the event flags group for an RX event
 } USART_handler_t;
 
 /**

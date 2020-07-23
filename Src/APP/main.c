@@ -14,6 +14,7 @@
 #include "gpio.h"
 #include "debug.h"
 #include "event.h"
+#include "accelerometer.h"
 
 /*********************************** Consts ********************************************/
 #define COMMAND_BUFFER_SIZE 256
@@ -37,10 +38,14 @@ int main(void)
     /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
     HAL_Init();
 
-    EVENT_init();
-
     /* configure the project specific HAL drivers */
     HAL_moduleInit();
+
+    /* initialize the event flags manager */
+    EVENT_init();
+
+    /* initialize the accelerometer */
+    ACCEL_init();
 
     /* light the LEDs */
     GPIO_setLED( GPIO_LED_GREEN, GPIO_LED_ON );
@@ -57,7 +62,7 @@ int main(void)
             /* got data on the debug port, so read it */
             if ( EVENT_get( &mainEventFlags, EVENT_USART_DEBUG_RX) )
             {
-                bytesReceived += USART_recv( USART_DEBUG, (uint8_t *)&msgIn[bytesReceived], (uint16_t)(COMMAND_BUFFER_SIZE - bytesReceived) );
+                bytesReceived += USART_recv( USART_DEBUG, (uint8_t *)&msgIn[bytesReceived], COMMAND_BUFFER_SIZE - bytesReceived );
                 if ( msgIn[bytesReceived - 1] == '\n' )
                 {
                     /* NULL terminate the message and send it to the CLI */

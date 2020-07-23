@@ -82,9 +82,11 @@ void USART_init( void )
                 /* setup usart specifics */
                 usart->Instance = DEBUG_USART_PORT;
 
-                /* setup the ring buffer structures */
+                /* setup the ring buffer structures and event flags */
                 usartHandlersArray[device].rxBuffer = &debugRxBuffer;
                 usartHandlersArray[device].txBuffer = &debugTxBuffer;
+                usartHandlersArray[device].eventFlagsGroup = &mainEventFlags;
+                usartHandlersArray[device].eventFlagBit = EVENT_USART_DEBUG_RX;
 
                 break;
 
@@ -182,7 +184,6 @@ static void USART_IRQHandler( USART_handler_t *usart )
 {
     uint32_t isrflags   = usart->handler.Instance->SR;
     uint32_t cr1its     = usart->handler.Instance->CR1;
-    uint32_t cr3its     = usart->handler.Instance->CR3;
     uint32_t dr         = usart->handler.Instance->DR;
     uint32_t errorflags = 0x00U;
     uint8_t data = 0;
@@ -204,7 +205,10 @@ static void USART_IRQHandler( USART_handler_t *usart )
             data = (uint8_t)(dr & 0xFF);
             UTILITIES_ringBufferAdd( usart->rxBuffer, &data, USART_RX_SIZE );
             /* set the data received event */
-            EVENT_set( &mainEventFlags, EVENT_USART_DEBUG_RX );
+            if ( usart->eventFlagsGroup )
+            {
+                EVENT_set( usart->eventFlagsGroup, usart->eventFlagBit );
+            }
         }
         /* handle a data transmit interrupt */
         if ( (cr1its & USART_CR1_TXEIE) && (isrflags & USART_SR_TXE) )

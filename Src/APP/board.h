@@ -88,6 +88,8 @@ extern "C" {
 /* MEMS Accelerometer Pin Definitions */
 #define ACCEL_CS_PIN GPIO_PIN_3
 #define ACCEL_CS_GPIO_BANK GPIOE
+#define ACCEL_DR_INT_PIN GPIO_PIN_0
+#define ACCEL_DR_INT_BANK GPIOE
 
 /* SPI1 Bus */
 #define SPI1_SCK_Pin GPIO_PIN_5

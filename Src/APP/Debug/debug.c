@@ -54,6 +54,7 @@ void DEBUG_init( void )
  */
 void DEBUG_log( const char *msg, ... )
 {
+    PARAMETER_NOT_USED( msg );
     return;
 }
 
@@ -64,9 +65,9 @@ void DEBUG_print( const char *msg, ... )
 {
     va_list(args);
     va_start( args, msg );
-    vsprintf( &printBuffer, msg, args );
+    vsprintf( printBuffer, msg, args );
     va_end( args );
-    USART_send( USART_DEBUG, &printBuffer, strnlen(printBuffer, DEBUG_PRINT_SIZE) );
+    USART_send( USART_DEBUG, (uint8_t *)printBuffer, strnlen(printBuffer, DEBUG_PRINT_SIZE) );
 }
 
 

@@ -19,7 +19,6 @@ extern "C"
 #include <stdint.h>
 
 /********************************** Defines *******************************************/
-#define CLI_RX_BUFFER_SIZE 512
 
 #define CLI_MAX_COMMANDS 10
 #define CLI_MAX_LINE_LEN 128

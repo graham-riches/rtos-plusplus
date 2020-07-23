@@ -114,6 +114,13 @@ void GPIO_init( void )
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(MEMS_INT2_GPIO_Port, &GPIO_InitStruct);
 
+    /* configure the data ready interrupt from the accelerometer */
+    GPIO_InitStruct.Pin = ACCEL_DR_INT_PIN;
+    GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(ACCEL_DR_INT_BANK, &GPIO_InitStruct);
+
+
     return;
 }
 
