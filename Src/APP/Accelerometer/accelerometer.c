@@ -15,11 +15,12 @@
 #include "debug.h"
 #include "board.h"
 #include "event.h"
+#include <string.h>
 
 /*********************************** Consts ********************************************/
-#define ACCEL_2G_SCALE_FACTOR   0x4000
-#define G_TO_METER_PER_S2       9.81
-#define ACCEL_BUFFER_SIZE       25
+#define ACCEL_2G_SCALE_FACTOR   0x4000  //!< convert from +/- 2g int data to floating point
+#define G_TO_METER_PER_S2       9.81    //!< gravitational conversion from [g] to [m/s2]
+#define ACCEL_BUFFER_SIZE       25      //!< number of samples per data buffer
 
 /************************************ Types ********************************************/
 /**
@@ -27,12 +28,24 @@
  */
 typedef struct
 {
-    ACCEL_data_t bank_0[ACCEL_BUFFER_SIZE]; //!< first buffer bank
-    ACCEL_data_t bank_1[ACCEL_BUFFER_SIZE]; //!< second buffer bank
-    ACCEL_data_t *writePtr;                 //!< current write pointer
-    ACCEL_data_t *readPtr;                  //!< read pointer
-    uint8_t samples;                        //!< samples read
-    uint8_t activeBank;                     //!< active bank index
+    float rawBank_0[ACCEL_BUFFER_SIZE]; //!< first raw data bank
+    float rawBank_1[ACCEL_BUFFER_SIZE]; //!< second raw data bank
+    float bank_0[ACCEL_BUFFER_SIZE];    //!< first processed data buffer bank
+    float bank_1[ACCEL_BUFFER_SIZE];    //!< second processed buffer bank
+    float *writePtr;                    //!< current raw data write pointer
+    float *readPtr;                     //!< read pointer
+} ACCEL_dualBank_t;
+
+/**
+ * \brief structure to manage X,Y,Z data buffering and processing
+ */
+typedef struct
+{
+    ACCEL_dualBank_t x; //!< x data buffer
+    ACCEL_dualBank_t y; //!< y data buffer
+    ACCEL_dualBank_t z; //!< z data buffer
+    uint8_t samples;    //!< samples read
+    uint8_t activeBank; //!< active bank index
 } ACCEL_bufferHandler_t;
 
 /*********************************** Macros ********************************************/
@@ -44,10 +57,9 @@ typedef struct
 /******************************** Local Variables **************************************/
 static ACCEL_bufferHandler_t buffer = {0};
 
-
 /****************************** Functions Prototype ************************************/
 void ACCEL_write( uint8_t addr, uint8_t command );
-void ACCEL_readData( ACCEL_data_t *data );
+void ACCEL_readData( void );
 
 /****************************** Functions Definition ***********************************/
 /**
@@ -72,13 +84,16 @@ void ACCEL_init( void )
     /* enable multi-byte reading */
     ACCEL_write( ACCEL_CTRL_REG6, ACCEL_ENABLE_MULTIBYTE_READ );
 
-    /* set the data processing buffer pointer to the first bank */
-    buffer.writePtr = buffer.bank_0;
+    /* set the data processing buffer pointers to the first bank */
+    buffer.x.writePtr = buffer.x.rawBank_0;
+    buffer.y.writePtr = buffer.y.rawBank_0;
+    buffer.z.writePtr = buffer.z.rawBank_0;
 
-    /* set the print pointer the first instance of processed data */
-    buffer.readPtr = buffer.bank_1;
+    /* set the read pointers the first instance of processed data */
+    buffer.x.readPtr = buffer.x.bank_0;
+    buffer.y.readPtr = buffer.y.bank_0;
+    buffer.z.readPtr = buffer.z.bank_0;
 
-    buffer.activeBank = 0;
     return;
 }
 
@@ -111,13 +126,12 @@ void ACCEL_write( uint8_t addr, uint8_t command )
 
 
 /**
- * \brief read the raw accelerometer data back from the device
- * \param data pointer to a raw data container
+ * \brief read the raw accelerometer data back from the device into the storage buffers
  * \NOTE the device registers are all sequential so it is faster
  *       to read them all in a chain. At this point, there is
  *       really no escaping the magic numbers in this function
  */
-void ACCEL_readData( ACCEL_data_t *rawData )
+void ACCEL_readData( void )
 {
     /* read the device data registers */
     uint8_t readCmd[7] = {0};
@@ -126,10 +140,10 @@ void ACCEL_readData( ACCEL_data_t *rawData )
     /* read the registers */
     readCmd[0] = (ACCEL_READ | ACCEL_OUT_X_L );
     SPI_readWrite( SPI_ACCELEROMETER, (uint8_t *)&readCmd, (uint8_t *)&data, sizeof(readCmd) );
-    rawData->x = (float)((int16_t)((uint16_t)data[1]  | ((uint16_t)data[2] << 8)))/ACCEL_2G_SCALE_FACTOR;
-    rawData->y = (float)((int16_t)((uint16_t)data[3]  | ((uint16_t)data[4] << 8)))/ACCEL_2G_SCALE_FACTOR;
-    rawData->z = (float)((int16_t)((uint16_t)data[6]  | ((uint16_t)data[6] << 8)))/ACCEL_2G_SCALE_FACTOR;
-
+    *buffer.x.writePtr++ = (float)((int16_t)((uint16_t)data[1]  | ((uint16_t)data[2] << 8)))/ACCEL_2G_SCALE_FACTOR;
+    *buffer.y.writePtr++ = (float)((int16_t)((uint16_t)data[3]  | ((uint16_t)data[4] << 8)))/ACCEL_2G_SCALE_FACTOR;
+    *buffer.z.writePtr++ = (float)((int16_t)((uint16_t)data[6]  | ((uint16_t)data[6] << 8)))/ACCEL_2G_SCALE_FACTOR;
+    buffer.samples++;
     return;
 }
 
@@ -137,9 +151,28 @@ void ACCEL_readData( ACCEL_data_t *rawData )
  * \brief print out the current data
  * \param data pointer to data to print
  */
-void ACCEL_printData( ACCEL_data_t *data )
+void ACCEL_printData( void )
 {
-    DEBUG_print("%d %6.4f %6.4f %6.4f\n", HAL_GetTick(), data->x, data->y, data->z );
+    DEBUG_print("%d %6.4f %6.4f %6.4f\r\n", HAL_GetTick(), *buffer.x.readPtr++, *buffer.y.readPtr++, *buffer.z.readPtr++ );
+    return;
+}
+
+/**
+ * \brief event handler to process a raw data buffer into filtered data
+ */
+void ACCEL_processDataBuffer( void )
+{
+    /* the current buffer bank is the write/read, so we can process the old bank */
+    /* for now, just copy the data into the "processed" buffer without filtering */
+    float *xOut = ( buffer.activeBank == 0 ) ? buffer.x.bank_1 : buffer.x.bank_0;
+    float *yOut = ( buffer.activeBank == 0 ) ? buffer.y.bank_1 : buffer.y.bank_0;
+    float *zOut = ( buffer.activeBank == 0 ) ? buffer.z.bank_1 : buffer.z.bank_0;
+    float *xIn  = ( buffer.activeBank == 0 ) ? buffer.x.rawBank_1 : buffer.x.rawBank_0;
+    float *yIn  = ( buffer.activeBank == 0 ) ? buffer.y.rawBank_1 : buffer.y.rawBank_0;
+    float *zIn  = ( buffer.activeBank == 0 ) ? buffer.z.rawBank_1 : buffer.z.rawBank_0;
+    memcpy( xOut, xIn, sizeof(buffer.x.bank_0) );
+    memcpy( yOut, yIn, sizeof(buffer.y.bank_0) );
+    memcpy( zOut, zIn, sizeof(buffer.z.bank_0) );
     return;
 }
 
@@ -148,18 +181,26 @@ void ACCEL_printData( ACCEL_data_t *data )
  */
 void EXTI0_IRQHandler( void )
 {
-    ACCEL_readData( buffer.writePtr++ );
-    buffer.samples++;
-    if ( buffer.samples == ACCEL_BUFFER_SIZE -1 )
+    ACCEL_readData( );
+    if ( buffer.samples == ACCEL_BUFFER_SIZE )
     {
         /* flip the bank */
         buffer.activeBank = ( buffer.activeBank == 0 ) ? 1 : 0;
-        buffer.writePtr = ( buffer.activeBank == 0 ) ? buffer.bank_0 : buffer.bank_1;
-        buffer.readPtr = ( buffer.activeBank == 0 ) ? buffer.bank_1 : buffer.bank_0;
+        /* reset the pointers */
+        buffer.x.writePtr = ( buffer.activeBank == 0 ) ? buffer.x.rawBank_0 : buffer.x.rawBank_1;
+        buffer.x.readPtr =  ( buffer.activeBank == 0 ) ? buffer.x.bank_0    : buffer.x.bank_1;
+        buffer.y.writePtr = ( buffer.activeBank == 0 ) ? buffer.y.rawBank_0 : buffer.y.rawBank_1;
+        buffer.y.readPtr =  ( buffer.activeBank == 0 ) ? buffer.y.bank_0    : buffer.y.bank_1;
+        buffer.z.writePtr = ( buffer.activeBank == 0 ) ? buffer.z.rawBank_0 : buffer.z.rawBank_1;
+        buffer.z.readPtr =  ( buffer.activeBank == 0 ) ? buffer.z.bank_0    : buffer.z.bank_1;
+        /* reset the sample counter */
         buffer.samples = 0;
+
+        /* set the event to process the data */
+        EVENT_set( &mainEventFlags, EVENT_ACCEL_BUFF_FULL );
     }
     /* print out the filtered data */
-    ACCEL_printData( buffer.readPtr++ );
+    ACCEL_printData( );
 
     /* clear the interrupt */
     __HAL_GPIO_EXTI_CLEAR_IT(ACCEL_DR_INT_PIN);

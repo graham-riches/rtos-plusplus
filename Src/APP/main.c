@@ -79,6 +79,7 @@ int main(void)
             /* got an accelerometer event */
             if ( EVENT_get(&mainEventFlags, EVENT_ACCEL_BUFF_FULL) )
             {
+                ACCEL_processDataBuffer();
             }
         }
     }

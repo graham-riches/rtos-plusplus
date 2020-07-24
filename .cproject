@@ -48,6 +48,7 @@
 									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32F4xx/Include"/>
 									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Core/Include"/>
 									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32F4xx/Include"/>
+									<listOptionValue builtIn="false" value="../Drivers/CMSIS/DSP/Include"/>
 									<listOptionValue builtIn="false" value="../Src/APP"/>
 									<listOptionValue builtIn="false" value="../Src/HWM/HAL"/>
 									<listOptionValue builtIn="false" value="../Src/APP/Events"/>
@@ -115,6 +116,7 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry excluding="CMSIS|CMSIS/DSP|CMSIS/NN|CMSIS/RTOS2" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers/CMSIS/DSP/Include"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Src"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="startup"/>
 					</sourceEntries>
@@ -226,6 +228,7 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry excluding="CMSIS|CMSIS/DSP|CMSIS/NN|CMSIS/RTOS2" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers/CMSIS/DSP/Include"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Src"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="startup"/>
 					</sourceEntries>
