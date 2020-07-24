@@ -54,13 +54,14 @@ int main(void)
     GPIO_setLED( GPIO_LED_BLUE, GPIO_LED_ON );
 
     /* main single-threaded function */
+    /* TODO: clean this into a more compact structure with callbacks/ function pointers */
     while (1)
     {
         /* check for events */
         if ( mainEventFlags )
         {
             /* got data on the debug port, so read it */
-            if ( EVENT_get( &mainEventFlags, EVENT_USART_DEBUG_RX) )
+            if ( EVENT_get(&mainEventFlags, EVENT_USART_DEBUG_RX) )
             {
                 bytesReceived += USART_recv( USART_DEBUG, (uint8_t *)&msgIn[bytesReceived], COMMAND_BUFFER_SIZE - bytesReceived );
                 if ( msgIn[bytesReceived - 1] == '\n' )
@@ -73,6 +74,11 @@ int main(void)
                     bytesReceived = 0;
                     memset( msgIn, 0, COMMAND_BUFFER_SIZE );
                 }
+            }
+
+            /* got an accelerometer event */
+            if ( EVENT_get(&mainEventFlags, EVENT_ACCEL_BUFF_FULL) )
+            {
             }
         }
     }

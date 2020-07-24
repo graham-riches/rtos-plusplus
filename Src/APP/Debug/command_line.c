@@ -70,7 +70,7 @@ const CLI_command_t led =
 
 /********************Accelerometer Command ********************/
 static const char accel_name[] = "accel";
-static const char * const accel_args[] = {"[mode]", 0};
+static const char * const accel_args[] = {"[MODE]", 0};
 static const char accel_desc[] = "Test the accelerometer";
 static int accel_func( int argc, char *argv[] )
 {
@@ -85,7 +85,6 @@ static int accel_func( int argc, char *argv[] )
     }
     if ( strncasecmp(argv[1], "data", CLI_MAX_ARG_LEN) == 0 )
     {
-        ACCEL_checkData();
     }
 
     return 0;

@@ -46,14 +46,15 @@ extern "C" {
 
 /************************************ Types ********************************************/
 /**
- * \brief raw accelerometer data
+ * \brief processed accelerometer data
  */
 typedef struct
 {
-    int16_t x;
-    int16_t y;
-    int16_t z;
-} ACCEL_rawData_t;
+    float x;
+    float y;
+    float z;
+} ACCEL_data_t;
+
 
 /*********************************** Macros ********************************************/
 
@@ -64,7 +65,7 @@ typedef struct
 /****************************** Functions Prototype ************************************/
 void ACCEL_init( void );
 void ACCEL_test( void );
-void ACCEL_checkData( void );
+void ACCEL_printData( ACCEL_data_t *data );
 
 
 #ifdef __cplusplus

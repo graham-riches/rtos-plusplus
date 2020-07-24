@@ -26,6 +26,7 @@ extern "C" {
 typedef enum
 {
     EVENT_USART_DEBUG_RX = 0,
+    EVENT_ACCEL_BUFF_FULL,
     EVENT_TOTAL_EVENTS
 } EVENT_mainEvents_t;
 
