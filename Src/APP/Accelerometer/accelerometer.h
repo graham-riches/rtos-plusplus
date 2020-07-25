@@ -20,7 +20,9 @@ extern "C" {
 /* LIS302DL API definitions */
 #define ACCEL_WRITE                 0x00U //!< write bit
 #define ACCEL_READ                  0x80U //!< read bit
-#define ACCEL_WAKE_UP               0x67U //!< wake-up command
+#define ACCEL_WAKE_UP_100HZ         0x57U //!< wake-up command at 100 Hz
+#define ACCEL_WAKE_UP_200HZ         0x67U //!< wake-up command at 200 Hz
+#define ACCEL_WAKE_UP_400HZ         0x77U //!< wake-up command at 400 Hz
 #define ACCEL_ENABLE_DR_INT         0xC8U //!< enable data ready interrupt
 #define ACCEL_ENABLE_MULTIBYTE_READ 0x10U //!< enable multi-byte read chaining
 #define ACCEL_INFO                  0x0DU

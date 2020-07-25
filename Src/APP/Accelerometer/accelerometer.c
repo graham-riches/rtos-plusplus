@@ -15,12 +15,15 @@
 #include "debug.h"
 #include "board.h"
 #include "event.h"
+#include "arm_math.h"
 #include <string.h>
 
 /*********************************** Consts ********************************************/
 #define ACCEL_2G_SCALE_FACTOR   0x4000  //!< convert from +/- 2g int data to floating point
 #define G_TO_METER_PER_S2       9.81    //!< gravitational conversion from [g] to [m/s2]
-#define ACCEL_BUFFER_SIZE       25      //!< number of samples per data buffer
+#define ACCEL_BUFFER_SIZE       64      //!< number of samples per data buffer
+#define ACCEL_DSP_FILTER_TAPS   64      //!< arm math filtering
+
 
 /************************************ Types ********************************************/
 /**
@@ -53,7 +56,27 @@ typedef struct
 
 /******************************* Global Variables **************************************/
 
+/******************************** DSP Filter Parameters **************************************/
+float filtStateArr[ACCEL_DSP_FILTER_TAPS + ACCEL_BUFFER_SIZE - 1] = {0};
+/* TODO: output these from python in single precision */
+float filtCoeffs[ACCEL_DSP_FILTER_TAPS] = {-0.0007951257757810831, -0.0008659828988107479, -0.0009697066797947907, -0.001103324214140007,
+                                           -0.0012560822765565855, -0.001409098732298799, -0.0015355381129686498, -0.001601331767186395,
+                                           -0.0015664314719828836, -0.00138655346727461, -0.001015339391494171, -0.0004068333459389835,
+                                           0.00048184805516356886, 0.0016877918824191557, 0.003239659311786027, 0.005155298963715912,
+                                           0.007439744328692877, 0.010083720903916429, 0.013062765798245978, 0.016337033484235645,
+                                           0.019851827567365473, 0.02353886167102235, 0.02731821476024491, 0.031100909489785118,
+                                           0.03479200847415908, 0.038294094606948256, 0.041510979322065836, 0.044351468267380595,
+                                           0.0467330081114202, 0.048585041520485636, 0.04985190962835438, 0.050495161986820296,
+                                           0.050495161986820296, 0.049851909628354375, 0.048585041520485636, 0.0467330081114202,
+                                           0.044351468267380595, 0.041510979322065836, 0.03829409460694825, 0.03479200847415908,
+                                           0.031100909489785115, 0.027318214760244906, 0.023538861671022336, 0.019851827567365473,
+                                           0.01633703348423564, 0.013062765798245978, 0.010083720903916425, 0.007439744328692877,
+                                           0.00515529896371591, 0.0032396593117860243, 0.001687791882419155, 0.0004818480551635685,
+                                           -0.0004068333459389835, -0.0010153393914941703, -0.00138655346727461, -0.0015664314719828825,
+                                           -0.0016013317671863929, -0.0015355381129686482, -0.0014090987322987972, -0.0012560822765565855,
+                                           -0.001103324214140007, -0.0009697066797947907, -0.0008659828988107479, -0.0007951257757810831 };
 
+arm_fir_instance_f32 filter;
 /******************************** Local Variables **************************************/
 static ACCEL_bufferHandler_t buffer = {0};
 
@@ -76,7 +99,7 @@ void ACCEL_init( void )
     HAL_NVIC_EnableIRQ( EXTI0_IRQn );
 
     /* write to control register 4 to wake up the device */
-    ACCEL_write( ACCEL_CTRL_REG4, ACCEL_WAKE_UP );
+    ACCEL_write( ACCEL_CTRL_REG4, ACCEL_WAKE_UP_400HZ );
 
     /* enable the data ready interrupt */
     ACCEL_write( ACCEL_CTRL_REG3, ACCEL_ENABLE_DR_INT );
@@ -93,6 +116,9 @@ void ACCEL_init( void )
     buffer.x.readPtr = buffer.x.bank_0;
     buffer.y.readPtr = buffer.y.bank_0;
     buffer.z.readPtr = buffer.z.bank_0;
+
+    /* initialize the filter object */
+    arm_fir_init_f32( &filter, ACCEL_DSP_FILTER_TAPS, filtCoeffs, filtStateArr, ACCEL_BUFFER_SIZE);
 
     return;
 }
@@ -163,16 +189,22 @@ void ACCEL_printData( void )
 void ACCEL_processDataBuffer( void )
 {
     /* the current buffer bank is the write/read, so we can process the old bank */
-    /* for now, just copy the data into the "processed" buffer without filtering */
     float *xOut = ( buffer.activeBank == 0 ) ? buffer.x.bank_1 : buffer.x.bank_0;
     float *yOut = ( buffer.activeBank == 0 ) ? buffer.y.bank_1 : buffer.y.bank_0;
     float *zOut = ( buffer.activeBank == 0 ) ? buffer.z.bank_1 : buffer.z.bank_0;
     float *xIn  = ( buffer.activeBank == 0 ) ? buffer.x.rawBank_1 : buffer.x.rawBank_0;
     float *yIn  = ( buffer.activeBank == 0 ) ? buffer.y.rawBank_1 : buffer.y.rawBank_0;
     float *zIn  = ( buffer.activeBank == 0 ) ? buffer.z.rawBank_1 : buffer.z.rawBank_0;
+    /* filter the signals into the processed data buffer */
+    arm_fir_f32( &filter, xIn ,xOut, ACCEL_BUFFER_SIZE);
+    arm_fir_f32( &filter, yIn ,yOut, ACCEL_BUFFER_SIZE);
+    arm_fir_f32( &filter, zIn ,zOut, ACCEL_BUFFER_SIZE);
+
+    /*
     memcpy( xOut, xIn, sizeof(buffer.x.bank_0) );
     memcpy( yOut, yIn, sizeof(buffer.y.bank_0) );
     memcpy( zOut, zIn, sizeof(buffer.z.bank_0) );
+    */
     return;
 }
 

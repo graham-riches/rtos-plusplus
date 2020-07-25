@@ -36,6 +36,7 @@ if __name__ == '__main__':
         writer.writerow(headers)
         while (time.time() - start_time) < RUN_TIME:
             line = ser.readline()
+            print(line)
             items = line.decode().strip('\r\n').split(' ')
             if len(items) == 4:
                 writer.writerow(items)

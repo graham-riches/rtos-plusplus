@@ -34,6 +34,11 @@ extern "C" {
 #define DISABLE_INTERRUPTS() uint32_t prim = __get_PRIMASK(); __disable_irq();
 #define ENABLE_INTERRUPTS() if(!prim){__enable_irq();}
 
+/* setup arm math */
+#ifndef ARM_MATH_CM4
+    #define ARM_MATH_CM4
+#endif
+
 
 /******************************* Global Variables **************************************/
 
