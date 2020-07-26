@@ -12,9 +12,9 @@ import numpy as np
 from scipy.signal import firwin, freqz
 import matplotlib.pyplot as plt
 
-NUM_TAPS = 64
+NUM_TAPS = 20
 FS = 400
-CUTOFF = 10
+CUTOFF = 20
 
 filename = 'no_filt400.csv'
 df = pd.read_csv(filename)
@@ -25,8 +25,11 @@ w, h = freqz(filt_coeffs, fs=FS)
 filt_signal = np.convolve(df['x'], filt_coeffs, mode='same')
 
 # dump the filter coeffiencts to json file
-#with open('filter_coefficents.json', 'w') as json_file:
-#    json_file.write(json.dumps(filt_coeffs.tolist()))
+with open('filter_coefficents.json', 'w') as json_file:
+    data = json.dumps(json.loads(json.dumps(filt_coeffs.tolist()),
+                                 parse_float=lambda x: round(float(x), 6)))
+    # json.dumps(filt_coeffs.tolist())
+    json_file.write(data)
 
 fig = plt.figure(figsize=(16, 9))
 filt = fig.add_subplot(2, 1, 1)

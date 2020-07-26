@@ -19,10 +19,50 @@
 #include <string.h>
 
 /*********************************** Consts ********************************************/
-#define ACCEL_2G_SCALE_FACTOR   0x4000  //!< convert from +/- 2g int data to floating point
-#define G_TO_METER_PER_S2       9.81    //!< gravitational conversion from [g] to [m/s2]
-#define ACCEL_BUFFER_SIZE       64      //!< number of samples per data buffer
-#define ACCEL_DSP_FILTER_TAPS   64      //!< arm math filtering
+/* LIS302DL API definitions */
+#define ACCEL_WRITE                 0x00U //!< write bit
+#define ACCEL_READ                  0x80U //!< read bit
+#define ACCEL_WAKE_UP_100HZ         0x57U //!< wake-up command at 100 Hz
+#define ACCEL_WAKE_UP_200HZ         0x67U //!< wake-up command at 200 Hz
+#define ACCEL_WAKE_UP_400HZ         0x77U //!< wake-up command at 400 Hz
+#define ACCEL_ENABLE_DR_INT         0xC8U //!< enable data ready interrupt
+#define ACCEL_ENABLE_MULTIBYTE_READ 0x10U //!< enable multi-byte read chaining
+#define ACCEL_INFO                  0x0DU //!< extra information register
+
+/* Data read/accessing */
+#define ACCEL_READ_DATA_CMD_SIZE    7 //!< need 7 bytes to read all the data registers -> CMD XL XH YL YH ZL ZH
+#define ACCEL_WRITE_PAYLOAD_SIZE    2 //!< 2 bytes for a write command
+#define ACCEL_ADDRESS_INDEX         0 //!< address is the first byte
+#define ACCEL_CMD_INDEX             1 //!< command is the second byte
+#define ACCEL_X_DATA_INDEX          1 //!< x data index
+#define ACCEL_Y_DATA_INDEX          3 //!< y data index
+#define ACCEL_Z_DATA_INDEX          5 //!< z data index
+
+/* Register Addresses */
+#define ACCEL_WHO_AM_I  0x0FU //!< device ID register
+#define ACCEL_CTRL_REG1 0x21U //!< control register 1
+#define ACCEL_CTRL_REG2 0x22U //!< control register 2
+#define ACCEL_CTRL_REG3 0x23U //!< control register 3
+#define ACCEL_CTRL_REG4 0x20U //!< control register 4
+#define ACCEL_CTRL_REG5 0x24U //!< control register 5
+#define ACCEL_CTRL_REG6 0x25U //!< control register 6
+#define ACCEL_SR_REG    0x27U //!< device status register
+#define ACCEL_OUT_X_L   0x28U //!< acceleration output low-byte in X-axis
+#define ACCEL_OUT_X_H   0x29U //!< acceleration output low-byte in X-axis
+#define ACCEL_OUT_Y_L   0x2AU //!< acceleration output low-byte in Y-axis
+#define ACCEL_OUT_Y_H   0x2BU //!< acceleration output low-byte in Y-axis
+#define ACCEL_OUT_Z_L   0x2CU //!< acceleration output low-byte in Z-axis
+#define ACCEL_OUT_Z_H   0x2DU //!< acceleration output low-byte in Z-axis
+
+/* Constants and conversions */
+#define ACCEL_2G_SCALE_FACTOR    0x4000  //!< convert from +/- 2g int data to floating point
+#define G_TO_METER_PER_S2        9.81    //!< gravitational conversion from [g] to [m/s2]
+
+/* Filter and Buffer Setup */
+#define ACCEL_BUFFER_SIZE        64     //!< number of samples per data buffer
+#define ACCEL_BUFF_BANK_0        0       //!< first data buffer
+#define ACCEL_BUFF_BANK_1        1       //!< second data buffer
+#define ACCEL_DSP_FILTER_TAPS    20      //!< arm DSP FIR taps
 
 
 /************************************ Types ********************************************/
@@ -47,38 +87,36 @@ typedef struct
     ACCEL_dualBank_t x; //!< x data buffer
     ACCEL_dualBank_t y; //!< y data buffer
     ACCEL_dualBank_t z; //!< z data buffer
-    uint8_t samples;    //!< samples read
+    uint16_t samples;   //!< samples read
     uint8_t activeBank; //!< active bank index
-} ACCEL_bufferHandler_t;
+} ACCEL_dataHandler_t;
+
 
 /*********************************** Macros ********************************************/
-
+#define REG_TO_RAWDATA(x, y) ((float)((int16_t)((uint16_t)x  | ((uint16_t)y << 8)))/ACCEL_2G_SCALE_FACTOR)
 
 /******************************* Global Variables **************************************/
 
 /******************************** DSP Filter Parameters **************************************/
-float filtStateArr[ACCEL_DSP_FILTER_TAPS + ACCEL_BUFFER_SIZE - 1] = {0};
-/* TODO: output these from python in single precision */
-float filtCoeffs[ACCEL_DSP_FILTER_TAPS] = {-0.0007951257757810831, -0.0008659828988107479, -0.0009697066797947907, -0.001103324214140007,
-                                           -0.0012560822765565855, -0.001409098732298799, -0.0015355381129686498, -0.001601331767186395,
-                                           -0.0015664314719828836, -0.00138655346727461, -0.001015339391494171, -0.0004068333459389835,
-                                           0.00048184805516356886, 0.0016877918824191557, 0.003239659311786027, 0.005155298963715912,
-                                           0.007439744328692877, 0.010083720903916429, 0.013062765798245978, 0.016337033484235645,
-                                           0.019851827567365473, 0.02353886167102235, 0.02731821476024491, 0.031100909489785118,
-                                           0.03479200847415908, 0.038294094606948256, 0.041510979322065836, 0.044351468267380595,
-                                           0.0467330081114202, 0.048585041520485636, 0.04985190962835438, 0.050495161986820296,
-                                           0.050495161986820296, 0.049851909628354375, 0.048585041520485636, 0.0467330081114202,
-                                           0.044351468267380595, 0.041510979322065836, 0.03829409460694825, 0.03479200847415908,
-                                           0.031100909489785115, 0.027318214760244906, 0.023538861671022336, 0.019851827567365473,
-                                           0.01633703348423564, 0.013062765798245978, 0.010083720903916425, 0.007439744328692877,
-                                           0.00515529896371591, 0.0032396593117860243, 0.001687791882419155, 0.0004818480551635685,
-                                           -0.0004068333459389835, -0.0010153393914941703, -0.00138655346727461, -0.0015664314719828825,
-                                           -0.0016013317671863929, -0.0015355381129686482, -0.0014090987322987972, -0.0012560822765565855,
-                                           -0.001103324214140007, -0.0009697066797947907, -0.0008659828988107479, -0.0007951257757810831 };
+/* NOTE: all filters are currently using the the same parameters, however each signal needs its own filter
+ *       object and state array.
+ */
+float filtCoeffs[ACCEL_DSP_FILTER_TAPS] = { 0.000511, 0.002174, 0.006474, 0.015337, 0.029753, 0.049215,
+                                            0.071579, 0.093438, 0.110905, 0.120614, 0.120614, 0.110905,
+                                            0.093438, 0.071579, 0.049215, 0.029753, 0.015337, 0.006474,
+                                            0.002174, 0.000511 };
 
-arm_fir_instance_f32 filter;
+float xFiltStateArr[ACCEL_DSP_FILTER_TAPS + ACCEL_BUFFER_SIZE - 1] = {0};
+float yFiltStateArr[ACCEL_DSP_FILTER_TAPS + ACCEL_BUFFER_SIZE - 1] = {0};
+float zFiltStateArr[ACCEL_DSP_FILTER_TAPS + ACCEL_BUFFER_SIZE - 1] = {0};
+
+arm_fir_instance_f32 xFilter;
+arm_fir_instance_f32 yFilter;
+arm_fir_instance_f32 zFilter;
+
+
 /******************************** Local Variables **************************************/
-static ACCEL_bufferHandler_t buffer = {0};
+static ACCEL_dataHandler_t buffer = {0};
 
 /****************************** Functions Prototype ************************************/
 void ACCEL_write( uint8_t addr, uint8_t command );
@@ -117,8 +155,10 @@ void ACCEL_init( void )
     buffer.y.readPtr = buffer.y.bank_0;
     buffer.z.readPtr = buffer.z.bank_0;
 
-    /* initialize the filter object */
-    arm_fir_init_f32( &filter, ACCEL_DSP_FILTER_TAPS, filtCoeffs, filtStateArr, ACCEL_BUFFER_SIZE);
+    /* initialize the filter objects */
+    arm_fir_init_f32( &xFilter, ACCEL_DSP_FILTER_TAPS, filtCoeffs, xFiltStateArr, ACCEL_BUFFER_SIZE);
+    arm_fir_init_f32( &yFilter, ACCEL_DSP_FILTER_TAPS, filtCoeffs, yFiltStateArr, ACCEL_BUFFER_SIZE);
+    arm_fir_init_f32( &zFilter, ACCEL_DSP_FILTER_TAPS, filtCoeffs, zFiltStateArr, ACCEL_BUFFER_SIZE);
 
     return;
 }
@@ -146,29 +186,29 @@ void ACCEL_test( void )
  */
 void ACCEL_write( uint8_t addr, uint8_t command )
 {
-    uint16_t payload = (command << 8 ) | (addr | ACCEL_WRITE);
-    SPI_write( SPI_ACCELEROMETER, (uint8_t *)&payload, sizeof(payload) );
+    uint8_t payload[ACCEL_WRITE_PAYLOAD_SIZE] = {0};
+    payload[ACCEL_ADDRESS_INDEX] = (addr | ACCEL_WRITE);
+    payload[ACCEL_CMD_INDEX] = command;
+    SPI_write( SPI_ACCELEROMETER, payload, sizeof(payload) );
 }
 
 
 /**
  * \brief read the raw accelerometer data back from the device into the storage buffers
  * \NOTE the device registers are all sequential so it is faster
- *       to read them all in a chain. At this point, there is
- *       really no escaping the magic numbers in this function
+ *       to read them all in a chain.
  */
 void ACCEL_readData( void )
 {
     /* read the device data registers */
-    uint8_t readCmd[7] = {0};
-    uint8_t data[7] = {0};
+    uint8_t readCmd[ACCEL_READ_DATA_CMD_SIZE] = {0};
+    uint8_t data[ACCEL_READ_DATA_CMD_SIZE] = {0};
 
-    /* read the registers */
     readCmd[0] = (ACCEL_READ | ACCEL_OUT_X_L );
-    SPI_readWrite( SPI_ACCELEROMETER, (uint8_t *)&readCmd, (uint8_t *)&data, sizeof(readCmd) );
-    *buffer.x.writePtr++ = (float)((int16_t)((uint16_t)data[1]  | ((uint16_t)data[2] << 8)))/ACCEL_2G_SCALE_FACTOR;
-    *buffer.y.writePtr++ = (float)((int16_t)((uint16_t)data[3]  | ((uint16_t)data[4] << 8)))/ACCEL_2G_SCALE_FACTOR;
-    *buffer.z.writePtr++ = (float)((int16_t)((uint16_t)data[6]  | ((uint16_t)data[6] << 8)))/ACCEL_2G_SCALE_FACTOR;
+    SPI_readWrite( SPI_ACCELEROMETER, readCmd, data, sizeof(readCmd) );
+    *buffer.x.writePtr++ = REG_TO_RAWDATA(data[ACCEL_X_DATA_INDEX], data[ACCEL_X_DATA_INDEX + 1]);
+    *buffer.y.writePtr++ = REG_TO_RAWDATA(data[ACCEL_Y_DATA_INDEX], data[ACCEL_Y_DATA_INDEX + 1]);
+    *buffer.z.writePtr++ = REG_TO_RAWDATA(data[ACCEL_Z_DATA_INDEX], data[ACCEL_Z_DATA_INDEX + 1]);
     buffer.samples++;
     return;
 }
@@ -189,22 +229,16 @@ void ACCEL_printData( void )
 void ACCEL_processDataBuffer( void )
 {
     /* the current buffer bank is the write/read, so we can process the old bank */
-    float *xOut = ( buffer.activeBank == 0 ) ? buffer.x.bank_1 : buffer.x.bank_0;
-    float *yOut = ( buffer.activeBank == 0 ) ? buffer.y.bank_1 : buffer.y.bank_0;
-    float *zOut = ( buffer.activeBank == 0 ) ? buffer.z.bank_1 : buffer.z.bank_0;
-    float *xIn  = ( buffer.activeBank == 0 ) ? buffer.x.rawBank_1 : buffer.x.rawBank_0;
-    float *yIn  = ( buffer.activeBank == 0 ) ? buffer.y.rawBank_1 : buffer.y.rawBank_0;
-    float *zIn  = ( buffer.activeBank == 0 ) ? buffer.z.rawBank_1 : buffer.z.rawBank_0;
+    float *xOut = ( buffer.activeBank == ACCEL_BUFF_BANK_0 ) ? buffer.x.bank_1 : buffer.x.bank_0;
+    float *yOut = ( buffer.activeBank == ACCEL_BUFF_BANK_0 ) ? buffer.y.bank_1 : buffer.y.bank_0;
+    float *zOut = ( buffer.activeBank == ACCEL_BUFF_BANK_0 ) ? buffer.z.bank_1 : buffer.z.bank_0;
+    float *xIn  = ( buffer.activeBank == ACCEL_BUFF_BANK_0 ) ? buffer.x.rawBank_1 : buffer.x.rawBank_0;
+    float *yIn  = ( buffer.activeBank == ACCEL_BUFF_BANK_0 ) ? buffer.y.rawBank_1 : buffer.y.rawBank_0;
+    float *zIn  = ( buffer.activeBank == ACCEL_BUFF_BANK_0 ) ? buffer.z.rawBank_1 : buffer.z.rawBank_0;
     /* filter the signals into the processed data buffer */
-    arm_fir_f32( &filter, xIn ,xOut, ACCEL_BUFFER_SIZE);
-    arm_fir_f32( &filter, yIn ,yOut, ACCEL_BUFFER_SIZE);
-    arm_fir_f32( &filter, zIn ,zOut, ACCEL_BUFFER_SIZE);
-
-    /*
-    memcpy( xOut, xIn, sizeof(buffer.x.bank_0) );
-    memcpy( yOut, yIn, sizeof(buffer.y.bank_0) );
-    memcpy( zOut, zIn, sizeof(buffer.z.bank_0) );
-    */
+    arm_fir_f32( &xFilter, xIn ,xOut, ACCEL_BUFFER_SIZE);
+    arm_fir_f32( &yFilter, yIn ,yOut, ACCEL_BUFFER_SIZE);
+    arm_fir_f32( &zFilter, zIn ,zOut, ACCEL_BUFFER_SIZE);
     return;
 }
 
@@ -217,14 +251,16 @@ void EXTI0_IRQHandler( void )
     if ( buffer.samples == ACCEL_BUFFER_SIZE )
     {
         /* flip the bank */
-        buffer.activeBank = ( buffer.activeBank == 0 ) ? 1 : 0;
-        /* reset the pointers */
-        buffer.x.writePtr = ( buffer.activeBank == 0 ) ? buffer.x.rawBank_0 : buffer.x.rawBank_1;
-        buffer.x.readPtr =  ( buffer.activeBank == 0 ) ? buffer.x.bank_0    : buffer.x.bank_1;
-        buffer.y.writePtr = ( buffer.activeBank == 0 ) ? buffer.y.rawBank_0 : buffer.y.rawBank_1;
-        buffer.y.readPtr =  ( buffer.activeBank == 0 ) ? buffer.y.bank_0    : buffer.y.bank_1;
-        buffer.z.writePtr = ( buffer.activeBank == 0 ) ? buffer.z.rawBank_0 : buffer.z.rawBank_1;
-        buffer.z.readPtr =  ( buffer.activeBank == 0 ) ? buffer.z.bank_0    : buffer.z.bank_1;
+        buffer.activeBank = ( buffer.activeBank == ACCEL_BUFF_BANK_0 ) ? ACCEL_BUFF_BANK_1 : ACCEL_BUFF_BANK_0;
+        /* reset the write pointers */
+        buffer.x.writePtr = ( buffer.activeBank == ACCEL_BUFF_BANK_0 ) ? buffer.x.rawBank_0 : buffer.x.rawBank_1;
+        buffer.y.writePtr = ( buffer.activeBank == ACCEL_BUFF_BANK_0 ) ? buffer.y.rawBank_0 : buffer.y.rawBank_1;
+        buffer.z.writePtr = ( buffer.activeBank == ACCEL_BUFF_BANK_0 ) ? buffer.z.rawBank_0 : buffer.z.rawBank_1;
+
+        /* reset the read pointers */
+        buffer.x.readPtr =  ( buffer.activeBank == ACCEL_BUFF_BANK_0 ) ? buffer.x.bank_0    : buffer.x.bank_1;
+        buffer.y.readPtr =  ( buffer.activeBank == ACCEL_BUFF_BANK_0 ) ? buffer.y.bank_0    : buffer.y.bank_1;
+        buffer.z.readPtr =  ( buffer.activeBank == ACCEL_BUFF_BANK_0 ) ? buffer.z.bank_0    : buffer.z.bank_1;
         /* reset the sample counter */
         buffer.samples = 0;
 
