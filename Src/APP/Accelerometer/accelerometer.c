@@ -27,7 +27,7 @@
 #define ACCEL_WAKE_UP_400HZ         0x77U //!< wake-up command at 400 Hz
 #define ACCEL_ENABLE_DR_INT         0xC8U //!< enable data ready interrupt
 #define ACCEL_ENABLE_MULTIBYTE_READ 0x10U //!< enable multi-byte read chaining
-#define ACCEL_INFO                  0x0DU //!< extra information register
+#define ACCEL_WHO_AM_I_EXP          0x42U //!< expected value of the WHO_AM_I register
 
 /* Data read/accessing */
 #define ACCEL_READ_DATA_CMD_SIZE    7 //!< need 7 bytes to read all the data registers -> CMD XL XH YL YH ZL ZH
@@ -165,8 +165,8 @@ void ACCEL_init( void )
 
 
 /**
- * \brief read the devices WHO_AM_I register as a test
- *
+ * \brief read the devices WHO_AM_I register as a test and validate that it equals the expected
+ *        value
  */
 void ACCEL_test( void )
 {
@@ -174,7 +174,7 @@ void ACCEL_test( void )
     uint16_t data = 0;
     SPI_readWrite( SPI_ACCELEROMETER, (uint8_t *)&command, (uint8_t *)&data, sizeof(command) );
     /* NOTE: the data we are interested in is in the second received byte */
-    DEBUG_print("ACCELEROMETER TEST: received: %d\n", (uint8_t)(data >> 8));
+    DEBUG_print("ACCELEROMETER TEST: Expected: %d Received: %d\n", ACCEL_WHO_AM_I_EXP, (uint8_t)(data >> 8));
     return;
 }
 

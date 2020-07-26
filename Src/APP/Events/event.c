@@ -10,6 +10,8 @@
 
 /********************************** Includes *******************************************/
 #include "event.h"
+#include "accelerometer.h"
+#include "command_line.h"
 
 /*********************************** Consts ********************************************/
 
@@ -22,7 +24,7 @@
 
 /******************************* Global Variables **************************************/
 volatile uint32_t mainEventFlags;
-
+EVENT_handler_t mainEventHandler;
 /******************************** Local Variables **************************************/
 
 
@@ -41,6 +43,10 @@ void EVENT_init( void )
 {
     /* clear the event flag groups */
    mainEventFlags = 0;
+
+   /* assign the function pointers for the event group */
+   mainEventHandler.cbs[EVENT_USART_DEBUG_RX] = (EVENT_cb_t)&CLI_mainEventFunc;
+   mainEventHandler.cbs[EVENT_ACCEL_BUFF_FULL] = (EVENT_cb_t)&ACCEL_processDataBuffer;
    return;
 }
 
@@ -58,6 +64,7 @@ void EVENT_set( volatile uint32_t *eventFlagGroup, uint8_t bit )
     return;
 }
 
+
 /**
  * \brief check a specific event flag to see if it has been raised
  * \param eventFlagGroup the event flag group
@@ -74,4 +81,16 @@ bool EVENT_get( volatile uint32_t *eventFlagGroup, uint8_t bit )
     }
     ENABLE_INTERRUPTS();
     return event;
+}
+
+
+/**
+ * \brief call an event callback function for an event group
+ * \param handler the container of callback function pointers
+ * \param event the event index to call
+ */
+void EVENT_call( EVENT_handler_t *handler, uint8_t event )
+{
+    /* call the function pointer */
+    handler->cbs[event]();
 }

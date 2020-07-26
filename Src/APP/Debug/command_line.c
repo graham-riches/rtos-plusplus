@@ -13,8 +13,16 @@
 #include "command_line.h"
 #include "utilities.h"
 #include "debug.h"
+#include "usart.h"
 #include "gpio.h"
 #include "accelerometer.h"
+
+/********************************** Constants *******************************************/
+#define COMMAND_BUFFER_SIZE 256
+
+/********************************** Local Variables *******************************************/
+static char msgIn[COMMAND_BUFFER_SIZE] = {0};
+static uint16_t bytesReceived = 0;
 
 /*********************************** Local Functions ********************************************/
 int32_t  CLI_parseCommand( char *commandString, int *argc, char *argv[] );
@@ -71,7 +79,7 @@ const CLI_command_t led =
 /********************Accelerometer Command ********************/
 static const char accel_name[] = "accel";
 static const char * const accel_args[] = {"[MODE]", 0};
-static const char accel_desc[] = "Test the accelerometer";
+static const char accel_desc[] = "Accelerometer options";
 static int accel_func( int argc, char *argv[] )
 {
     if ( argc < 2 )
@@ -83,10 +91,6 @@ static int accel_func( int argc, char *argv[] )
     {
         ACCEL_test();
     }
-    if ( strncasecmp(argv[1], "data", CLI_MAX_ARG_LEN) == 0 )
-    {
-    }
-
     return 0;
 }
 
@@ -139,6 +143,24 @@ bool CLI_init( const CLI_command_t **commandList )
     return true;
 }
 
+
+/**
+ * \brief function to call when a UART RX event occurs
+ */
+void CLI_mainEventFunc( void )
+{
+    bytesReceived += USART_recv( USART_DEBUG, (uint8_t *)&msgIn[bytesReceived], COMMAND_BUFFER_SIZE - bytesReceived );
+    if ( msgIn[bytesReceived - 1] == '\n' )
+    {
+        /* NULL terminate the message and send it to the CLI */
+        msgIn[bytesReceived - 1] = '\0';
+        CLI_executeCommand( msgIn );
+
+        /* clear the buffer and reset */
+        bytesReceived = 0;
+        memset( msgIn, 0, COMMAND_BUFFER_SIZE );
+    }
+}
 
 
 /**

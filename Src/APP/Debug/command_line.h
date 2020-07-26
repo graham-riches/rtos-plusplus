@@ -1,5 +1,5 @@
 /*! \file command_line.h
- *	 \brief command line module for RCP development
+ *	 \brief command line interface module
  *  \details
  *	    This header contains the types and functions used in the menu interface.
  *
@@ -35,7 +35,7 @@ extern "C"
 *	\brief contains callback and information for a single command.
 *		   Each command must have one of these structs.
 *	*callback --> function pointer to a callback function
-*  *name     --> the text to be input at the command line to initaie the command
+*  *name     --> the text to be input at the command line to initiate the command
 *  *usage    --> help menu usage display.
 */
 typedef struct
@@ -52,6 +52,7 @@ typedef struct
 bool CLI_init( const CLI_command_t **commandList );
 int32_t  CLI_executeCommand( char *commandString );
 void CLI_listCommands( void );
+void CLI_mainEventFunc( void );
 
 
 #ifdef __cplusplus
