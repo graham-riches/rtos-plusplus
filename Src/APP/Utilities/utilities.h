@@ -4,7 +4,6 @@
 *
 *
 *  \author Graham Riches
-*  \copyright Copyright (c) ATTAbotics Inc. 2020
 */
 
 #ifndef __UTILITIES_H__

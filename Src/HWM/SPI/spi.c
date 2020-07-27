@@ -1,4 +1,4 @@
-/*! \file spi.c
+  /*! \file spi.c
 *
 *  \brief SPI peripheral setup and abstraction layer.
 *

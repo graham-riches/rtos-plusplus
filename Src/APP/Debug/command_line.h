@@ -1,5 +1,5 @@
 /*! \file command_line.h
- *	 \brief command line interface module
+ *	\brief command line interface module
  *  \details
  *	    This header contains the types and functions used in the menu interface.
  *

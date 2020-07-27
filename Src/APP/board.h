@@ -2,7 +2,6 @@
 *
 *  \brief contains board pin mappings
 *
-*
 *  \author Graham Riches
 */
 

@@ -44,12 +44,6 @@ int main(void)
     /* initialize the accelerometer */
     ACCEL_init();
 
-    /* light the LEDs */
-    GPIO_setLED( GPIO_LED_GREEN, GPIO_LED_ON );
-    GPIO_setLED( GPIO_LED_ORANGE, GPIO_LED_ON );
-    GPIO_setLED( GPIO_LED_RED, GPIO_LED_ON );
-    GPIO_setLED( GPIO_LED_BLUE, GPIO_LED_ON );
-
     /* main application loop */
     while (1)
     {

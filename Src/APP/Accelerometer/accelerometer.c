@@ -4,7 +4,6 @@
 *
 *
 *  \author Graham Riches
-*  \copyright Copyright (c) ATTAbotics Inc. 2020
 */
 
 
@@ -15,6 +14,7 @@
 #include "debug.h"
 #include "board.h"
 #include "event.h"
+#include "gpio.h"
 #include "arm_math.h"
 #include <string.h>
 
@@ -27,7 +27,7 @@
 #define ACCEL_WAKE_UP_400HZ         0x77U //!< wake-up command at 400 Hz
 #define ACCEL_ENABLE_DR_INT         0xC8U //!< enable data ready interrupt
 #define ACCEL_ENABLE_MULTIBYTE_READ 0x10U //!< enable multi-byte read chaining
-#define ACCEL_WHO_AM_I_EXP          0x42U //!< expected value of the WHO_AM_I register
+#define ACCEL_WHO_AM_I_EXP          0x3FU //!< expected value of the WHO_AM_I register
 
 /* Data read/accessing */
 #define ACCEL_READ_DATA_CMD_SIZE    7 //!< need 7 bytes to read all the data registers -> CMD XL XH YL YH ZL ZH
@@ -57,6 +57,7 @@
 /* Constants and conversions */
 #define ACCEL_2G_SCALE_FACTOR    0x4000  //!< convert from +/- 2g int data to floating point
 #define G_TO_METER_PER_S2        9.81    //!< gravitational conversion from [g] to [m/s2]
+#define ACCEL_LED_THRESHOLD      0.1     //!< trigger level to light the LEDs
 
 /* Filter and Buffer Setup */
 #define ACCEL_BUFFER_SIZE        64     //!< number of samples per data buffer
@@ -92,6 +93,15 @@ typedef struct
 } ACCEL_dataHandler_t;
 
 
+/**
+ * \brief structure to control different accelerometer feature flags
+ */
+typedef struct
+{
+    bool print;      //!< enable/disable uart output
+    bool ledControl; //!< enable/disable LED control mode
+} ACCEL_control_t;
+
 /*********************************** Macros ********************************************/
 #define REG_TO_RAWDATA(x, y) ((float)((int16_t)((uint16_t)x  | ((uint16_t)y << 8)))/ACCEL_2G_SCALE_FACTOR)
 
@@ -117,10 +127,11 @@ arm_fir_instance_f32 zFilter;
 
 /******************************** Local Variables **************************************/
 static ACCEL_dataHandler_t buffer = {0};
+static ACCEL_control_t controller = {0};
 
 /****************************** Functions Prototype ************************************/
 void ACCEL_write( uint8_t addr, uint8_t command );
-void ACCEL_readData( void );
+void ACCEL_onDataUpdate( void );
 
 /****************************** Functions Definition ***********************************/
 /**
@@ -159,6 +170,9 @@ void ACCEL_init( void )
     arm_fir_init_f32( &xFilter, ACCEL_DSP_FILTER_TAPS, filtCoeffs, xFiltStateArr, ACCEL_BUFFER_SIZE);
     arm_fir_init_f32( &yFilter, ACCEL_DSP_FILTER_TAPS, filtCoeffs, yFiltStateArr, ACCEL_BUFFER_SIZE);
     arm_fir_init_f32( &zFilter, ACCEL_DSP_FILTER_TAPS, filtCoeffs, zFiltStateArr, ACCEL_BUFFER_SIZE);
+
+    /* enable LED control mode */
+    controller.ledControl = true;
 
     return;
 }
@@ -214,12 +228,56 @@ void ACCEL_readData( void )
 }
 
 /**
- * \brief print out the current data
- * \param data pointer to data to print
+ * \brief function to handle/act on the latest processed data
  */
-void ACCEL_printData( void )
+void ACCEL_onDataUpdate( void )
 {
-    DEBUG_print("%d %6.4f %6.4f %6.4f\r\n", HAL_GetTick(), *buffer.x.readPtr++, *buffer.y.readPtr++, *buffer.z.readPtr++ );
+    if ( controller.print )
+    {
+        DEBUG_print("%d %6.4f %6.4f %6.4f\r\n", HAL_GetTick(), *buffer.x.readPtr, *buffer.y.readPtr, *buffer.z.readPtr );
+    }
+
+    if ( controller.ledControl )
+    {
+        /* super clunky implementation for now. TODO: CLEANIT */
+        if ( *buffer.x.readPtr <= -ACCEL_LED_THRESHOLD )
+        {
+            GPIO_setLED( GPIO_LED_GREEN, GPIO_LED_ON );
+        }
+        else
+        {
+            GPIO_setLED( GPIO_LED_GREEN, GPIO_LED_OFF );
+        }
+        if ( *buffer.x.readPtr >= ACCEL_LED_THRESHOLD )
+        {
+            GPIO_setLED( GPIO_LED_RED, GPIO_LED_ON );
+        }
+        else
+        {
+            GPIO_setLED( GPIO_LED_RED, GPIO_LED_OFF );
+        }
+        if ( *buffer.y.readPtr <= -ACCEL_LED_THRESHOLD )
+        {
+            GPIO_setLED( GPIO_LED_BLUE, GPIO_LED_ON );
+        }
+        else
+        {
+            GPIO_setLED( GPIO_LED_BLUE, GPIO_LED_OFF );
+        }
+        if ( *buffer.y.readPtr >= ACCEL_LED_THRESHOLD )
+        {
+            GPIO_setLED( GPIO_LED_ORANGE, GPIO_LED_ON );
+        }
+        else
+        {
+            GPIO_setLED( GPIO_LED_ORANGE, GPIO_LED_OFF );
+        }
+    }
+
+    /* increment the read pointers */
+    buffer.x.readPtr++;
+    buffer.y.readPtr++;
+    buffer.z.readPtr++;
     return;
 }
 
@@ -267,8 +325,8 @@ void EXTI0_IRQHandler( void )
         /* set the event to process the data */
         EVENT_set( &mainEventFlags, EVENT_ACCEL_BUFF_FULL );
     }
-    /* print out the filtered data */
-    ACCEL_printData( );
+    /* act on the data */
+    ACCEL_onDataUpdate( );
 
     /* clear the interrupt */
     __HAL_GPIO_EXTI_CLEAR_IT(ACCEL_DR_INT_PIN);
