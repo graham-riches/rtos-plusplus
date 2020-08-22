@@ -16,6 +16,7 @@ RM := rm -rf
 -include Src/HWM/I2C/subdir.mk
 -include Src/HWM/HAL/subdir.mk
 -include Src/HWM/GPIO/subdir.mk
+-include Src/HWM/ADC/subdir.mk
 -include Src/APP/Utilities/subdir.mk
 -include Src/APP/Events/subdir.mk
 -include Src/APP/Debug/subdir.mk

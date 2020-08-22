@@ -16,6 +16,7 @@
 #include "usart.h"
 #include "gpio.h"
 #include "accelerometer.h"
+#include "adc.h"
 
 /********************************** Constants *******************************************/
 #define COMMAND_BUFFER_SIZE 256
@@ -76,7 +77,7 @@ const CLI_command_t led =
    led_desc
 };
 
-/********************Accelerometer Command ********************/
+/******************** Accelerometer Command ********************/
 static const char accel_name[] = "accel";
 static const char * const accel_args[] = {"[MODE]", 0};
 static const char accel_desc[] = "Accelerometer options";
@@ -91,6 +92,10 @@ static int accel_func( int argc, char *argv[] )
     {
         ACCEL_test();
     }
+    if ( strncasecmp(argv[1], "control", CLI_MAX_ARG_LEN) == 0 )
+    {
+        ACCEL_setControlMode( (ACCEL_controlMode_t)strtol(argv[2], NULL, 10) );
+    }
     return 0;
 }
 
@@ -102,6 +107,37 @@ const CLI_command_t accel =
     accel_desc
 };
 
+/******************** ADC Command ********************/
+static const char adc_name[] = "adc";
+static const char * const adc_args[] = {"[measure]", 0};
+static const char adc_desc[] = "ADC options";
+static int adc_func( int argc, char *argv[] )
+{
+    if ( argc < 2 )
+    {
+        DEBUG_print( "Invalid number of arguments\n" );
+    }
+
+    if ( strncasecmp(argv[1], "measure", CLI_MAX_ARG_LEN) == 0 )
+    {
+        uint32_t value = ADC_getValue( ADC_AUDIO_INPUT );
+        /* ADC resolution is set to 12B, so convert to voltage */
+        float voltage = (float)((float)value/(float)4096.0 * (float)3.0);
+        DEBUG_print( "ADC Voltage: %f \n", voltage );
+    }
+
+    return 0;
+}
+
+const CLI_command_t adc =
+{
+    adc_func,
+    adc_name,
+    adc_args,
+    adc_desc
+};
+
+
 /************************************ Command Line List ********************************************/
 /**
  * \brief contains the entire list of command line options used to initialize the CLI
@@ -111,6 +147,7 @@ static const CLI_command_t *CLI_menuCommands[CLI_MAX_COMMANDS] =
    &help,
    &led,
    &accel,
+   &adc,
    // add new CLI commands here
 };
 

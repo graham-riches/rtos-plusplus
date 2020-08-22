@@ -45,6 +45,7 @@
 									<listOptionValue builtIn="false" value="../Src/HWM/SPI"/>
 									<listOptionValue builtIn="false" value="../Src/HWM/GPIO/"/>
 									<listOptionValue builtIn="false" value="../Src/HWM/I2C/"/>
+									<listOptionValue builtIn="false" value="../Src/HWM/ADC/"/>
 									<listOptionValue builtIn="false" value="../Src/HWM/I2S/"/>
 									<listOptionValue builtIn="false" value="../Src/HWM/USART/"/>
 									<listOptionValue builtIn="false" value="../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy"/>

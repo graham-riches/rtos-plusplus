@@ -18,9 +18,13 @@ extern "C" {
 /*********************************** Consts ********************************************/
 
 
-
-
 /************************************ Types ********************************************/
+typedef enum
+{
+    ACCEL_CONTROL_MODE_LED = 0,
+    ACCEL_CONTROL_MODE_NONE,
+    ACCEL_CONTROL_TOTAL_MODES
+} ACCEL_controlMode_t;
 
 
 /*********************************** Macros ********************************************/
@@ -34,6 +38,7 @@ void ACCEL_init( void );
 void ACCEL_test( void );
 void ACCEL_printData( void );
 void ACCEL_processDataBuffer( void );
+void ACCEL_setControlMode( ACCEL_controlMode_t mode );
 
 #ifdef __cplusplus
 }

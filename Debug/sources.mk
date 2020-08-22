@@ -21,6 +21,7 @@ Src/APP/Debug \
 Src/APP/Events \
 Src/APP/Utilities \
 Src/APP \
+Src/HWM/ADC \
 Src/HWM/GPIO \
 Src/HWM/HAL \
 Src/HWM/I2C \

@@ -98,6 +98,12 @@ extern "C" {
 #define SPI1_MOSI_Pin GPIO_PIN_7
 #define SPI1_MOSI_GPIO_Port GPIOA
 
+/* Audio in ADC */
+#define AUDIO_IN_ADC ADC1
+#define AUDIO_IN_ADC_CHANNEL ADC_CHANNEL_1
+#define AUDIO_IN_PIN GPIO_PIN_1
+#define AUDIO_IN_PORT GPIOA
+
 #ifdef __cplusplus
 }
 #endif

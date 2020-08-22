@@ -15,6 +15,7 @@
 #include "i2s.h"
 #include "gpio.h"
 #include "usart.h"
+#include "adc.h"
 
 /*********************************** Consts ********************************************/
 
@@ -53,4 +54,5 @@ void HAL_moduleInit( void )
 	I2C_init();
 	I2S_init();
 	USART_init();
+	ADC_init();
 }

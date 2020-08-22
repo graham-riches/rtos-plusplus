@@ -179,6 +179,31 @@ void ACCEL_init( void )
 
 
 /**
+ * \brief set the accelerometer control mode
+ * \retval None
+ */
+void ACCEL_setControlMode( ACCEL_controlMode_t mode )
+{
+    if ( mode < ACCEL_CONTROL_TOTAL_MODES )
+    {
+        switch ( mode )
+        {
+        case ACCEL_CONTROL_MODE_LED:
+            controller.ledControl = true;
+            break;
+
+        case ACCEL_CONTROL_MODE_NONE:
+            controller.ledControl = false;
+            break;
+
+        default:
+            break;
+        }
+    }
+}
+
+
+/**
  * \brief read the devices WHO_AM_I register as a test and validate that it equals the expected
  *        value
  */

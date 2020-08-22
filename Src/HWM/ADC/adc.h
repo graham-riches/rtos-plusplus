@@ -14,12 +14,30 @@ extern "C" {
 #endif
 /********************************** Includes *******************************************/
 #include "common.h"
+#include "stm32f4xx_hal.h"
 
 /*********************************** Consts ********************************************/
 
 
 /************************************ Types ********************************************/
+/**
+ * \brief handler structure for ADC peripherals
+ */
+typedef struct
+{
+    ADC_HandleTypeDef handler;      //!< ADC HAL handler
+    ADC_ChannelConfTypeDef channel; //!< ADC Channel config
+} ADC_handler_t;
 
+
+/**
+ * \brief enumeration of ADC peripherals
+ */
+typedef enum
+{
+    ADC_AUDIO_INPUT = 0,
+    ADC_TOTAL_DEVICES,
+} ADC_devices_t;
 
 /*********************************** Macros ********************************************/
 
@@ -28,7 +46,8 @@ extern "C" {
 
 
 /****************************** Functions Prototype ************************************/
-void ADC_init( void );
+void  ADC_init( void );
+uint32_t ADC_getValue( ADC_devices_t device );
 
 
 #ifdef __cplusplus

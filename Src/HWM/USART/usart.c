@@ -13,7 +13,7 @@
 #include "event.h"
 
 /*********************************** Consts ********************************************/
-#define USART_BUFFER_SIZE 256
+#define USART_BUFFER_SIZE 512
 #define USART_RX_SIZE 1
 #define USART_TX_SIZE 1
 
@@ -27,7 +27,7 @@
 
 
 /******************************** Local Variables **************************************/
-static USART_handler_t usartHandlersArray[USART_TOTAL_DEVICES];
+static USART_handler_t usartHandlersArray[USART_TOTAL_DEVICES] = {0};
 
 
 /* create a local buffer for each USART peripheral and create a ring buffer handler to manage it */
@@ -76,7 +76,7 @@ void USART_init( void )
                 gpio.Alternate = GPIO_AF7_USART3;
 
                 /* init the GPIO */
-                HAL_GPIO_Init( GPIOD, &gpio );
+                HAL_GPIO_Init( DEBUG_USART_TX_PORT, &gpio );
 
                 /* setup usart specifics */
                 usart->Instance = DEBUG_USART_PORT;
