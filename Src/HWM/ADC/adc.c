@@ -73,7 +73,7 @@ void ADC_init( void )
                adc->Init.DiscontinuousConvMode = DISABLE;
                adc->Init.DataAlign = ADC_DATAALIGN_RIGHT;
                adc->Init.NbrOfConversion = 1;
-               adc->Init.DMAContinuousRequests = DISABLE;
+               adc->Init.DMAContinuousRequests = ENABLE;
                adc->Init.EOCSelection = ADC_EOC_SEQ_CONV;
 
                if ( HAL_ADC_Init( adc ) != HAL_OK )
@@ -100,6 +100,66 @@ void ADC_init( void )
    }
 }
 
+
+/**
+ * \name HAL_ADC_MspInit
+ * \brief HAL function to setup the ADC DMA
+ * \note this overrides the __weak declaration in stm32f4xx_hal_adc.c
+ */
+void HAL_ADC_MspInit( ADC_HandleTypeDef *hadc )
+{
+    DMA_HandleTypeDef dma = {0};
+
+    uint8_t device;
+    for ( device = 0; device < ADC_TOTAL_DEVICES; device ++ )
+    {
+        if ( hadc == &adcHandlersArray[device].handler )
+        {
+            break;
+        }
+    }
+
+    /* handle device specific setup */
+    switch ( device )
+    {
+        case ADC_AUDIO_INPUT:
+            /* setup the DMA */
+            dma.Instance = DMA2_Stream0;
+            dma.Init.Channel = DMA_CHANNEL_0;
+            dma.Init.Direction = DMA_PERIPH_TO_MEMORY;
+            dma.Init.PeriphInc = DMA_PINC_DISABLE;
+            dma.Init.MemInc = DMA_MINC_ENABLE;
+            dma.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
+            dma.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
+            dma.Init.Mode = DMA_NORMAL;
+            dma.Init.Priority = DMA_PRIORITY_LOW;
+            dma.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
+            HAL_DMA_Init( &dma );
+
+            __HAL_LINKDMA( hadc, DMA_Handle, dma );
+            break;
+
+        default:
+            break;
+    }
+}
+
+
+/**
+ * \brief DMA HAL Callback
+ * \note this overrides a __weak declaration in stm32f4xx_hal_adc.c
+ */
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
+{
+    uint8_t device;
+    for ( device = 0; device < ADC_TOTAL_DEVICES; device ++ )
+    {
+        if ( hadc == &adcHandlersArray[device].handler )
+        {
+            break;
+        }
+    }
+}
 
 /**
  * \name ADC_getValue

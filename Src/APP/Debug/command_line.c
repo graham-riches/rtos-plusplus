@@ -122,7 +122,7 @@ static int adc_func( int argc, char *argv[] )
     {
         uint32_t value = ADC_getValue( ADC_AUDIO_INPUT );
         /* ADC resolution is set to 12B, so convert to voltage */
-        float voltage = (float)((float)value/(float)4096.0 * (float)3.0);
+        float voltage = (float)((float)value/(float)4096.0 * (float)2.93588);
         DEBUG_print( "ADC Voltage: %f \n", voltage );
     }
 
