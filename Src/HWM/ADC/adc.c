@@ -144,8 +144,8 @@ void HAL_ADC_MspInit( ADC_HandleTypeDef *hadc )
             }
 
             __HAL_LINKDMA( hadc, DMA_Handle, *dma );
-            //HAL_NVIC_SetPriority( DMA2_Stream0_IRQn, 2, 2 );
-            //HAL_NVIC_EnableIRQ( DMA2_Stream0_IRQn );
+            HAL_NVIC_SetPriority( DMA2_Stream0_IRQn, 2, 2 );
+            HAL_NVIC_EnableIRQ( DMA2_Stream0_IRQn );
             break;
 
         default:
@@ -244,6 +244,6 @@ void ADC_startDMA( ADC_devices_t device, uint32_t *buffer, uint32_t size)
 
 void DMA2_Stream0_IRQHandler( void )
 {
-    ADC_HandleTypeDef *adc = &adcHandlersArray[ADC_AUDIO_INPUT].handler;
-    HAL_ADC_IRQHandler( adc );
+    DMA_HandleTypeDef *dma = &adcHandlersArray[ADC_AUDIO_INPUT].dma;
+    HAL_DMA_IRQHandler( dma );
 }
