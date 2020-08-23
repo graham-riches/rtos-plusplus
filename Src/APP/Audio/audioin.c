@@ -24,7 +24,9 @@
 typedef struct
 {
     uint16_t buffer[AUDIOIN_BUFFER_SAMPLES];
-    uint16_t *currentDataPtr;
+    uint16_t *bufferBank0;
+    uint16_t *bufferBank1;
+    uint8_t activeBank;
 } AUDIOIN_handler_t;
 
 /*********************************** Macros ********************************************/
@@ -51,6 +53,15 @@ void AUDIOIN_init( void )
 {
     /* Initialize the module here*/
     memset( &input, 0, sizeof(AUDIOIN_handler_t) );
+
+    /* set ping-pong buffering up using the single data buffer in the handler struct.
+       DMA is in circular mode, so this can be used as a dual bank
+       buffer with the half/full callbacks signaling the ends of each bank.
+     */
+    input.bufferBank0 = input.buffer;
+    input.bufferBank1 = &input.buffer[AUDIOIN_HALFBUFFER_SAMPLES];
+    input.activeBank = 0;
+
     /* start the ADC DMA sampling */
     ADC_startDMA( ADC_AUDIO_INPUT, (uint32_t *)&input.buffer, AUDIOIN_BUFFER_SAMPLES );
 }
@@ -65,6 +76,5 @@ void AUDIOIN_init( void )
 */
 void AUDIOIN_processDataBuffer( void )
 {
-    /* placeholder function */
-    DEBUG_print( "AUDIOIN buffer full event" );
+    return;
 }

@@ -25,9 +25,10 @@ extern "C" {
  */
 typedef struct
 {
-    ADC_HandleTypeDef      handler;                     //!< ADC HAL handler
-    ADC_ChannelConfTypeDef channel;                     //!< ADC Channel config
-    DMA_HandleTypeDef      dma;                         //!< DMA handler
+    ADC_HandleTypeDef      handler; //!< ADC HAL handler
+    ADC_ChannelConfTypeDef channel; //!< ADC Channel config
+    DMA_HandleTypeDef      dma;     //!< DMA handler
+    TIM_HandleTypeDef      timer;   //!< Timer handler
 } ADC_handler_t;
 
 

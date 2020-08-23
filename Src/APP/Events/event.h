@@ -24,9 +24,9 @@ extern "C" {
  */
 typedef enum
 {
-    EVENT_USART_DEBUG_RX = 0,  //!< received data on UART
-    EVENT_ACCEL_BUFF_FULL,     //!< accelerometer data ready for processing
-    EVENT_AUDIO_IN_BUFF_FULL,  //!< audio input data buffer ready for processing
+    EVENT_USART_DEBUG_RX = 0,     //!< received data on UART
+    EVENT_ACCEL_BUFF_FULL,        //!< accelerometer data ready for processing
+    EVENT_AUDIO_IN_BUFF_FULL,     //!< audio input buffer is full
     EVENT_TOTAL_EVENTS
 } EVENT_mainEvents_t;
 
