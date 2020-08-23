@@ -17,7 +17,7 @@ extern "C" {
 #include "stm32f4xx_hal.h"
 
 /*********************************** Consts ********************************************/
-
+#define ADC_DMA_BUFFER_SIZE 64
 
 /************************************ Types ********************************************/
 /**
@@ -25,8 +25,9 @@ extern "C" {
  */
 typedef struct
 {
-    ADC_HandleTypeDef handler;      //!< ADC HAL handler
-    ADC_ChannelConfTypeDef channel; //!< ADC Channel config
+    ADC_HandleTypeDef      handler;                     //!< ADC HAL handler
+    ADC_ChannelConfTypeDef channel;                     //!< ADC Channel config
+    DMA_HandleTypeDef      dma;                         //!< DMA handler
 } ADC_handler_t;
 
 
@@ -46,8 +47,9 @@ typedef enum
 
 
 /****************************** Functions Prototype ************************************/
-void  ADC_init( void );
+void     ADC_init( void );
 uint32_t ADC_getValue( ADC_devices_t device );
+void     ADC_startDMA( ADC_devices_t device, uint32_t *buffer, uint32_t size );
 
 
 #ifdef __cplusplus

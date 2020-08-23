@@ -1,6 +1,6 @@
-/*! \file hal.c
+/*! \file dma.c
 *
-*  \brief HAL setup and abstraction.
+*  \brief DMA module initialization.
 *
 *
 *  \author Graham Riches
@@ -8,14 +8,6 @@
 
 
 /********************************** Includes *******************************************/
-#include "hal.h"
-#include "system.h"
-#include "spi.h"
-#include "i2c.h"
-#include "i2s.h"
-#include "gpio.h"
-#include "usart.h"
-#include "adc.h"
 #include "dma.h"
 
 /*********************************** Consts ********************************************/
@@ -38,23 +30,15 @@
 
 /****************************** Functions Definition ***********************************/
 /**
-* \name     HAL_init
+* \name     DMA_init
 * \brief    Initialize the module variables and resources.
 *
 * \param    None
 * \retval   None
 */
-void HAL_moduleInit( void )
+void DMA_init( void )
 {
-	/* Configure the system clock */
-	SYSTEM_init();
-
-	/* Initialize all configured peripherals */
-	GPIO_init();
-	DMA_init();
-	SPI_init();
-	I2C_init();
-	I2S_init();
-	USART_init();
-	ADC_init();
+    /* Initialize the module here*/
+    __DMA1_CLK_ENABLE();
+    __DMA2_CLK_ENABLE();
 }

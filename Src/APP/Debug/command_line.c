@@ -17,9 +17,10 @@
 #include "gpio.h"
 #include "accelerometer.h"
 #include "adc.h"
+#include "audioin.h"
 
 /********************************** Constants *******************************************/
-#define COMMAND_BUFFER_SIZE 256
+#define COMMAND_BUFFER_SIZE (256ul)
 
 /********************************** Local Variables *******************************************/
 static char msgIn[COMMAND_BUFFER_SIZE] = {0};
@@ -79,8 +80,8 @@ const CLI_command_t led =
 
 /******************** Accelerometer Command ********************/
 static const char accel_name[] = "accel";
-static const char * const accel_args[] = {"[MODE]", 0};
-static const char accel_desc[] = "Accelerometer options";
+static const char * const accel_args[] = {"[test, control]", 0};
+static const char accel_desc[] = "Enable accelerometer control modes and test functions";
 static int accel_func( int argc, char *argv[] )
 {
     if ( argc < 2 )
@@ -125,7 +126,6 @@ static int adc_func( int argc, char *argv[] )
         float voltage = (float)((float)value/(float)4096.0 * (float)2.93588);
         DEBUG_print( "ADC Voltage: %f \n", voltage );
     }
-
     return 0;
 }
 
@@ -137,6 +137,31 @@ const CLI_command_t adc =
     adc_desc
 };
 
+/******************** Audio Input/Output Management Command ********************/
+static const char audio_name[] = "audio";
+static const char * const audio_args[] = {"[start]", 0};
+static const char audio_desc[] = "Manage the audio input and output";
+static int audio_func( int argc, char *argv[] )
+{
+    if ( argc < 2 )
+    {
+        DEBUG_print( "Invalid number of arguments\n" );
+    }
+
+    if ( strncasecmp(argv[1], "start", CLI_MAX_ARG_LEN) == 0 )
+    {
+        AUDIOIN_init();
+    }
+    return 0;
+}
+
+const CLI_command_t audio =
+{
+    audio_func,
+    audio_name,
+    audio_args,
+    audio_desc
+};
 
 /************************************ Command Line List ********************************************/
 /**
@@ -148,6 +173,7 @@ static const CLI_command_t *CLI_menuCommands[CLI_MAX_COMMANDS] =
    &led,
    &accel,
    &adc,
+   &audio,
    // add new CLI commands here
 };
 
@@ -186,7 +212,7 @@ bool CLI_init( const CLI_command_t **commandList )
  */
 void CLI_mainEventFunc( void )
 {
-    bytesReceived += USART_recv( USART_DEBUG, (uint8_t *)&msgIn[bytesReceived], COMMAND_BUFFER_SIZE - bytesReceived );
+    bytesReceived += USART_recv( USART_DEBUG, (uint8_t *)&msgIn[bytesReceived], (uint16_t)(COMMAND_BUFFER_SIZE - bytesReceived) );
     if ( msgIn[bytesReceived - 1] == '\n' )
     {
         /* NULL terminate the message and send it to the CLI */

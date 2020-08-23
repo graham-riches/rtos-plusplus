@@ -10,9 +10,10 @@
 /********************************** Includes *******************************************/
 #include "adc.h"
 #include "board.h"
+#include "debug.h"
+#include "event.h"
 
 /*********************************** Consts ********************************************/
-
 
 /************************************ Types ********************************************/
 
@@ -66,7 +67,7 @@ void ADC_init( void )
 
                /* setup the audio input ADC parameters */
                adc->Instance = AUDIO_IN_ADC;
-               adc->Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
+               adc->Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV8;
                adc->Init.Resolution = ADC_RESOLUTION_12B;
                adc->Init.ScanConvMode = DISABLE;
                adc->Init.ContinuousConvMode = ENABLE;
@@ -90,7 +91,6 @@ void ADC_init( void )
                    /* TODO: error handler */
                }
 
-               /* start the ADC */
                HAL_ADC_Start( adc );
                break;
 
@@ -108,13 +108,14 @@ void ADC_init( void )
  */
 void HAL_ADC_MspInit( ADC_HandleTypeDef *hadc )
 {
-    DMA_HandleTypeDef dma = {0};
+    DMA_HandleTypeDef *dma;
 
     uint8_t device;
     for ( device = 0; device < ADC_TOTAL_DEVICES; device ++ )
     {
         if ( hadc == &adcHandlersArray[device].handler )
         {
+            dma = &adcHandlersArray[device].dma;
             break;
         }
     }
@@ -123,20 +124,28 @@ void HAL_ADC_MspInit( ADC_HandleTypeDef *hadc )
     switch ( device )
     {
         case ADC_AUDIO_INPUT:
-            /* setup the DMA */
-            dma.Instance = DMA2_Stream0;
-            dma.Init.Channel = DMA_CHANNEL_0;
-            dma.Init.Direction = DMA_PERIPH_TO_MEMORY;
-            dma.Init.PeriphInc = DMA_PINC_DISABLE;
-            dma.Init.MemInc = DMA_MINC_ENABLE;
-            dma.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
-            dma.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
-            dma.Init.Mode = DMA_NORMAL;
-            dma.Init.Priority = DMA_PRIORITY_LOW;
-            dma.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
-            HAL_DMA_Init( &dma );
+            /* enable the peripheral clock */
+            __HAL_RCC_ADC1_CLK_ENABLE();
 
-            __HAL_LINKDMA( hadc, DMA_Handle, dma );
+            /* setup the DMA */
+            dma->Instance = DMA2_Stream0;
+            dma->Init.Channel = DMA_CHANNEL_0;
+            dma->Init.Direction = DMA_PERIPH_TO_MEMORY;
+            dma->Init.PeriphInc = DMA_PINC_DISABLE;
+            dma->Init.MemInc = DMA_MINC_ENABLE;
+            dma->Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
+            dma->Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
+            dma->Init.Mode = DMA_CIRCULAR;
+            dma->Init.Priority = DMA_PRIORITY_LOW;
+            dma->Init.FIFOMode = DMA_FIFOMODE_DISABLE;
+            if ( HAL_DMA_Init( dma ) != HAL_OK )
+            {
+                DEBUG_print( "failed to start dma ");
+            }
+
+            __HAL_LINKDMA( hadc, DMA_Handle, *dma );
+            //HAL_NVIC_SetPriority( DMA2_Stream0_IRQn, 2, 2 );
+            //HAL_NVIC_EnableIRQ( DMA2_Stream0_IRQn );
             break;
 
         default:
@@ -146,18 +155,55 @@ void HAL_ADC_MspInit( ADC_HandleTypeDef *hadc )
 
 
 /**
- * \brief DMA HAL Callback
+ * \brief DMA HAL Callback for completed transfer (full buffer)
  * \note this overrides a __weak declaration in stm32f4xx_hal_adc.c
  */
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
+void HAL_ADC_ConvCpltCallback( ADC_HandleTypeDef* hadc )
 {
     uint8_t device;
-    for ( device = 0; device < ADC_TOTAL_DEVICES; device ++ )
+    for ( device = 0; device < ADC_TOTAL_DEVICES; device++ )
     {
         if ( hadc == &adcHandlersArray[device].handler )
         {
             break;
         }
+    }
+    /* handle device specific call backs */
+    switch ( device )
+    {
+        case ADC_AUDIO_INPUT:
+            EVENT_set( &mainEventFlags, EVENT_AUDIO_IN_BUFF_FULL );
+            break;
+
+        default:
+           break;
+    }
+}
+
+
+/**
+ * \brief DMA HAL Callback for half completed transfer
+ * \note this overrides a __weak declaration in stm32f4xx_hal_adc.c
+ */
+void HAL_ADC_ConvHalfCpltCallback( ADC_HandleTypeDef* hadc )
+{
+    uint8_t device;
+    for ( device = 0; device < ADC_TOTAL_DEVICES; device++ )
+    {
+        if ( hadc == &adcHandlersArray[device].handler )
+        {
+            break;
+        }
+    }
+    /* handle device specific call backs */
+    switch ( device )
+    {
+        case ADC_AUDIO_INPUT:
+            EVENT_set( &mainEventFlags, EVENT_AUDIO_IN_BUFF_FULL );
+            break;
+
+        default:
+           break;
     }
 }
 
@@ -179,3 +225,25 @@ uint32_t ADC_getValue( ADC_devices_t device )
     return value;
 }
 
+/**
+ * \name ADC_startDMA
+ * \brief start the DMA for a specific device
+ * \param device the ADC device to start measurements on
+ * \param buffer pointer to the data buffer
+ * \param size how much data to capture
+ */
+void ADC_startDMA( ADC_devices_t device, uint32_t *buffer, uint32_t size)
+{
+    if ( device >= ADC_TOTAL_DEVICES )
+    {
+        return;
+    }
+    HAL_ADC_Start_DMA( &adcHandlersArray[device].handler, buffer, size );
+}
+
+
+void DMA2_Stream0_IRQHandler( void )
+{
+    ADC_HandleTypeDef *adc = &adcHandlersArray[ADC_AUDIO_INPUT].handler;
+    HAL_ADC_IRQHandler( adc );
+}

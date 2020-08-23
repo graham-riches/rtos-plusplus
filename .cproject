@@ -39,12 +39,14 @@
 									<listOptionValue builtIn="false" value="../Drivers/STM32F4xx_HAL_Driver/Inc"/>
 									<listOptionValue builtIn="false" value="../Src/APP/Accelerometer"/>
 									<listOptionValue builtIn="false" value="../Src/APP/Debug"/>
-									<listOptionValue builtIn="false" value="../Src/APP/Utilities"/>
+									<listOptionValue builtIn="false" value="../Src/APP/Audio"/>
 									<listOptionValue builtIn="false" value="../Src/HWM/System"/>
+									<listOptionValue builtIn="false" value="../Src/APP/Utilities"/>
 									<listOptionValue builtIn="false" value="../Src"/>
 									<listOptionValue builtIn="false" value="../Src/HWM/SPI"/>
 									<listOptionValue builtIn="false" value="../Src/HWM/GPIO/"/>
 									<listOptionValue builtIn="false" value="../Src/HWM/I2C/"/>
+									<listOptionValue builtIn="false" value="../Src/HWM/DMA/"/>
 									<listOptionValue builtIn="false" value="../Src/HWM/ADC/"/>
 									<listOptionValue builtIn="false" value="../Src/HWM/I2S/"/>
 									<listOptionValue builtIn="false" value="../Src/HWM/USART/"/>
