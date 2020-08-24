@@ -184,7 +184,7 @@ void ADC_configureTimer( ADC_devices_t device )
 
             /* setup the timer */
             timer->Instance = TIM2;
-            timer->Init.Prescaler = 174; //!< 84MHz/48kHz = 1750
+            timer->Init.Prescaler = 4199; //!< 84MHz/48kHz = 1750 -> 174
             timer->Init.Period = 9;      //!< generate an event every 10 samples (hence the 174 ^^)
             timer->Init.CounterMode = TIM_COUNTERMODE_UP;
             timer->Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
