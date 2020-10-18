@@ -77,12 +77,20 @@ extern "C" {
 
 
 /* USART3 - Debug port setup */
+/*
 #define DEBUG_USART_PORT USART3
 #define DEBUG_USART_TX_PORT GPIOD
 #define DEBUG_USART_RX_PORT GPIOD
 #define DEBUG_USART_TX_PIN GPIO_PIN_8
 #define DEBUG_USART_RX_PIN GPIO_PIN_9
+*/
 
+/* USART2 - Built-In Debug Port */
+#define DEBUG_USART_PORT USART2
+#define DEBUG_USART_TX_PORT GPIOA
+#define DEBUG_USART_RX_PORT GPIOA
+#define DEBUG_USART_TX_PIN GPIO_PIN_2
+#define DEBUG_USART_RX_PIN GPIO_PIN_3
 
 /* MEMS Accelerometer Pin Definitions */
 #define ACCEL_CS_PIN GPIO_PIN_3

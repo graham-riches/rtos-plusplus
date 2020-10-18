@@ -65,7 +65,7 @@ void USART_init( void )
         {
             case USART_DEBUG:
                 /* enable the usart clock */
-                __HAL_RCC_USART3_CLK_ENABLE();
+                __HAL_RCC_USART2_CLK_ENABLE();
 
                 /* set the interrupt priority and enable the interrupt */
                 HAL_NVIC_SetPriority( USART3_IRQn, 3, 3 );
@@ -73,7 +73,7 @@ void USART_init( void )
 
                 /* setup gpio pins */
                 gpio.Pin = DEBUG_USART_TX_PIN | DEBUG_USART_RX_PIN;
-                gpio.Alternate = GPIO_AF7_USART3;
+                gpio.Alternate = GPIO_AF7_USART2;
 
                 /* init the GPIO */
                 HAL_GPIO_Init( DEBUG_USART_TX_PORT, &gpio );

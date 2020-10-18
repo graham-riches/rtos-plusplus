@@ -24,6 +24,7 @@ RM := rm -rf
 -include Src/APP/Audio/subdir.mk
 -include Src/APP/Accelerometer/subdir.mk
 -include Src/APP/subdir.mk
+-include Drivers/STM32F4xx_StdPeriph_Driver/src/subdir.mk
 -include Drivers/STM32F4xx_HAL_Driver/Src/subdir.mk
 -include subdir.mk
 -include objects.mk

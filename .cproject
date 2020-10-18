@@ -53,15 +53,17 @@
 									<listOptionValue builtIn="false" value="../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy"/>
 									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32F4xx/Include"/>
 									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Core/Include"/>
+									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Include"/>
 									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32F4xx/Include"/>
 									<listOptionValue builtIn="false" value="../Drivers/CMSIS/DSP/Include"/>
 									<listOptionValue builtIn="false" value="../Src/APP"/>
 									<listOptionValue builtIn="false" value="../Src/HWM/HAL"/>
 									<listOptionValue builtIn="false" value="../Src/APP/Events"/>
+									<listOptionValue builtIn="false" value="../Drivers/STM32F4xx_StdPeriph_Driver/inc"/>
 								</option>
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.1946114596" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
-									<listOptionValue builtIn="false" value="USE_HAL_DRIVER"/>
 									<listOptionValue builtIn="false" value="ARM_MATH_CM4"/>
+									<listOptionValue builtIn="false" value="USE_STDPERIPH_DRIVER"/>
 									<listOptionValue builtIn="false" value="STM32F407xx"/>
 								</option>
 								<option id="fr.ac6.managedbuild.gnu.c.compiler.option.misc.other.2109245631" superClass="fr.ac6.managedbuild.gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-fmessage-length=0" valueType="string"/>
@@ -76,6 +78,7 @@
 								<option id="gnu.cpp.compiler.option.debugging.level.1331567293" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.474931385" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="../Drivers/STM32F4xx_HAL_Driver/Inc"/>
+									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Include"/>
 									<listOptionValue builtIn="false" value="../Src/APP/Accelerometer"/>
 									<listOptionValue builtIn="false" value="../Src/APP/Debug"/>
 									<listOptionValue builtIn="false" value="../Src/APP/Audio"/>
@@ -96,14 +99,15 @@
 									<listOptionValue builtIn="false" value="../Src/APP"/>
 									<listOptionValue builtIn="false" value="../Src/HWM/HAL"/>
 									<listOptionValue builtIn="false" value="../Src/APP/Events"/>
+									<listOptionValue builtIn="false" value="../Drivers/STM32F4xx_StdPeriph_Driver/inc"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.674221133" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
-									<listOptionValue builtIn="false" value="USE_HAL_DRIVER"/>
 									<listOptionValue builtIn="false" value="ARM_MATH_CM4"/>
+									<listOptionValue builtIn="false" value="USE_STDPERIPH_DRIVER"/>
 									<listOptionValue builtIn="false" value="STM32F407xx"/>
 								</option>
 								<option id="fr.ac6.managedbuild.gnu.cpp.compiler.option.misc.other.311935131" name="Other flags" superClass="fr.ac6.managedbuild.gnu.cpp.compiler.option.misc.other" useByScannerDiscovery="false" value="-fmessage-length=0" valueType="string"/>
-								<option id="gnu.cpp.compiler.option.dialect.std.316281064" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.c++11" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.dialect.std.316281064" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.c++11" valueType="enumerated"/>
 								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.input.cpp.9949207" superClass="fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.input.cpp"/>
 								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.input.s.927628975" superClass="fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.input.s"/>
 							</tool>
@@ -145,9 +149,60 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<folderInfo id="fr.ac6.managedbuild.config.gnu.cross.exe.debug.209252442.202228822" name="/" resourcePath="Drivers/STM32F4xx_StdPeriph_Driver">
+						<toolChain id="fr.ac6.managedbuild.toolchain.gnu.cross.exe.debug.655638726" name="Ac6 STM32 MCU GCC" superClass="fr.ac6.managedbuild.toolchain.gnu.cross.exe.debug" unusedChildren="">
+							<option id="fr.ac6.managedbuild.option.gnu.cross.prefix.1729430816.973738257" name="Prefix" superClass="fr.ac6.managedbuild.option.gnu.cross.prefix.1729430816"/>
+							<option id="fr.ac6.managedbuild.option.gnu.cross.mcu.2100334150.90180808" name="Mcu" superClass="fr.ac6.managedbuild.option.gnu.cross.mcu.2100334150"/>
+							<option id="fr.ac6.managedbuild.option.gnu.cross.board.1963900434.684910579" name="Board" superClass="fr.ac6.managedbuild.option.gnu.cross.board.1963900434"/>
+							<option id="fr.ac6.managedbuild.option.gnu.cross.core.1083960614.99837954" name="Core" superClass="fr.ac6.managedbuild.option.gnu.cross.core.1083960614"/>
+							<option id="fr.ac6.managedbuild.option.gnu.cross.instructionSet.1463760976.1531908158" name="Instruction Set" superClass="fr.ac6.managedbuild.option.gnu.cross.instructionSet.1463760976"/>
+							<option id="fr.ac6.managedbuild.option.gnu.cross.fpu.1652698704.1642706785" name="Floating point hardware" superClass="fr.ac6.managedbuild.option.gnu.cross.fpu.1652698704"/>
+							<option id="fr.ac6.managedbuild.option.gnu.cross.floatabi.671627713.1387643565" name="Floating-point ABI" superClass="fr.ac6.managedbuild.option.gnu.cross.floatabi.671627713"/>
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="fr.ac6.managedbuild.targetPlatform.gnu.cross" isAbstract="false" osList="all" superClass="fr.ac6.managedbuild.targetPlatform.gnu.cross"/>
+							<tool id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.1980857966" name="MCU GCC Compiler" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.1353260659">
+								<option id="gnu.c.compiler.option.include.paths.738612001" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="../Drivers/STM32F4xx_HAL_Driver/Inc"/>
+									<listOptionValue builtIn="false" value="../Src/APP/Accelerometer"/>
+									<listOptionValue builtIn="false" value="../Src/APP/Debug"/>
+									<listOptionValue builtIn="false" value="../Src/APP/Audio"/>
+									<listOptionValue builtIn="false" value="../Src/HWM/System"/>
+									<listOptionValue builtIn="false" value="../Src/APP/Utilities"/>
+									<listOptionValue builtIn="false" value="../Src"/>
+									<listOptionValue builtIn="false" value="../Src/HWM/SPI"/>
+									<listOptionValue builtIn="false" value="../Src/HWM/GPIO/"/>
+									<listOptionValue builtIn="false" value="../Src/HWM/I2C/"/>
+									<listOptionValue builtIn="false" value="../Src/HWM/DMA/"/>
+									<listOptionValue builtIn="false" value="../Src/HWM/ADC/"/>
+									<listOptionValue builtIn="false" value="../Src/HWM/I2S/"/>
+									<listOptionValue builtIn="false" value="../Src/HWM/USART/"/>
+									<listOptionValue builtIn="false" value="../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy"/>
+									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32F4xx/Include"/>
+									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Core/Include"/>
+									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32F4xx/Include"/>
+									<listOptionValue builtIn="false" value="../Drivers/CMSIS/DSP/Include"/>
+									<listOptionValue builtIn="false" value="../Src/APP"/>
+									<listOptionValue builtIn="false" value="../Src/HWM/HAL"/>
+									<listOptionValue builtIn="false" value="../Src/APP/Events"/>
+									<listOptionValue builtIn="false" value="../Drivers/STM32F4xx_StdPeriph_Driver/inc"/>
+								</option>
+								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.c.99319756" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.c"/>
+								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.s.379613531" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.s"/>
+							</tool>
+							<tool id="fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.1591421389" name="MCU G++ Compiler" superClass="fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.733209017">
+								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.input.cpp.1057001183" superClass="fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.input.cpp"/>
+								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.input.s.1610782653" superClass="fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.input.s"/>
+							</tool>
+							<tool id="fr.ac6.managedbuild.tool.gnu.cross.c.linker.156916176" name="MCU GCC Linker" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.linker.1169371863"/>
+							<tool id="fr.ac6.managedbuild.tool.gnu.cross.cpp.linker.704961772" name="MCU G++ Linker" superClass="fr.ac6.managedbuild.tool.gnu.cross.cpp.linker.642584057"/>
+							<tool id="fr.ac6.managedbuild.tool.gnu.archiver.1340912098" name="MCU GCC Archiver" superClass="fr.ac6.managedbuild.tool.gnu.archiver.610334868"/>
+							<tool id="fr.ac6.managedbuild.tool.gnu.cross.assembler.531751362" name="MCU GCC Assembler" superClass="fr.ac6.managedbuild.tool.gnu.cross.assembler.1493951589">
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1929373576" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.assembler.input.627965032" superClass="fr.ac6.managedbuild.tool.gnu.cross.assembler.input"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
 					<sourceEntries>
 						<entry excluding="CMSIS|CMSIS/DSP|CMSIS/NN|CMSIS/RTOS2" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers/CMSIS/DSP/Include"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Src"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="startup"/>
 					</sourceEntries>
@@ -261,7 +316,6 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry excluding="CMSIS|CMSIS/DSP|CMSIS/NN|CMSIS/RTOS2" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers/CMSIS/DSP/Include"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Src"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="startup"/>
 					</sourceEntries>
