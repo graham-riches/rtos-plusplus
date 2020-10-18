@@ -1,6 +1,6 @@
 /*! \file stm32f4xx_it.h
 *
-*  \brief This file contains the headers of the interrupt handlers.
+*  \brief This file contains the definitions for some Cortex M4 interrupts.
 *
 *
 *  \author Graham Riches
