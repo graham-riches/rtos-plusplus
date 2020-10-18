@@ -36,7 +36,6 @@
 								<option defaultValue="gnu.c.optimization.level.none" id="fr.ac6.managedbuild.gnu.c.compiler.option.optimization.level.1398350032" name="Optimization Level" superClass="fr.ac6.managedbuild.gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" value="fr.ac6.managedbuild.gnu.c.optimization.level.debug" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.debugging.level.566766316" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.include.paths.219777941" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="../Drivers/STM32F4xx_HAL_Driver/Inc"/>
 									<listOptionValue builtIn="false" value="../Src/APP/Accelerometer"/>
 									<listOptionValue builtIn="false" value="../Src/APP/Debug"/>
 									<listOptionValue builtIn="false" value="../Src/APP/Audio"/>
@@ -50,9 +49,7 @@
 									<listOptionValue builtIn="false" value="../Src/HWM/ADC/"/>
 									<listOptionValue builtIn="false" value="../Src/HWM/I2S/"/>
 									<listOptionValue builtIn="false" value="../Src/HWM/USART/"/>
-									<listOptionValue builtIn="false" value="../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy"/>
 									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32F4xx/Include"/>
-									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Core/Include"/>
 									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Include"/>
 									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32F4xx/Include"/>
 									<listOptionValue builtIn="false" value="../Drivers/CMSIS/DSP/Include"/>
@@ -63,6 +60,7 @@
 								</option>
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.1946114596" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="ARM_MATH_CM4"/>
+									<listOptionValue builtIn="false" value="STM32F40XX"/>
 									<listOptionValue builtIn="false" value="USE_STDPERIPH_DRIVER"/>
 									<listOptionValue builtIn="false" value="STM32F407xx"/>
 								</option>
@@ -77,7 +75,6 @@
 								<option defaultValue="gnu.cpp.optimization.level.none" id="fr.ac6.managedbuild.gnu.cpp.compiler.option.optimization.level.241000072" name="Optimization Level" superClass="fr.ac6.managedbuild.gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="fr.ac6.managedbuild.gnu.cpp.optimization.level.debug" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.debugging.level.1331567293" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.474931385" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="../Drivers/STM32F4xx_HAL_Driver/Inc"/>
 									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Include"/>
 									<listOptionValue builtIn="false" value="../Src/APP/Accelerometer"/>
 									<listOptionValue builtIn="false" value="../Src/APP/Debug"/>
@@ -92,9 +89,8 @@
 									<listOptionValue builtIn="false" value="../Src/HWM/ADC/"/>
 									<listOptionValue builtIn="false" value="../Src/HWM/I2S/"/>
 									<listOptionValue builtIn="false" value="../Src/HWM/USART/"/>
-									<listOptionValue builtIn="false" value="../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy"/>
 									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32F4xx/Include"/>
-									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Core/Include"/>
+									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Include"/>
 									<listOptionValue builtIn="false" value="../Drivers/CMSIS/DSP/Include"/>
 									<listOptionValue builtIn="false" value="../Src/APP"/>
 									<listOptionValue builtIn="false" value="../Src/HWM/HAL"/>
@@ -103,6 +99,7 @@
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.674221133" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="ARM_MATH_CM4"/>
+									<listOptionValue builtIn="false" value="STM32F40XX"/>
 									<listOptionValue builtIn="false" value="USE_STDPERIPH_DRIVER"/>
 									<listOptionValue builtIn="false" value="STM32F407xx"/>
 								</option>
@@ -203,7 +200,7 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry excluding="CMSIS|CMSIS/DSP|CMSIS/NN|CMSIS/RTOS2" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Src"/>
+						<entry excluding="APP/Accelerometer|HWM/GPIO|HWM/DMA|HWM/ADC|HWM/SPI|HWM/I2S|HWM/I2C|HWM/USART" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Src"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="startup"/>
 					</sourceEntries>
 				</configuration>
@@ -316,7 +313,7 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry excluding="CMSIS|CMSIS/DSP|CMSIS/NN|CMSIS/RTOS2" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Src"/>
+						<entry excluding="APP/Accelerometer|HWM/GPIO|HWM/DMA|HWM/ADC|HWM/SPI|HWM/I2S|HWM/I2C|HWM/USART" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Src"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="startup"/>
 					</sourceEntries>
 				</configuration>

@@ -17,7 +17,8 @@ extern "C" {
 /********************************** Includes *******************************************/
 #include <stdint.h>
 #include "common.h"
-#include "stm32f4xx_hal.h"
+#include "stm32f4xx.h"
+#include "stm32f4xx_spi.h"
 
 /*********************************** Consts ********************************************/
 
@@ -30,7 +31,7 @@ typedef struct
 {
 	uint8_t cs;                 //!< gpio pin of the CS pin
 	GPIO_TypeDef *bank;         //!< gpio bank of the SPI CS pin
-	SPI_HandleTypeDef handler;	//!< HAL SPI handler type
+	SPI_InitTypeDef handler;	//!< HAL SPI handler type
 } SPI_handler_t;
 
 

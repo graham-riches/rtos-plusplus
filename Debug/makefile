@@ -9,23 +9,14 @@ RM := rm -rf
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include startup/subdir.mk
--include Src/HWM/USART/subdir.mk
 -include Src/HWM/System/subdir.mk
--include Src/HWM/SPI/subdir.mk
--include Src/HWM/I2S/subdir.mk
--include Src/HWM/I2C/subdir.mk
 -include Src/HWM/HAL/subdir.mk
--include Src/HWM/GPIO/subdir.mk
--include Src/HWM/DMA/subdir.mk
--include Src/HWM/ADC/subdir.mk
 -include Src/APP/Utilities/subdir.mk
 -include Src/APP/Events/subdir.mk
 -include Src/APP/Debug/subdir.mk
 -include Src/APP/Audio/subdir.mk
--include Src/APP/Accelerometer/subdir.mk
 -include Src/APP/subdir.mk
 -include Drivers/STM32F4xx_StdPeriph_Driver/src/subdir.mk
--include Drivers/STM32F4xx_HAL_Driver/Src/subdir.mk
 -include subdir.mk
 -include objects.mk
 

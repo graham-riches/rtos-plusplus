@@ -11,7 +11,7 @@
 #include "audioin.h"
 #include "string.h"
 #include "debug.h"
-#include "adc.h"
+//#include "adc.h"
 #include "arm_math.h"
 
 /*********************************** Consts ********************************************/
@@ -87,7 +87,7 @@ void AUDIOIN_init( void )
     arm_rfft_fast_init_f32( &rfft, AUDIOIN_FFT_SIZE );
 
     /* start the ADC DMA sampling */
-    ADC_startDMA( ADC_AUDIO_INPUT, (uint32_t *)&input.buffer, AUDIOIN_BUFFER_SAMPLES );
+    //ADC_startDMA( ADC_AUDIO_INPUT, (uint32_t *)&input.buffer, AUDIOIN_BUFFER_SAMPLES );
 }
 
 

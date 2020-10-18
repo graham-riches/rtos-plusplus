@@ -9,7 +9,6 @@
 
 /********************************** Includes *******************************************/
 #include "accelerometer.h"
-#include "stm32f4xx_hal.h"
 #include "spi.h"
 #include "debug.h"
 #include "board.h"
@@ -354,6 +353,6 @@ void EXTI0_IRQHandler( void )
     ACCEL_onDataUpdate( );
 
     /* clear the interrupt */
-    __HAL_GPIO_EXTI_CLEAR_IT(ACCEL_DR_INT_PIN);
+    //__HAL_GPIO_EXTI_CLEAR_IT(ACCEL_DR_INT_PIN);
     return;
 }

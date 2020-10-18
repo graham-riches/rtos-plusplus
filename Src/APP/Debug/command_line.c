@@ -16,7 +16,7 @@
 #include "usart.h"
 #include "gpio.h"
 #include "accelerometer.h"
-#include "adc.h"
+//#include "adc.h"
 #include "audioin.h"
 
 /********************************** Constants *******************************************/
@@ -121,7 +121,8 @@ static int adc_func( int argc, char *argv[] )
 
     if ( strncasecmp(argv[1], "measure", CLI_MAX_ARG_LEN) == 0 )
     {
-        uint32_t value = ADC_getValue( ADC_AUDIO_INPUT );
+        //uint32_t value = ADC_getValue( ADC_AUDIO_INPUT );
+        uint32_t value = 0;
         /* ADC resolution is set to 12B, so convert to voltage */
         float voltage = (float)((float)value/(float)4096.0 * (float)2.93588);
         DEBUG_print( "ADC Voltage: %f \n", voltage );

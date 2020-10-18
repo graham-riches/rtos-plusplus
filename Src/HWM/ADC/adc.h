@@ -14,7 +14,7 @@ extern "C" {
 #endif
 /********************************** Includes *******************************************/
 #include "common.h"
-#include "stm32f4xx_hal.h"
+#include "stm32f4xx.h"
 
 /*********************************** Consts ********************************************/
 #define ADC_DMA_BUFFER_SIZE 64

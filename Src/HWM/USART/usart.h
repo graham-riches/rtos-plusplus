@@ -13,7 +13,8 @@
 extern "C" {
 #endif
 /********************************** Includes *******************************************/
-#include "stm32f4xx_hal.h"
+#include "stm32f4xx.h"
+#include "stm32f4xx_usart.h"
 #include "utilities.h"
 #include "common.h"
 
@@ -27,7 +28,7 @@ extern "C" {
  */
 typedef struct
 {
-    UART_HandleTypeDef handler;       //!< UART HAL handler
+    USART_InitTypeDef handler;       //!< UART HAL handler
     UTILITIES_ringBuffer_t *rxBuffer; //!< pointer to a rx buffer struct for storing the data
     UTILITIES_ringBuffer_t *txBuffer; //!< pointer to a tx buffer for sending data
     volatile uint32_t *eventFlagsGroup;        //!< pointer to an events flag group to set an event on RX

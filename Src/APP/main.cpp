@@ -10,7 +10,7 @@
 #include "hal.h"
 #include "common.h"
 #include "gpio.h"
-#include "accelerometer.h"
+//#include "accelerometer.h"
 #include "event.h"
 
 
@@ -32,9 +32,6 @@
   */
 int main(void)
 {
-    /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-    HAL_Init();
-
     /* configure the project specific HAL drivers */
     HAL_moduleInit();
 
@@ -42,7 +39,7 @@ int main(void)
     EVENT_init();
 
     /* initialize the accelerometer */
-    ACCEL_init();
+    //ACCEL_init();
 
     /* main application loop */
     while (1)
