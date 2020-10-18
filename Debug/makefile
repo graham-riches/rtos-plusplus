@@ -51,8 +51,11 @@ endif
 # All Target
 all: STM32_discovery_test.elf
 
+dependents:
+	-cd D:/Code/C/stm32-discovery/Release && $(MAKE) clean all
+
 # Tool invocations
-STM32_discovery_test.elf: $(OBJS) $(USER_OBJS)
+STM32_discovery_test.elf: $(OBJS) $(USER_OBJS) D:/Code/C/stm32-discovery/Release/STM32_discovery_test.elf
 	@echo 'Building target: $@'
 	@echo 'Invoking: MCU G++ Linker'
 	arm-none-eabi-g++ -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -L"D:\Code\C\stm32-discovery\Lib" -specs=nosys.specs -specs=nano.specs -u _printf_float -T"../STM32F407VGTx_FLASH.ld" -Wl,-Map=output.map -Wl,--gc-sections -fno-exceptions -fno-rtti -lm -o "STM32_discovery_test.elf" $(OBJS) $(USER_OBJS) $(LIBS)
@@ -72,5 +75,6 @@ post-build:
 
 .PHONY: all clean dependents
 .SECONDARY: post-build
+D:/Code/C/stm32-discovery/Release/STM32_discovery_test.elf:
 
 -include ../makefile.targets

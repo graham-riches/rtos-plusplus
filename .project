@@ -3,6 +3,7 @@
 	<name>STM32_discovery_test</name>
 	<comment></comment>
 	<projects>
+		<project>STM32_discovery_test</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

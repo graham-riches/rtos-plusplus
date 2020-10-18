@@ -45,16 +45,18 @@ void HardFault_Handler( void )
 
   while (1)
   {
+      /*
       asm volatile(
-                  "tst lr, #4\t\n" /* Check EXC_RETURN[2] */
+                  "tst lr, #4\t\n" // Check EXC_RETURN[2]
                   "ite eq\t\n"
                   "mrseq r0, msp\t\n"
                   "mrsne r0, psp\t\n"
                   "b HardFault_Handler\t\n"
-                  : /* no output */
-                  : /* no input */
-                  : "r0" /* clobber */
+                  : // no output
+                  : // no input
+                  : "r0" // clobber
                   );
+      */
   }
 }
 
