@@ -31,8 +31,8 @@ extern "C" {
 #endif
 
 /* NOTE: these macros must exist in pairs! */
-#define DISABLE_INTERRUPTS() uint32_t prim = __get_PRIMASK(); __disable_irq();
-#define ENABLE_INTERRUPTS() if(!prim){__enable_irq();}
+//#define DISABLE_INTERRUPTS() uint32_t prim = __get_PRIMASK(); __disable_irq();
+//#define ENABLE_INTERRUPTS() if(!prim){__enable_irq();}
 
 /* setup arm math */
 #ifndef ARM_MATH_CM4

@@ -56,3 +56,7 @@ dkms.conf
 *.png
 *.json
 /Release/
+/Debug/
+
+# build files
+Build/**

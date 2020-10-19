@@ -31,35 +31,36 @@
 							<option id="fr.ac6.managedbuild.option.gnu.cross.fpu.1652698704" name="Floating point hardware" superClass="fr.ac6.managedbuild.option.gnu.cross.fpu" useByScannerDiscovery="false" value="fr.ac6.managedbuild.option.gnu.cross.fpu.fpv4-sp-d16" valueType="enumerated"/>
 							<option id="fr.ac6.managedbuild.option.gnu.cross.floatabi.671627713" name="Floating-point ABI" superClass="fr.ac6.managedbuild.option.gnu.cross.floatabi" useByScannerDiscovery="false" value="fr.ac6.managedbuild.option.gnu.cross.floatabi.hard" valueType="enumerated"/>
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="fr.ac6.managedbuild.targetPlatform.gnu.cross.2029024725" isAbstract="false" osList="all" superClass="fr.ac6.managedbuild.targetPlatform.gnu.cross"/>
-							<builder buildPath="${workspace_loc:/STM32_discovery_test}/Debug" id="cdt.managedbuild.builder.gnu.cross.356003342" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" superClass="cdt.managedbuild.builder.gnu.cross"/>
+							<builder buildPath="${workspace_loc:/STM32_discovery_test}/Debug" id="cdt.managedbuild.builder.gnu.cross.356003342" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="cdt.managedbuild.builder.gnu.cross"/>
 							<tool id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.1353260659" name="MCU GCC Compiler" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler">
 								<option defaultValue="gnu.c.optimization.level.none" id="fr.ac6.managedbuild.gnu.c.compiler.option.optimization.level.1398350032" name="Optimization Level" superClass="fr.ac6.managedbuild.gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" value="fr.ac6.managedbuild.gnu.c.optimization.level.debug" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.debugging.level.566766316" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.include.paths.219777941" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="../Src/APP/Accelerometer"/>
-									<listOptionValue builtIn="false" value="../Src/APP/Debug"/>
-									<listOptionValue builtIn="false" value="../Src/APP/Audio"/>
-									<listOptionValue builtIn="false" value="../Src/HWM/System"/>
-									<listOptionValue builtIn="false" value="../Src/APP/Utilities"/>
-									<listOptionValue builtIn="false" value="../Src"/>
-									<listOptionValue builtIn="false" value="../Src/HWM/SPI"/>
-									<listOptionValue builtIn="false" value="../Src/HWM/GPIO/"/>
-									<listOptionValue builtIn="false" value="../Src/HWM/I2C/"/>
-									<listOptionValue builtIn="false" value="../Src/HWM/DMA/"/>
-									<listOptionValue builtIn="false" value="../Src/HWM/ADC/"/>
-									<listOptionValue builtIn="false" value="../Src/HWM/I2S/"/>
-									<listOptionValue builtIn="false" value="../Src/HWM/USART/"/>
-									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32F4xx/Include"/>
-									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Include"/>
-									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32F4xx/Include"/>
-									<listOptionValue builtIn="false" value="../Drivers/CMSIS/DSP/Include"/>
-									<listOptionValue builtIn="false" value="../Src/APP"/>
-									<listOptionValue builtIn="false" value="../Src/HWM/HAL"/>
-									<listOptionValue builtIn="false" value="../Src/APP/Events"/>
-									<listOptionValue builtIn="false" value="../Drivers/STM32F4xx_StdPeriph_Driver/inc"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\APP\Utilities&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\APP\Events&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\APP\Debug&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\APP\Audio&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\APP\Accelerometer&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\APP&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\HWM&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\HWM\ADC&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\HWM\DMA&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\HWM\GPIO&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\HWM\HAL&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\HWM\I2C&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\HWM\I2S&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\HWM\SPI&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\HWM\System&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\HWM\USART&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\CMSIS\Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Drivers\CMSIS\Device\ST\STM32F4xx\Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Drivers\STM32F4xx_StdPeriph_Driver\inc&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Drivers\CMSIS\DSP_Lib\Include&quot;"/>
 								</option>
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.1946114596" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="ARM_MATH_CM4"/>
+									<listOptionValue builtIn="false" value="__FPU_PRESENT"/>
 									<listOptionValue builtIn="false" value="STM32F40XX"/>
 									<listOptionValue builtIn="false" value="USE_STDPERIPH_DRIVER"/>
 									<listOptionValue builtIn="false" value="STM32F407xx"/>
@@ -75,29 +76,31 @@
 								<option defaultValue="gnu.cpp.optimization.level.none" id="fr.ac6.managedbuild.gnu.cpp.compiler.option.optimization.level.241000072" name="Optimization Level" superClass="fr.ac6.managedbuild.gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="fr.ac6.managedbuild.gnu.cpp.optimization.level.debug" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.debugging.level.1331567293" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.474931385" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="../Src/APP/Accelerometer"/>
-									<listOptionValue builtIn="false" value="../Src/APP/Debug"/>
-									<listOptionValue builtIn="false" value="../Src/APP/Audio"/>
-									<listOptionValue builtIn="false" value="../Src/HWM/System"/>
-									<listOptionValue builtIn="false" value="../Src/APP/Utilities"/>
-									<listOptionValue builtIn="false" value="../Src"/>
-									<listOptionValue builtIn="false" value="../Src/HWM/SPI"/>
-									<listOptionValue builtIn="false" value="../Src/HWM/GPIO/"/>
-									<listOptionValue builtIn="false" value="../Src/HWM/I2C/"/>
-									<listOptionValue builtIn="false" value="../Src/HWM/DMA/"/>
-									<listOptionValue builtIn="false" value="../Src/HWM/ADC/"/>
-									<listOptionValue builtIn="false" value="../Src/HWM/I2S/"/>
-									<listOptionValue builtIn="false" value="../Src/HWM/USART/"/>
-									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32F4xx/Include"/>
-									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Include"/>
-									<listOptionValue builtIn="false" value="../Drivers/CMSIS/DSP/Include"/>
-									<listOptionValue builtIn="false" value="../Src/APP"/>
-									<listOptionValue builtIn="false" value="../Src/HWM/HAL"/>
-									<listOptionValue builtIn="false" value="../Src/APP/Events"/>
-									<listOptionValue builtIn="false" value="../Drivers/STM32F4xx_StdPeriph_Driver/inc"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\APP\Utilities&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\APP\Events&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\APP\Debug&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\APP\Audio&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\APP\Accelerometer&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\APP&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\HWM&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\HWM\ADC&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\HWM\DMA&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\HWM\GPIO&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\HWM\HAL&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\HWM\I2C&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\HWM\I2S&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\HWM\SPI&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\HWM\System&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Src\HWM\USART&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\CMSIS\Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Drivers\CMSIS\Device\ST\STM32F4xx\Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Drivers\STM32F4xx_StdPeriph_Driver\inc&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Code\C\stm32-discovery\Drivers\CMSIS\DSP_Lib\Include&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.674221133" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="ARM_MATH_CM4"/>
+									<listOptionValue builtIn="false" value="__FPU_PRESENT"/>
 									<listOptionValue builtIn="false" value="STM32F40XX"/>
 									<listOptionValue builtIn="false" value="USE_STDPERIPH_DRIVER"/>
 									<listOptionValue builtIn="false" value="STM32F407xx"/>
@@ -154,8 +157,9 @@
 							<option id="fr.ac6.managedbuild.option.gnu.cross.instructionSet.1463760976.1406023472" name="Instruction Set" superClass="fr.ac6.managedbuild.option.gnu.cross.instructionSet.1463760976"/>
 							<option id="fr.ac6.managedbuild.option.gnu.cross.fpu.1652698704.52805423" name="Floating point hardware" superClass="fr.ac6.managedbuild.option.gnu.cross.fpu.1652698704"/>
 							<option id="fr.ac6.managedbuild.option.gnu.cross.floatabi.671627713.12862745" name="Floating-point ABI" superClass="fr.ac6.managedbuild.option.gnu.cross.floatabi.671627713"/>
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="fr.ac6.managedbuild.targetPlatform.gnu.cross" isAbstract="false" osList="all" superClass="fr.ac6.managedbuild.targetPlatform.gnu.cross"/>
 							<tool id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.780503384" name="MCU GCC Compiler" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.1353260659">
-								<option id="gnu.c.compiler.option.include.paths.2021408934" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+								<option id="gnu.c.compiler.option.include.paths.2021408934" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="../Src/APP/Accelerometer"/>
 									<listOptionValue builtIn="false" value="../Src/APP/Debug"/>
 									<listOptionValue builtIn="false" value="../Src/APP/Audio"/>
@@ -383,6 +387,7 @@
 		<configuration configurationName="Release"/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		<scannerConfigBuildInfo instanceId="fr.ac6.managedbuild.config.gnu.cross.exe.debug.209252442;fr.ac6.managedbuild.config.gnu.cross.exe.debug.209252442.;fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.733209017;fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.input.cpp.9949207">
@@ -398,5 +403,4 @@
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 	</storageModule>
-	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cproject>
