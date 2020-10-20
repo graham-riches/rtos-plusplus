@@ -12,6 +12,7 @@
 #include "accelerometer.h"
 #include "audioin.h"
 #include "command_line.h"
+#include "board.h"
 
 /*********************************** Consts ********************************************/
 
@@ -59,9 +60,9 @@ void EVENT_init( void )
  */
 void EVENT_set( volatile uint32_t *eventFlagGroup, uint8_t bit )
 {
-    //DISABLE_INTERRUPTS();
+    DISABLE_INTERRUPTS();
     *eventFlagGroup |= (0x01U << bit);
-    //ENABLE_INTERRUPTS();
+    ENABLE_INTERRUPTS();
     return;
 }
 
@@ -73,14 +74,14 @@ void EVENT_set( volatile uint32_t *eventFlagGroup, uint8_t bit )
  */
 bool EVENT_get( volatile uint32_t *eventFlagGroup, uint8_t bit )
 {
-   //DISABLE_INTERRUPTS();
+   DISABLE_INTERRUPTS();
    bool event = ( *eventFlagGroup & (0x01U << bit) );
    /* clear the bit */
    if ( event )
    {
       *eventFlagGroup &= ~(0x01U << bit);
    }
-   //ENABLE_INTERRUPTS();
+   ENABLE_INTERRUPTS();
    return event;
 }
 

@@ -64,7 +64,7 @@ set(APP_SOURCES
 		Src/Peripherals/GPIO/gpio.c
 		Src/Peripherals/peripherals.c
 		Src/Peripherals/stm32f4xx_it.c
-		Src/Peripherals/System/system.c
+		Src/Peripherals/RCC/rcc.c
 		
 		# Start Up File
         startup/startup_stm32f407xx.s)
@@ -103,7 +103,7 @@ target_include_directories(${BINARY} PRIVATE
 		Src/Peripherals/I2C
 		Src/Peripherals/I2S
 		Src/Peripherals/SPI
-		Src/Peripherals/System
+		Src/Peripherals/RCC
 		Src/Peripherals/USART
         )
 

@@ -1,6 +1,6 @@
-/*! \file system.c
+/*! \file rcc.c
 *
-*  \brief System clock setups.
+*  \brief setup the reset and control clock for booting up the micro
 *
 *
 *  \author Graham Riches
@@ -8,7 +8,7 @@
 
 
 /********************************** Includes *******************************************/
-#include "system.h"
+#include "rcc.h"
 #include "stm32f4xx.h"
 #include "stm32f4xx_rcc.h"
 
@@ -32,27 +32,28 @@
 
 
 /****************************** Functions Prototype ************************************/
-void SYSTEM_clockConfig(void);
+void RCC_configureClocks(void);
 
 /****************************** Functions Definition ***********************************/
 /**
-* \name     SYSTEM_init
-* \brief    Initialize the system
+* \name     RCC_initialize
+* \brief    Initialize the system clocks
 *
 * \param    None
 * \retval   None
 */
-void SYSTEM_init( void )
+void RCC_initialize( void )
 {
 	/* initialize the clocks */
-	SYSTEM_clockConfig();
+	RCC_configureClocks();
 }
+
 
 /**
   * @brief System Clock Configuration
   * @retval None
   */
-void SYSTEM_clockConfig(void)
+void RCC_configureClocks(void)
 {
   volatile uint32_t StartUpCounter = 0;
   volatile uint32_t HSEStatus = 0;

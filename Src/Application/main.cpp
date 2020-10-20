@@ -49,7 +49,7 @@ int main(void)
          {
                if ( EVENT_get(&mainEventFlags, event) )
                {
-                  //EVENT_call( &mainEventHandler, event );
+                  EVENT_call( &mainEventHandler, event );
                }
          }
       }

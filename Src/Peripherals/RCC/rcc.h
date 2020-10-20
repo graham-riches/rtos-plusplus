@@ -1,13 +1,13 @@
-/*! \file system.h
+/*! \file rcc.h
 *
-*  \brief system module functions and variables declarations.
+*  \brief RCC system clock configuration
 *
 *
 *  \author Graham Riches
 */
 
-#ifndef __SYSTEM_H__
-#define __SYSTEM_H__
+#ifndef __RCC_H__
+#define __RCC_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,11 +28,11 @@ extern "C" {
 
 
 /****************************** Functions Prototype ************************************/
-void SYSTEM_init( void );
+void RCC_initialize( void );
 
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __SYSTEM_H__ */
+#endif /* __RCC_H__ */
