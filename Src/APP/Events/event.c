@@ -45,9 +45,9 @@ void EVENT_init( void )
    mainEventFlags = 0;
 
    /* assign the function pointers for the event group */
-   mainEventHandler.cbs[EVENT_USART_DEBUG_RX] = (EVENT_cb_t)&CLI_mainEventFunc;
-   mainEventHandler.cbs[EVENT_ACCEL_BUFF_FULL] = (EVENT_cb_t)&ACCEL_processDataBuffer;
-   mainEventHandler.cbs[EVENT_AUDIO_IN_BUFF_FULL] = (EVENT_cb_t)&AUDIOIN_processDataBuffer;
+   //mainEventHandler.cbs[EVENT_USART_DEBUG_RX] = (EVENT_cb_t)&CLI_mainEventFunc;
+   //mainEventHandler.cbs[EVENT_ACCEL_BUFF_FULL] = (EVENT_cb_t)&ACCEL_processDataBuffer;
+   //mainEventHandler.cbs[EVENT_AUDIO_IN_BUFF_FULL] = (EVENT_cb_t)&AUDIOIN_processDataBuffer;
    return;
 }
 
@@ -59,9 +59,9 @@ void EVENT_init( void )
  */
 void EVENT_set( volatile uint32_t *eventFlagGroup, uint8_t bit )
 {
-    DISABLE_INTERRUPTS();
+    //DISABLE_INTERRUPTS();
     *eventFlagGroup |= (0x01U << bit);
-    ENABLE_INTERRUPTS();
+    //ENABLE_INTERRUPTS();
     return;
 }
 
@@ -73,15 +73,15 @@ void EVENT_set( volatile uint32_t *eventFlagGroup, uint8_t bit )
  */
 bool EVENT_get( volatile uint32_t *eventFlagGroup, uint8_t bit )
 {
-    DISABLE_INTERRUPTS();
-    bool event = ( *eventFlagGroup & (0x01U << bit) );
-    /* clear the bit */
-    if ( event )
-    {
-        *eventFlagGroup &= ~(0x01U << bit);
-    }
-    ENABLE_INTERRUPTS();
-    return event;
+   //DISABLE_INTERRUPTS();
+   bool event = ( *eventFlagGroup & (0x01U << bit) );
+   /* clear the bit */
+   if ( event )
+   {
+      *eventFlagGroup &= ~(0x01U << bit);
+   }
+   //ENABLE_INTERRUPTS();
+   return event;
 }
 
 
@@ -92,6 +92,6 @@ bool EVENT_get( volatile uint32_t *eventFlagGroup, uint8_t bit )
  */
 void EVENT_call( EVENT_handler_t *handler, uint8_t event )
 {
-    /* call the function pointer */
-    handler->cbs[event]();
+   /* call the function pointer */
+   handler->cbs[event]();
 }
