@@ -48,8 +48,6 @@ void SYSTEM_init( void )
 	SYSTEM_clockConfig();
 }
 
-
-
 /**
   * @brief System Clock Configuration
   * @retval None

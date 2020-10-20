@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.15.3)
 
+set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
+set(CMAKE_SYSTEM_NAME Generic)
+
+
 project(stm32_discovery)
 
 enable_language(C CXX ASM)
@@ -78,7 +82,7 @@ set(APP_SOURCES
 		# Start Up File
         startup/startup_stm32f407xx.s)
 
-set(BINARY ${PROJECT_NAME}.out)
+set(BINARY ${PROJECT_NAME}.elf)
 
 add_executable(${BINARY} ${APP_SOURCES})
 
@@ -87,6 +91,7 @@ target_compile_definitions(${BINARY} PRIVATE
 		-D__FPU_PRESENT
 		-DSTM32F40XX
 		-DSTM32F407xx
+      -DSTM32F40_41xxx
 		-DUSE_STDPERIPH_DRIVER        
         )
 

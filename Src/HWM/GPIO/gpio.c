@@ -108,6 +108,7 @@ void GPIO_init( void )
 
    /*Configure GPIO pins : LD4_Pin LD3_Pin LD5_Pin LD6_Pin
                            Audio_RST_Pin */
+   GPIO_InitStruct.GPIO_Pin = LD3_Pin | LD4_Pin | LD5_Pin | LD6_Pin;
    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_OUT;
    GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
    GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
