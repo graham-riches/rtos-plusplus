@@ -7,10 +7,9 @@
 /********************************** Includes *******************************************/
 #include <string.h>
 #include "board.h"
-#include "hal.h"
+#include "peripherals.h"
 #include "common.h"
 #include "gpio.h"
-//#include "accelerometer.h"
 #include "event.h"
 
 
@@ -33,13 +32,10 @@
 int main(void)
 {
    /* configure the project specific HAL drivers */
-   HAL_moduleInit();
+   PERIPHERAL_moduleInitialize();
 
    /* initialize the events module */
    EVENT_init();
-
-   /* initialize the accelerometer */
-   //ACCEL_init();
 
    GPIO_setLED( GPIO_LED_GREEN, GPIO_LED_ON );
 

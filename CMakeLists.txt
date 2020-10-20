@@ -34,7 +34,6 @@ set(APP_SOURCES
 		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c
 		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_flash.c
 		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_flash_ramfunc.c
-		#Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_fmc.c
 		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_fmpi2c.c
 		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_fsmc.c
 		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_gpio.c
@@ -60,24 +59,12 @@ set(APP_SOURCES
 		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c
 		
 		# Application Source Files
-		Src/APP/main.cpp
-		#Src/APP/Accelerometer/accelerometer.c
-		#Src/APP/Audio/audioin.c
-		#Src/APP/Debug/command_line.c
-		#Src/APP/Debug/debug.c
-		Src/APP/Events/event.c
-		#Src/APP/Utilities/utilities.c
-		#Src/HWM/ADC/adc.c
-		#Src/HWM/DMA/dma.c
-		Src/HWM/GPIO/gpio.c
-		Src/HWM/HAL/hal.c
-		Src/HWM/HAL/stm32f4xx_it.c
-		Src/HWM/HAL/system_stm32f4xx.c
-		#Src/HWM/I2C/i2c.c
-		#Src/HWM/I2S/i2s.c
-		#Src/HWM/SPI/spi.c
-		Src/HWM/System/system.c
-		#Src/HWM/USART/usart.c
+		Src/Application/main.cpp
+		Src/Application/Events/event.c
+		Src/Peripherals/GPIO/gpio.c
+		Src/Peripherals/peripherals.c
+		Src/Peripherals/stm32f4xx_it.c
+		Src/Peripherals/System/system.c
 		
 		# Start Up File
         startup/startup_stm32f407xx.s)
@@ -102,23 +89,22 @@ target_include_directories(${BINARY} PRIVATE
 		Drivers/STM32F4xx_StdPeriph_Driver/inc
 		
 		Src
-		Src/APP
-		Src/APP/Accelerometer
-		Src/APP/Audio
-		Src/APP/Debug
-		Src/APP/Events
-		Src/APP/Utilities
+		Src/Application
+		Src/Application/Accelerometer
+		Src/Application/Audio
+		Src/Application/Debug
+		Src/Application/Events
+		Src/Application/Utilities
 		
-		Src/HWM
-		Src/HWM/ADC
-		Src/HWM/DMA
-		Src/HWM/GPIO
-		Src/HWM/HAL
-		Src/HWM/I2C
-		Src/HWM/I2S
-		Src/HWM/SPI
-		Src/HWM/System
-		Src/HWM/USART
+		Src/Peripherals
+		Src/Peripherals/ADC
+		Src/Peripherals/DMA
+		Src/Peripherals/GPIO		
+		Src/Peripherals/I2C
+		Src/Peripherals/I2S
+		Src/Peripherals/SPI
+		Src/Peripherals/System
+		Src/Peripherals/USART
         )
 
 target_compile_options(${BINARY} PRIVATE		

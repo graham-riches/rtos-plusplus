@@ -1,4 +1,4 @@
-/*! \file hal.h
+/*! \file peripherals.h
 *
 *  \brief hal module functions and variables declarations.
 *
@@ -6,8 +6,8 @@
 *  \author Graham Riches
 */
 
-#ifndef __HAL_H__
-#define __HAL_H__
+#ifndef __PERIPHERALS_H__
+#define __PERIPHERALS_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,11 +28,11 @@ extern "C" {
 
 
 /****************************** Functions Prototype ************************************/
-void HAL_moduleInit( void );
+void PERIPHERAL_moduleInitialize( void );
 
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __HAL_H__ */
+#endif /* __PERIPHERALS_H__ */

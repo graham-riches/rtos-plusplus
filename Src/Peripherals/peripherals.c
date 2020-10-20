@@ -1,6 +1,6 @@
-/*! \file hal.c
+/*! \file peripherals.c
 *
-*  \brief HAL setup and abstraction.
+*  \brief HAL setup and abstraction for all peripherals
 *
 *
 *  \author Graham Riches
@@ -8,7 +8,7 @@
 
 
 /********************************** Includes *******************************************/
-#include "hal.h"
+#include "peripherals.h"
 #include "system.h"
 #include "gpio.h"
 //#include "spi.h"
@@ -38,23 +38,18 @@
 
 /****************************** Functions Definition ***********************************/
 /**
-* \name     HAL_init
+* \name     PERIPHERAL_moculdeInitialize
 * \brief    Initialize the module variables and resources.
 *
 * \param    None
 * \retval   None
 */
-void HAL_moduleInit( void )
+void PERIPHERAL_moduleInitialize( void )
 {
 	/* Configure the system clock */
 	SYSTEM_init();
 
 	/* Initialize all configured peripherals */
 	GPIO_init();
-	//DMA_init();
-	//SPI_init();
-	//I2C_init();
-	//I2S_init();
-	//USART_init();
-	//ADC_init();
+
 }
