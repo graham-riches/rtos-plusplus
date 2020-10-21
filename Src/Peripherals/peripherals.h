@@ -9,9 +9,7 @@
 #ifndef __PERIPHERALS_H__
 #define __PERIPHERALS_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+
 /********************************** Includes *******************************************/
 #include "common.h"
 
@@ -31,8 +29,5 @@ extern "C" {
 void PERIPHERAL_moduleInitialize( void );
 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* __PERIPHERALS_H__ */

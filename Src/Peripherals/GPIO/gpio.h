@@ -9,9 +9,7 @@
 #ifndef __GPIO_H__
 #define __GPIO_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+
 /********************************** Includes *******************************************/
 #include "common.h"
 
@@ -38,6 +36,7 @@ typedef enum
     GPIO_LED_ON,
 } GPIO_LED_state_t;
 
+
 /*********************************** Macros ********************************************/
 
 
@@ -49,9 +48,5 @@ void GPIO_init( void );
 void GPIO_setLED( GPIO_LED_t led, GPIO_LED_state_t state );
 
 
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* __GPIO_H__ */
