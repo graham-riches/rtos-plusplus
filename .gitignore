@@ -54,4 +54,8 @@ dkms.conf
 # data files
 *.csv
 *.png
-*.json
+/Release/
+/Debug/
+
+# build files
+Build/**

@@ -1,0 +1,25 @@
+{
+   "version": "2.0.0",
+   "tasks": [
+      {
+         "label": "cmake",
+         "type": "shell",
+         "options": {
+            "cwd": "${workspaceRoot}"
+         },
+         "command": "cmake",
+         "args": [
+            "${workspaceRoot}",
+            "-G",
+            "\"MinGW Makefiles\"",
+            "--config Debug",
+            "--target all",
+         ],
+         "problemMatcher": [],
+         "group": {
+            "kind": "build",
+            "isDefault": true
+         }
+      }
+   ]
+}
