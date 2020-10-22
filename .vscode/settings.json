@@ -1,0 +1,18 @@
+{
+   "files.associations": {
+      "type_traits": "cpp",
+      "array": "cpp",
+      "compare": "cpp",
+      "concepts": "cpp",
+      "cstddef": "cpp",
+      "cstdlib": "cpp",
+      "cstring": "cpp",
+      "exception": "cpp",
+      "initializer_list": "cpp",
+      "new": "cpp",
+      "utility": "cpp",
+      "xstddef": "cpp",
+      "xtr1common": "cpp",
+      "xutility": "cpp"
+   }
+}
