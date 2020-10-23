@@ -17,7 +17,6 @@
 #define GPIO_LED_BANK GPIOD
 
 
-
 /************************************ Types ********************************************/
 
 
@@ -28,7 +27,6 @@
 
 
 /******************************** Local Variables **************************************/
-static const uint16_t ledPins[GPIO_TOTAL_LEDS] = { GPIO_Pin_12, GPIO_Pin_13, GPIO_Pin_14, GPIO_Pin_15 };
 
 /****************************** Functions Prototype ************************************/
 
