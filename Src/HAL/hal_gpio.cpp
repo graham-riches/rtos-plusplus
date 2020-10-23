@@ -46,8 +46,6 @@ void initialize_pin(
          /* set the pin mode */
          GPIOx->MODER &= ~( CLEAR_MODE_REGISTER_MASK << ( 2 * i ) );
          GPIOx->MODER |= ( static_cast<uint32_t>( mode ) << ( 2 * i ) );
-         uint32_t test = ( static_cast<uint32_t>( mode ) << ( 2 * i ) );
-         GPIOx->MODER |= test << ( 2* i);
 
          /* set the pin port type (push_pull/open_drain) */
          GPIOx->OTYPER &= ~( CLEAR_PORT_TYPE_REGISTER_MASK << i );
