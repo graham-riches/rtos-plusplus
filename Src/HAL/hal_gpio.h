@@ -123,32 +123,27 @@ enum class Pins : unsigned
    all = 0xFFFF
 };
 
-/* template specialization to enable bitwise operator overloads for pins enumeration */
-template<>
-struct EnableBitwiseOperators<Pins>
+/**
+ * \brief class type for a GPIO output pin
+ * 
+ */
+class OutputPin
 {
-   static const bool enable = true;
+   private:
+      GPIO_TypeDef *bank;
+      Pins pin;
+      Speed speed;
+      PullMode pull_mode;
+   public:
+      OutputPin( GPIO_TypeDef *bank, Pins pin, Speed speed, PullMode pull_mode, OutputMode output_mode );
+
+      void set( bool high );
 };
 
-/**
- * \brief configuration structure for a pin/pins       
- */
-typedef struct
-{
-   Pins pins;
-   PinMode mode;
-   OutputMode output_mode;
-   Speed speed;
-   PullMode pull_mode;
-   AlternateMode alternate_mode;   
-} PinConfiguration;
 
 /*********************************** Macros ********************************************/
 
 /****************************** Function Declarations ************************************/
-void initialize_pin( GPIO_TypeDef *GPIOx, PinConfiguration configuration );
-void set_pin()
-
 
 
 };  // namespace GPIO

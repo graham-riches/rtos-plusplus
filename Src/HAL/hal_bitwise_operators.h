@@ -14,6 +14,10 @@
 #include <type_traits>
 
 
+namespace HAL
+{
+
+
 /********************************** Templates *******************************************/
 /**
  * \brief template to enable/disable bitwise operator overloading for a scoped enum. Default is Disabled
@@ -56,6 +60,6 @@ typename std::enable_if_t<EnableBitwiseOperators<Enum>::enable, Enum> operator &
    return static_cast<underlying_type>(first) & static_cast<underlying_type>(second);
 }
 
-
+}; // namespace HAL
 
 #endif /* __HAL_BITWISE_OPS_H__ */

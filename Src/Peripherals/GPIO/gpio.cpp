@@ -43,21 +43,23 @@ static const uint16_t ledPins[GPIO_TOTAL_LEDS] = { GPIO_Pin_12, GPIO_Pin_13, GPI
 */
 void GPIO_init( void )
 {
-   using namespace HAL;
-
    /* GPIO Ports Clock Enable */
    /* TODO: remove once the HAL RCC code is built out */
-   RCC_AHB1PeriphClockCmd( RCC_AHB1Periph_GPIOA, ENABLE );
+   RCC_AHB1PeriphClockCmd( RCC_AHB1Periph_GPIOD, ENABLE );
 
 
    /* configure the pins */
-   GPIO::PinConfiguration configuration;
-   configuration.mode = GPIO::PinMode::output;
-   configuration.output_mode = GPIO::OutputMode::push_pull;
-   configuration.pull_mode = GPIO::PullMode::none;
-   configuration.speed = GPIO::Speed::low;
-   configuration.pins = static_cast<GPIO::Pins>( LD3_Pin | LD4_Pin | LD5_Pin | LD6_Pin );
-   GPIO::initialize_pin( GPIO_LED_BANK, configuration );
-   
+   using namespace HAL::GPIO;
+   static OutputPin green_led( GPIO_LED_BANK, Pins::pin_12, Speed::low, PullMode::pull_down, OutputMode::push_pull );
+   static OutputPin orange_led( GPIO_LED_BANK, Pins::pin_13, Speed::low, PullMode::pull_down, OutputMode::push_pull );
+   static OutputPin red_led( GPIO_LED_BANK, Pins::pin_14, Speed::low, PullMode::pull_down, OutputMode::push_pull );
+   static OutputPin blue_led( GPIO_LED_BANK, Pins::pin_15, Speed::low, PullMode::pull_down, OutputMode::push_pull );
+
+   green_led.set( true );
+   orange_led.set( true );
+   red_led.set( true );
+   blue_led.set( true );
+
+
    return;
 }

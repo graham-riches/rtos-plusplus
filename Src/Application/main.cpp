@@ -37,8 +37,6 @@ int main(void)
    /* initialize the events module */
    EVENT_init();
 
-   GPIO_setLED( GPIO_LED_GREEN, GPIO_LED_ON );
-
    /* main application loop */
    while (1)
    {
