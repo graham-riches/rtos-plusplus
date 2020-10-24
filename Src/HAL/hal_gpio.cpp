@@ -1,4 +1,4 @@
-/*! \file gpio_gpio.cpp
+/*! \file hal_gpio.cpp
 *
 *  \brief HAL++ gpio abstraction layer
 *
@@ -8,7 +8,6 @@
 
 /********************************** Includes *******************************************/
 #include "hal_gpio.h"
-#include <array>
 
 namespace HAL
 {
