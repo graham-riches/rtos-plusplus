@@ -62,6 +62,7 @@ set(APP_SOURCES
       
       # HAL++ source files
       Src/HAL/hal_gpio.cpp
+      Src/HAL/hal_rcc.cpp
 		
 		# Application Source Files
 		Src/Application/main.cpp
@@ -83,7 +84,7 @@ target_compile_definitions(${BINARY} PRIVATE
 		-D__FPU_PRESENT
 		-DSTM32F40XX
 		-DSTM32F407xx
-        -DSTM32F40_41xxx
+      -DSTM32F40_41xxx
 		-DUSE_STDPERIPH_DRIVER        
         )
 
@@ -94,7 +95,7 @@ target_include_directories(${BINARY} PRIVATE
 		Drivers/STM32F4xx_StdPeriph_Driver/inc
 		
       Src
-      Src/HAL
+      Src/HAL      
 		Src/Application
 		Src/Application/Accelerometer
 		Src/Application/Audio
@@ -121,7 +122,7 @@ target_compile_options(${BINARY} PRIVATE
         -fdata-sections
         -ffunction-sections
         -fno-exceptions
-		  -Og
+		  -O0
 		  -g3
         -Wall
 		  -Wextra

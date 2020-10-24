@@ -33,7 +33,7 @@ constexpr HAL::ResetControlClock::PLLSource RCC_PLL_SOURCE = HAL::ResetControlCl
 
 
 /****************************** Functions Prototype ************************************/
-void system_bootup( void );
+void PERIPHERAL_systemBoot( void );
 
 /****************************** Functions Definition ***********************************/
 /**
@@ -45,10 +45,9 @@ void system_bootup( void );
 */
 void PERIPHERAL_moduleInitialize( void )
 {
-   
+   /* boot-up */
+   PERIPHERAL_systemBoot( );
 
-	/* Configure the system clocks */
-	RCC_initialize();
 
 	/* Initialize all configured peripherals */
 	GPIO_init();
@@ -65,7 +64,7 @@ void PERIPHERAL_moduleInitialize( void )
  *    - configure the flash prefetch, etc.
  *    - set the main system clock to be driven by the PLL
  */
-void system_bootup( void )
+void PERIPHERAL_systemBoot( void )
 {
    using namespace HAL;
    
@@ -76,8 +75,13 @@ void system_bootup( void )
    volatile bool hse_ready = false;  
    do
    {
-      hse_ready = static_cast<bool>( ResetControlClock::get_control_register( ResetControlClock::RCCRegister::hse_on ) );
+      hse_ready = static_cast<bool>( ResetControlClock::get_control_register( ResetControlClock::RCCRegister::hse_ready ) );
    } while ( hse_ready == false );
+
+   /* TODO: power management module here */
+   /* Select regulator voltage output Scale 1 mode */
+    RCC->APB1ENR |= RCC_APB1ENR_PWREN;
+    PWR->CR |= PWR_CR_VOS;
 
    /* setup the clock prescalers */
    ResetControlClock::configure_ahb_clock( ResetControlClock::AHBPrescaler::prescaler_none );
@@ -97,10 +101,10 @@ void system_bootup( void )
       pll_ready = static_cast<bool>( ResetControlClock::get_control_register( ResetControlClock::RCCRegister::main_pll_ready ) );
    } while ( pll_ready == false );
 
+   /* TODO: flash module here */
+   /* Configure Flash prefetch, Instruction cache, Data cache and wait state */
+    FLASH->ACR = FLASH_ACR_PRFTEN | FLASH_ACR_ICEN | FLASH_ACR_DCEN | FLASH_ACR_LATENCY_5WS;
+
    /* set the system clock source */
    ResetControlClock::set_system_clock_source( ResetControlClock::SystemClockSource::phase_locked_loop );
-   
-
-   
-
 }

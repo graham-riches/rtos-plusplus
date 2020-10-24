@@ -23,7 +23,7 @@ namespace ResetControlClock
  */
 uint8_t get_control_register( RCCRegister reg )
 {
-   uint8_t mask = 0;
+   uint32_t mask = 0;
 
    switch ( reg )
    {
@@ -34,26 +34,26 @@ uint8_t get_control_register( RCCRegister reg )
       case RCCRegister::hse_ready:
       case RCCRegister::hse_bypass:
       case RCCRegister::clock_security:
-      case RCCRegister::main_pll:
+      case RCCRegister::main_pll_on:
       case RCCRegister::main_pll_ready:
       case RCCRegister::i2s_pll_on:
       case RCCRegister::i2s_pll_ready:
-         mask = ( 0x01 << static_cast<uint8_t>( reg ) );         
+         mask = static_cast<uint32_t>( ( 0x01u << static_cast<uint32_t>( reg ) ));         
          break;
 
       case RCCRegister::hsi_trim:
-         mask = ( 0xFF << static_cast<uint8_t>( reg ) );         
+         mask = static_cast<uint32_t>( ( 0xFFu << static_cast<uint32_t>( reg ) ) );         
          break;
 
       case RCCRegister::hsi_cal:
-         mask = ( 0x1F << static_cast<uint8_t>( reg ) );
+         mask = static_cast<uint32_t>( ( 0x1Fu << static_cast<uint32_t>( reg ) ) );
          break;
 
       default:         
          break;
    }
-
-   uint8_t value = RCC->CR & ( mask << static_cast<uint8_t>( reg ) );
+   
+   uint8_t value = static_cast<uint8_t>( (RCC->CR & mask) >> static_cast<uint8_t>( reg ) );
    return value;
 }
 
@@ -111,7 +111,7 @@ void set_system_clock_source( SystemClockSource source )
    /* wait until the clock source status register matches the selected clock */
    while ( (RCC->CFGR & clock_source_mask) != static_cast<uint32_t>( source) )
    {
-      
+
    }
 }
 
