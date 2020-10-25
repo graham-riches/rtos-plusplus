@@ -12,7 +12,6 @@
 #include "hal_flash.h"
 #include "hal_power.h"
 #include "hal_rcc.h"
-#include "rcc.h"
 
 
 /*********************************** Consts ********************************************/
