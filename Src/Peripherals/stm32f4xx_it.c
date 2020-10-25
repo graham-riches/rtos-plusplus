@@ -1,6 +1,6 @@
 /*! \file stm32f4xx_it.c
 *
-*  \brief This file contains the ISR routines
+*  \brief This file contains the ISR routines for the M4 exception interrupts
 *
 *
 *  \author Graham Riches

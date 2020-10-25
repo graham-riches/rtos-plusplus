@@ -66,7 +66,7 @@ void initialize_pin(
 }
 
 /**
- * \brief Construct a new Output Pin:: Output Pin object
+ * \brief initialize a gpio output pin object
  * 
  * \param bank the GPIO bank of the pin i.e. GPIOA, GPIOB, etc.
  * \param pin the pin number 
@@ -74,7 +74,7 @@ void initialize_pin(
  * \param pull_mode pullup, pulldown, etc.
  * \param output_mode open drain, etc.
  */
-OutputPin::OutputPin( GPIO_TypeDef *bank, Pins pin, Speed speed, PullMode pull_mode, OutputMode output_mode )
+void OutputPin::initialize( GPIO_TypeDef *bank, Pins pin, Speed speed, PullMode pull_mode, OutputMode output_mode )
 {
    this->bank = bank;
    this->pin = pin;

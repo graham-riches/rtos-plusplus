@@ -21,11 +21,14 @@ set(APP_SOURCES
       Src/HAL/hal_rcc.cpp
       Src/HAL/hal_flash.cpp
       Src/HAL/hal_power.cpp
+      Src/HAL/hal_usart.cpp
 		
 		# Application Source Files
 		Src/Application/main.cpp
-		Src/Application/Events/event.c
-		Src/Peripherals/GPIO/gpio.cpp
+      Src/Application/Events/event.c
+      Src/Application/Utilities/ring_buffer.cpp
+      Src/Peripherals/GPIO/gpio.cpp
+      Src/Peripherals/USART/usart.cpp
 		Src/Peripherals/peripherals.cpp
 		Src/Peripherals/stm32f4xx_it.c
 		
@@ -58,13 +61,7 @@ target_include_directories(${BINARY} PRIVATE
 		Src/Application/Utilities
 		
 		Src/Peripherals
-		Src/Peripherals/ADC
-		Src/Peripherals/DMA
 		Src/Peripherals/GPIO		
-		Src/Peripherals/I2C
-		Src/Peripherals/I2S
-		Src/Peripherals/SPI
-		Src/Peripherals/RCC
 		Src/Peripherals/USART
         )
 

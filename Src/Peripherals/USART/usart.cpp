@@ -1,18 +1,15 @@
-/*! \file gpio.h
+/*! \file usart.c
 *
-*  \brief gpio module functions and variables declarations.
+*  \brief setup the usart peripherals in the application.
 *
 *
 *  \author Graham Riches
 */
 
-#ifndef __GPIO_H__
-#define __GPIO_H__
-
 
 /********************************** Includes *******************************************/
-#include "common.h"
-#include "hal_gpio.h"
+#include "usart.h"
+#include "hal_usart.h"
 
 /*********************************** Consts ********************************************/
 
@@ -24,14 +21,23 @@
 
 
 /******************************* Global Variables **************************************/
-/* declare the LED pins */
-extern HAL::GPIO::OutputPin green_led;
-extern HAL::GPIO::OutputPin orange_led;
-extern HAL::GPIO::OutputPin red_led;
-extern HAL::GPIO::OutputPin blue_led;
+
+
+/******************************** Local Variables **************************************/
+
 
 /****************************** Functions Prototype ************************************/
-void GPIO_initialize( void );
 
 
-#endif /* __GPIO_H__ */
+/****************************** Functions Definition ***********************************/
+/**
+* \brief    Initialize the module variables and resources.
+*
+* \param    None
+* \retval   None
+*/
+void USART_initialize( void )
+{
+   /* Initialize the module here*/
+
+}

@@ -135,7 +135,9 @@ class OutputPin
    PullMode pull_mode;
 
    public:
+   OutputPin() {} //!< default constructor
    OutputPin( GPIO_TypeDef *bank, Pins pin, Speed speed, PullMode pull_mode, OutputMode output_mode );
+   void initialize( GPIO_TypeDef *bank, Pins pin, Speed speed, PullMode pull_mode, OutputMode output_mode );
 
    void set( bool high );
 };

@@ -10,7 +10,6 @@
 /********************************** Includes *******************************************/
 #include "gpio.h"
 #include "board.h"
-#include "hal_gpio.h"
 #include "hal_rcc.h"
 
 /*********************************** Consts ********************************************/
@@ -24,7 +23,10 @@
 
 
 /******************************* Global Variables **************************************/
-
+HAL::GPIO::OutputPin green_led;
+HAL::GPIO::OutputPin orange_led;
+HAL::GPIO::OutputPin red_led;
+HAL::GPIO::OutputPin blue_led;
 
 /******************************** Local Variables **************************************/
 
@@ -33,24 +35,23 @@
 
 /****************************** Functions Definition ***********************************/
 /**
-* \name     GPIO_init
 * \brief    Initialize the module variables and resources.
 *
 * \param    None
 * \retval   None
 */
-void GPIO_init( void )
+void GPIO_initialize( void )
 {
    using namespace HAL;
 
    /* enable the peripheral clock */
    ResetControlClock::set_ahb1_clock( ResetControlClock::AHB1Clocks::gpio_d, true );
 
-   /* configure the pins */   
-   static GPIO::OutputPin green_led( GPIO_LED_BANK, GPIO::Pins::pin_12, GPIO::Speed::low, GPIO::PullMode::pull_down, GPIO::OutputMode::push_pull );
-   static GPIO::OutputPin orange_led( GPIO_LED_BANK, GPIO::Pins::pin_13, GPIO::Speed::low, GPIO::PullMode::pull_down, GPIO::OutputMode::push_pull );
-   static GPIO::OutputPin red_led( GPIO_LED_BANK, GPIO::Pins::pin_14, GPIO::Speed::low, GPIO::PullMode::pull_down, GPIO::OutputMode::push_pull );
-   static GPIO::OutputPin blue_led( GPIO_LED_BANK, GPIO::Pins::pin_15, GPIO::Speed::low, GPIO::PullMode::pull_down, GPIO::OutputMode::push_pull );
+   /* configure the pins */
+   green_led.initialize( GPIO_LED_BANK, GPIO::Pins::pin_12, GPIO::Speed::low, GPIO::PullMode::pull_down, GPIO::OutputMode::push_pull );
+   orange_led.initialize( GPIO_LED_BANK, GPIO::Pins::pin_13, GPIO::Speed::low, GPIO::PullMode::pull_down, GPIO::OutputMode::push_pull );
+   red_led.initialize( GPIO_LED_BANK, GPIO::Pins::pin_14, GPIO::Speed::low, GPIO::PullMode::pull_down, GPIO::OutputMode::push_pull );
+   blue_led.initialize( GPIO_LED_BANK, GPIO::Pins::pin_15, GPIO::Speed::low, GPIO::PullMode::pull_down, GPIO::OutputMode::push_pull );
 
    green_led.set( true );
    orange_led.set( true );

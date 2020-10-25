@@ -31,7 +31,7 @@
   */
 int main(void)
 {
-   /* configure the project specific HAL drivers */
+   /* configure the project specific HAL drivers and bootup the chip */
    PERIPHERAL_moduleInitialize();
 
    /* initialize the events module */

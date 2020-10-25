@@ -43,11 +43,11 @@ void PERIPHERAL_systemBoot( void );
 */
 void PERIPHERAL_moduleInitialize( void )
 {
-   /* boot-up */
+   /* boot-up the system */
    PERIPHERAL_systemBoot( );
 
    /* Initialize all configured peripherals */
-   GPIO_init( );
+   GPIO_initialize( );
 }
 
 /**
