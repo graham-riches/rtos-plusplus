@@ -9,9 +9,9 @@
 
 /********************************** Includes *******************************************/
 #include "gpio.h"
-#include "stm32f4xx_gpio.h"
 #include "board.h"
 #include "hal_gpio.h"
+#include "hal_rcc.h"
 
 /*********************************** Consts ********************************************/
 #define GPIO_LED_BANK GPIOD
@@ -41,17 +41,16 @@
 */
 void GPIO_init( void )
 {
-   /* GPIO Ports Clock Enable */
-   /* TODO: remove once the HAL RCC code is built out */
-   RCC_AHB1PeriphClockCmd( RCC_AHB1Periph_GPIOD, ENABLE );
+   using namespace HAL;
 
+   /* enable the peripheral clock */
+   ResetControlClock::set_ahb1_clock( ResetControlClock::AHB1Clocks::gpio_d, true );
 
-   /* configure the pins */
-   using namespace HAL::GPIO;
-   static OutputPin green_led( GPIO_LED_BANK, Pins::pin_12, Speed::low, PullMode::pull_down, OutputMode::push_pull );
-   static OutputPin orange_led( GPIO_LED_BANK, Pins::pin_13, Speed::low, PullMode::pull_down, OutputMode::push_pull );
-   static OutputPin red_led( GPIO_LED_BANK, Pins::pin_14, Speed::low, PullMode::pull_down, OutputMode::push_pull );
-   static OutputPin blue_led( GPIO_LED_BANK, Pins::pin_15, Speed::low, PullMode::pull_down, OutputMode::push_pull );
+   /* configure the pins */   
+   static GPIO::OutputPin green_led( GPIO_LED_BANK, GPIO::Pins::pin_12, GPIO::Speed::low, GPIO::PullMode::pull_down, GPIO::OutputMode::push_pull );
+   static GPIO::OutputPin orange_led( GPIO_LED_BANK, GPIO::Pins::pin_13, GPIO::Speed::low, GPIO::PullMode::pull_down, GPIO::OutputMode::push_pull );
+   static GPIO::OutputPin red_led( GPIO_LED_BANK, GPIO::Pins::pin_14, GPIO::Speed::low, GPIO::PullMode::pull_down, GPIO::OutputMode::push_pull );
+   static GPIO::OutputPin blue_led( GPIO_LED_BANK, GPIO::Pins::pin_15, GPIO::Speed::low, GPIO::PullMode::pull_down, GPIO::OutputMode::push_pull );
 
    green_led.set( true );
    orange_led.set( true );

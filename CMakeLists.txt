@@ -15,54 +15,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 
-set(APP_SOURCES 		
-		# Standard Peripheral Library Files
-		Drivers/STM32F4xx_StdPeriph_Driver/src/misc.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_adc.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_can.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cec.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_crc.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_aes.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_des.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_dac.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_dbgmcu.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_dcmi.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_dfsdm.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_dma.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_dma2d.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_dsi.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_flash.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_flash_ramfunc.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_fmpi2c.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_fsmc.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_gpio.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_hash.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_hash_md5.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_hash_sha1.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_i2c.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_iwdg.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_lptim.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_ltdc.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_pwr.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_qspi.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rcc.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rtc.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_sai.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_sdio.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_spdifrx.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_spi.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_syscfg.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_tim.c
-		Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_usart.c
-      Drivers/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c
-      
+set(APP_SOURCES 		      
       # HAL++ source files
       Src/HAL/hal_gpio.cpp
       Src/HAL/hal_rcc.cpp
+      Src/HAL/hal_flash.cpp
+      Src/HAL/hal_power.cpp
 		
 		# Application Source Files
 		Src/Application/main.cpp
@@ -70,7 +28,6 @@ set(APP_SOURCES
 		Src/Peripherals/GPIO/gpio.cpp
 		Src/Peripherals/peripherals.cpp
 		Src/Peripherals/stm32f4xx_it.c
-		Src/Peripherals/RCC/rcc.c
 		
 		# Start Up File
         startup/startup_stm32f407xx.s)
@@ -81,18 +38,15 @@ add_executable(${BINARY} ${APP_SOURCES})
 
 target_compile_definitions(${BINARY} PRIVATE
 		-DARM_MATH_CM4
-		-D__FPU_PRESENT
 		-DSTM32F40XX
 		-DSTM32F407xx
-      -DSTM32F40_41xxx
-		-DUSE_STDPERIPH_DRIVER        
+      -DSTM32F40_41xxx    
         )
 
 target_include_directories(${BINARY} PRIVATE
-        Drivers/CMSIS/Device/ST/STM32F4xx/Include
+      Drivers/CMSIS/Device/ST/STM32F4xx/Include
 		Drivers/CMSIS/Include
 		Drivers/CMSIS/DSP_Lib/Include
-		Drivers/STM32F4xx_StdPeriph_Driver/inc
 		
       Src
       Src/HAL      

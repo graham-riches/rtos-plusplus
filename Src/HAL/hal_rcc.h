@@ -24,7 +24,6 @@ namespace ResetControlClock
 /************************************ Types ********************************************/
 /**
  * \brief main control registers bit offsets for the reset and control clock
- * 
  */
 enum class RCCRegister : unsigned
 {
@@ -44,7 +43,6 @@ enum class RCCRegister : unsigned
 
 /**
  * \brief enumeration of register bit offsets for the PLLCFGR register
- * 
  */
 enum class PLLRegister : unsigned
 {
@@ -57,7 +55,6 @@ enum class PLLRegister : unsigned
 
 /**
  * \brief clock source selector for the main PLL
- * 
  */
 enum class PLLSource : unsigned
 {
@@ -67,7 +64,6 @@ enum class PLLSource : unsigned
 
 /**
  * \brief prescaler modes for the main phase locked loop output divisor (PLL_P)
- * 
  */
 enum class PLLOutputPrescaler : unsigned
 {
@@ -79,7 +75,6 @@ enum class PLLOutputPrescaler : unsigned
 
 /**
  * \brief enumeration of register bit offsets for the RCC configuration register
- * 
  */
 enum class ConfigurationRegister : unsigned
 {
@@ -98,7 +93,6 @@ enum class ConfigurationRegister : unsigned
 
 /**
  * \brief enumeration of system clock sources
- * 
  */
 enum class SystemClockSource : unsigned
 {
@@ -110,7 +104,6 @@ enum class SystemClockSource : unsigned
 
 /**
  * \brief prescalers for the high speed bus/system clock
- * 
  */
 enum class AHBPrescaler : unsigned
 {
@@ -127,7 +120,6 @@ enum class AHBPrescaler : unsigned
 
 /**
  * \brief prescalers for the peripheral busses
- * 
  */
 enum class APBPrescaler : unsigned
 {
@@ -136,6 +128,103 @@ enum class APBPrescaler : unsigned
    prescaler_4 = 0b101,
    prescaler_8 = 0b110,
    prescaler_16 = 0b111,
+};
+
+/**
+ * \brief enumeration of bit offsets for ahb1 clocks
+ */
+enum class AHB1Clocks : unsigned
+{
+   gpio_a = 0,
+   gpio_b = 1,
+   gpio_c = 2,
+   gpio_d = 3,
+   gpio_e = 4,
+   gpio_f = 5,
+   gpio_g = 6,
+   gpio_h = 7,
+   gpio_i = 8,
+   crc = 12,
+   backup_sram = 18,
+   ccm_data_ram = 20,
+   dma_1 = 21,
+   dma_2 = 22,
+   ethernet_mac = 25,
+   ethernet_mac_tx = 26,
+   ethernet_mac_rx = 27,
+   ethernet_ptp = 28,
+   usb_otg = 29,
+   usb_otg_hsulpi = 30
+};
+
+/**
+ * \brief enumeration of bit offsets for ahb2 clocks
+ */
+enum class AHB2Clocks : unsigned 
+{
+   digital_camera_interface = 0,
+   cryptography = 4,
+   hash = 5,
+   random_number_generator = 6,
+   usb_otg_fs = 7,
+};
+
+/**
+ * \brief enumeration of bit offsets for ahb2 clocks
+ */
+enum class AHB3Clocks : unsigned 
+{
+   static_memory_controller = 0,
+};
+
+/**
+ * \brief enumeration of bit offsets for apb1 clocks
+ */
+enum class APB1Clocks : unsigned 
+{
+   timer_2 = 0,
+   timer_3 = 1,
+   timer_4 = 2,
+   timer_5 = 3,
+   timer_6 = 4,
+   timer_7 = 5,
+   timer_12 = 6,
+   timer_13 = 7,
+   timer_14 = 8,
+   window_watchdog = 11,
+   spi_2 = 14,
+   spi_3 = 15,
+   usart_2 = 17,
+   usart_3 = 18,
+   uart_4 = 19,
+   uart_5 = 20,
+   i2c_1 = 21,
+   i2c_2 = 22,
+   i2c_3 = 23,
+   can_1 = 25,
+   can_2 = 26,
+   power_management = 28,
+   dac = 29,
+};
+
+/**
+ * \brief enumeration of bit offsets for apb2 clocks
+ */
+enum class APB2Clocks : unsigned
+{
+   timer_1 = 0,
+   timer_8 = 1,
+   usart_1 = 4,
+   usart_6 = 5,
+   adc_1 = 8,
+   adc_2 = 9,
+   adc_3 = 10,
+   sdio = 11,
+   spi_1 = 12,
+   sys_config = 14,
+   timer_9 = 16,
+   timer_10 = 17,
+   timer_11 = 18
 };
 
 /*********************************** Macros ********************************************/
@@ -148,6 +237,12 @@ void    set_system_clock_source( SystemClockSource source );
 void    configure_ahb_clock( AHBPrescaler prescaler );
 void    configure_apb2_clock( APBPrescaler prescaler );
 void    configure_apb1_clock( APBPrescaler prescaler );
+void    set_ahb1_clock( AHB1Clocks clock, bool enable );
+void    set_ahb2_clock( AHB2Clocks clock, bool enable );
+void    set_ahb3_clock( AHB3Clocks clock, bool enable );
+void    set_apb1_clock( APB1Clocks clock, bool enable );
+void    set_apb2_clock( APB2Clocks clock, bool enable );
+
 
 
 };  // namespace ResetControlClock

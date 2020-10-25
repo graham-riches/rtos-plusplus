@@ -29,7 +29,7 @@ uint8_t get_control_register( RCCRegister reg )
    {
       /* handle all the single bit registers */
       case RCCRegister::hsi_on:
-      case RCCRegister::hsi_ready:      
+      case RCCRegister::hsi_ready:
       case RCCRegister::hse_on:
       case RCCRegister::hse_ready:
       case RCCRegister::hse_bypass:
@@ -38,25 +38,24 @@ uint8_t get_control_register( RCCRegister reg )
       case RCCRegister::main_pll_ready:
       case RCCRegister::i2s_pll_on:
       case RCCRegister::i2s_pll_ready:
-         mask = static_cast<uint32_t>( ( 0x01u << static_cast<uint32_t>( reg ) ));         
+         mask = static_cast<uint32_t>( ( 0x01u << static_cast<uint32_t>( reg ) ) );
          break;
 
       case RCCRegister::hsi_trim:
-         mask = static_cast<uint32_t>( ( 0xFFu << static_cast<uint32_t>( reg ) ) );         
+         mask = static_cast<uint32_t>( ( 0xFFu << static_cast<uint32_t>( reg ) ) );
          break;
 
       case RCCRegister::hsi_cal:
          mask = static_cast<uint32_t>( ( 0x1Fu << static_cast<uint32_t>( reg ) ) );
          break;
 
-      default:         
+      default:
          break;
    }
-   
-   uint8_t value = static_cast<uint8_t>( (RCC->CR & mask) >> static_cast<uint8_t>( reg ) );
+
+   uint8_t value = static_cast<uint8_t>( ( RCC->CR & mask ) >> static_cast<uint8_t>( reg ) );
    return value;
 }
-
 
 /**
  * \brief Set the control register object
@@ -69,13 +68,13 @@ void set_control_register( RCCRegister reg, uint8_t value )
    RCC->CR |= ( value << static_cast<uint8_t>( reg ) );
 }
 
-
 /**
  * \brief setup the main phase-locked loop
  * 
  * \param pll_config the configuration
  */
-void configure_main_pll( PLLSource clock_source, uint8_t pll_m, uint16_t pll_n, PLLOutputPrescaler pll_p, uint8_t pll_q )
+void configure_main_pll(
+   PLLSource clock_source, uint8_t pll_m, uint16_t pll_n, PLLOutputPrescaler pll_p, uint8_t pll_q )
 {
    /* set the phase locked loop clock source */
    RCC->PLLCFGR |= ( static_cast<uint8_t>( clock_source ) << static_cast<uint8_t>( PLLRegister::pll_source ) );
@@ -91,9 +90,7 @@ void configure_main_pll( PLLSource clock_source, uint8_t pll_m, uint16_t pll_n, 
 
    /* set the output for the 48 MHz clock source: PLL_Q */
    RCC->PLLCFGR |= ( pll_q << static_cast<uint8_t>( PLLRegister::pll_q ) );
-
 }
-
 
 /**
  * \brief Set the system clock
@@ -106,15 +103,13 @@ void set_system_clock_source( SystemClockSource source )
    uint32_t clock_source_mask = 0b11;
 
    RCC->CFGR &= ~( clock_source_mask );
-   RCC->CFGR |= ( static_cast<uint8_t>( source ) << static_cast<uint8_t>( ConfigurationRegister::system_clock_source ) );
+   RCC->CFGR |=
+      ( static_cast<uint8_t>( source ) << static_cast<uint8_t>( ConfigurationRegister::system_clock_source ) );
 
    /* wait until the clock source status register matches the selected clock */
-   while ( (RCC->CFGR & clock_source_mask) != static_cast<uint32_t>( source) )
-   {
-
-   }
+   while ( ( RCC->CFGR & clock_source_mask ) != static_cast<uint32_t>( source ) )
+   { }
 }
-
 
 /**
  * \brief configure the ahb clock prescaler
@@ -123,9 +118,8 @@ void set_system_clock_source( SystemClockSource source )
  */
 void configure_ahb_clock( AHBPrescaler prescaler )
 {
-   RCC->CFGR |= ( static_cast<uint8_t>( prescaler ) << static_cast<uint8_t>(ConfigurationRegister::ahb_prescaler) );
+   RCC->CFGR |= ( static_cast<uint8_t>( prescaler ) << static_cast<uint8_t>( ConfigurationRegister::ahb_prescaler ) );
 }
-
 
 /**
  * \brief configure the apb2 bus prescaler
@@ -134,9 +128,8 @@ void configure_ahb_clock( AHBPrescaler prescaler )
  */
 void configure_apb2_clock( APBPrescaler prescaler )
 {
-   RCC->CFGR |= ( static_cast<uint8_t>( prescaler ) << static_cast<uint8_t>(ConfigurationRegister::apb2_prescaler) );
+   RCC->CFGR |= ( static_cast<uint8_t>( prescaler ) << static_cast<uint8_t>( ConfigurationRegister::apb2_prescaler ) );
 }
-
 
 /**
  * \brief configure the apb1 clock prescaler
@@ -145,10 +138,98 @@ void configure_apb2_clock( APBPrescaler prescaler )
  */
 void configure_apb1_clock( APBPrescaler prescaler )
 {
-   RCC->CFGR |= ( static_cast<uint8_t>( prescaler ) << static_cast<uint8_t>(ConfigurationRegister::apb1_prescaler) );
+   RCC->CFGR |= ( static_cast<uint8_t>( prescaler ) << static_cast<uint8_t>( ConfigurationRegister::apb1_prescaler ) );
 }
 
+/**
+ * \brief enable or disable a clock source on the ahb1 bus
+ * 
+ * \param clock the clock to enable/disable
+ * \param enable state
+ */
+void set_ahb1_clock( AHB1Clocks clock, bool enable )
+{
+   if ( enable )
+   {
+      RCC->AHB1ENR |= ( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
+   }
+   else
+   {
+      RCC->AHB1ENR &= ~( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
+   }
+}
 
+/**
+ * \brief enable or disable a clock source on the ahb2 bus
+ * 
+ * \param clock the clock to enable/disable
+ * \param enable state
+ */
+void set_ahb2_clock( AHB2Clocks clock, bool enable )
+{
+   if ( enable )
+   {
+      RCC->AHB2ENR |= ( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
+   }
+   else
+   {
+      RCC->AHB2ENR &= ~( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
+   }
+}
+
+/**
+ * \brief enable or disable a clock source on the ahb3 bus
+ * 
+ * \param clock the clock to enable/disable
+ * \param enable state
+ */
+void set_ahb3_clock( AHB3Clocks clock, bool enable )
+{
+   if ( enable )
+   {
+      RCC->AHB3ENR |= ( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
+   }
+   else
+   {
+      RCC->AHB3ENR &= ~( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
+   }
+}
+
+/**
+ * \brief enable or disable a clock source on the apb1 bus
+ * 
+ * \param clock the clock to enable/disable
+ * \param enable state
+ */
+void set_apb1_clock( APB1Clocks clock, bool enable )
+{
+   if ( enable )
+   {
+      RCC->APB1ENR |= ( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
+   }
+   else
+   {
+      RCC->APB1ENR &= ~( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
+   }
+}
+
+/**
+ * \brief enable or disable a clock source on the apb2 bus
+ * 
+ * \param clock the clock to enable/disable
+ * \param enable state
+ */
+void set_apb2_clock( APB2Clocks clock, bool enable )
+{
+   if ( enable )
+   {
+      RCC->APB2ENR |= ( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
+   }
+   else
+   {
+      RCC->APB2ENR &= ~( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
+   }
+}
 
 };  // namespace ResetControlClock
 };  // namespace HAL

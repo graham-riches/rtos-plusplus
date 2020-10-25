@@ -10,10 +10,9 @@
 #define __HAL_GPIO_H__
 
 /********************************** Includes *******************************************/
-#include "stm32f4xx.h"
 #include "hal_bitwise_operators.h"
+#include "stm32f4xx.h"
 #include <stdint.h>
-
 
 namespace HAL
 {
@@ -130,21 +129,20 @@ enum class Pins : unsigned
 class OutputPin
 {
    private:
-      GPIO_TypeDef *bank;
-      Pins pin;
-      Speed speed;
-      PullMode pull_mode;
+   GPIO_TypeDef *bank;
+   Pins pin;
+   Speed speed;
+   PullMode pull_mode;
+
    public:
-      OutputPin( GPIO_TypeDef *bank, Pins pin, Speed speed, PullMode pull_mode, OutputMode output_mode );
+   OutputPin( GPIO_TypeDef *bank, Pins pin, Speed speed, PullMode pull_mode, OutputMode output_mode );
 
-      void set( bool high );
+   void set( bool high );
 };
-
 
 /*********************************** Macros ********************************************/
 
 /****************************** Function Declarations ************************************/
-
 
 };  // namespace GPIO
 };  // namespace HAL
