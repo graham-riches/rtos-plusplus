@@ -9,6 +9,7 @@
 /********************************** Includes *******************************************/
 #include "hal_usart.h"
 
+
 namespace HAL
 {
 namespace USART
@@ -53,6 +54,35 @@ void write_control_register( USART_TypeDef *usart, ControlRegister1 reg, uint8_t
 
    /* write the value */
    usart->CR1 |= ( ( value & 0x01 ) << static_cast<uint8_t>( reg ) );
+}
+
+/**
+ * \brief Set the baudrate for a usart peripheral
+ * 
+ * \param usart the usart peripheral
+ * \param base_clock_rate the base clock rate for the peripheral
+ * \param baudrate baudrate to set
+ * \todo remove base clock rate and get that direct from HAL_rcc
+ * \todo account for oversampling mode
+ */
+void set_baudrate( USART_TypeDef *usart, uint32_t base_clock_rate, uint32_t baudrate );
+{
+   uint32_t usart_div = ( 100 * base_clock_rate ) / ( 16 * baudrate );
+
+   /* calculate the integer component */
+   uint32_t integer_component = usart_div / 100;
+
+   /* calculate the fractional component */
+   uint32_t fractional_temp = usart_div - ( 100 * integer_component );
+   
+   /* round the fractional component */
+   uint32_t fractional_component = ((fractional_temp * 16) + 50 ) / 100 );
+
+   /* build out the register value */
+   uint32_t register_value = (integer_component << 4) | ( fractional_component & 0x0F );
+
+   /* write it to the register */
+   usart->BRR = register_value;
 }
 
 };  // namespace USART

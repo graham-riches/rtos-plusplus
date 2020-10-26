@@ -21,21 +21,20 @@ namespace GPIO
 #define CLEAR_PULLUP_REGISTER_MASK    0x03  //!< bitmask to clear the pullup/pulldown config register for a pin
 
 /****************************** Local Function Prototypes ***********************************/
-void initialize_pin(
-   GPIO_TypeDef *GPIOx, Pins pin, PinMode mode, Speed speed, PullMode pull_mode, OutputMode output_mode );
+
 
 /****************************** Functions Definitions ***********************************/
 /**
  * \brief initialize a GPIO pin
  * 
- * \param GPIOx reference to the internal GPIO registers for the peripheral
+ * \param bank reference to the internal GPIO registers for the peripheral
  * \param configuration configuration structure 
  */
 void initialize_pin(
-   GPIO_TypeDef *GPIOx, Pins pin, PinMode mode, Speed speed, PullMode pull_mode, OutputMode output_mode )
+   GPIO_TypeDef *bank, Pins pin, PinMode mode, Speed speed, PullMode pull_mode, OutputMode output_mode )
 {
    /* find the appropriate bits and set them */
-   /* TODO fix magic number */
+   /* TODO fix magic number  */
    for ( uint8_t i = 0; i < 16; i++ )
    {
       uint32_t test_pin = 0x01 << i;
@@ -43,24 +42,50 @@ void initialize_pin(
       if ( static_cast<bool>( test_pin & static_cast<uint32_t>( pin ) ) )
       {
          /* set the pin mode */
-         GPIOx->MODER &= ~( CLEAR_MODE_REGISTER_MASK << ( 2 * i ) );
-         GPIOx->MODER |= ( static_cast<uint32_t>( mode ) << ( 2 * i ) );
+         bank->MODER &= ~( CLEAR_MODE_REGISTER_MASK << ( 2 * i ) );
+         bank->MODER |= ( static_cast<uint32_t>( mode ) << ( 2 * i ) );
 
          /* set the pin port type (push_pull/open_drain) */
-         GPIOx->OTYPER &= ~( CLEAR_PORT_TYPE_REGISTER_MASK << i );
-         GPIOx->OTYPER |= ( static_cast<uint32_t>( output_mode ) << i );
+         bank->OTYPER &= ~( CLEAR_PORT_TYPE_REGISTER_MASK << i );
+         bank->OTYPER |= ( static_cast<uint32_t>( output_mode ) << i );
 
          /* set the speed and push pull config only for outputs and alternate function pins */
          if ( ( mode == GPIO::PinMode::output ) || ( mode == GPIO::PinMode::alternate ) )
          {
             /* set the pin speed */
-            GPIOx->OSPEEDR &= ~( CLEAR_SPEED_REGISTER_MASK << ( 2 * i ) );
-            GPIOx->OSPEEDR |= ( static_cast<uint32_t>( speed ) << ( 2 * i ) );
+            bank->OSPEEDR &= ~( CLEAR_SPEED_REGISTER_MASK << ( 2 * i ) );
+            bank->OSPEEDR |= ( static_cast<uint32_t>( speed ) << ( 2 * i ) );
 
             /* set the pin push_pull configuration */
-            GPIOx->PUPDR &= ~( CLEAR_PULLUP_REGISTER_MASK << ( 2 * i ) );
-            GPIOx->PUPDR |= ( static_cast<uint32_t>( pull_mode ) << ( 2 * i ) );
+            bank->PUPDR &= ~( CLEAR_PULLUP_REGISTER_MASK << ( 2 * i ) );
+            bank->PUPDR |= ( static_cast<uint32_t>( pull_mode ) << ( 2 * i ) );
          }
+      }
+   }
+}
+
+/**
+ * \brief Set the alternate mode for a pin
+ * 
+ * \param bank which GPIO port
+ * \param pins to set
+ * \param alternate what alternate mode
+ */
+void set_alternate_mode( GPIO_TypeDef *bank, Pins pins, AlternateMode alternate )
+{
+   for ( uint8_t i = 0; i < 16; i++ )
+   {
+      uint32_t test_pin = 0x01 << i;
+
+      if ( static_cast<bool>( test_pin & static_cast<uint32_t>( pins ) ) )
+      {
+         /* select the appropriate register (high/low) from the AFR array */
+         uint8_t afr_array_index = ( test_pin <= 8 ) ? 0 : 1;
+         
+         /* clear the register and set it to the appropriate value */
+         uint32_t mask = 0x0F;
+         bank->AFR[afr_array_index] &= ~( ( mask ) << ( static_cast<uint8_t>(alternate) * 4 ) );
+         bank->AFR[afr_array_index] |= ( static_cast<uint8_t>( alternate ) << ( static_cast<uint8_t>( alternate ) * 4 ) );
       }
    }
 }
@@ -101,6 +126,9 @@ void OutputPin::set( bool high )
       this->bank->BSRRH |= pin_mask;
    }
 }
+
+
+
 
 };  // namespace GPIO
 };  // namespace HAL

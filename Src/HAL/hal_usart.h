@@ -97,8 +97,6 @@ enum class ControlRegister3 : unsigned
 };
 
 
-
-
 /*********************************** Macros ********************************************/
 
 /******************************* Global Variables **************************************/
@@ -109,6 +107,7 @@ enum class ControlRegister3 : unsigned
  */
 bool read_status_register( USART_TypeDef *usart, StatusRegister reg );
 void write_control_register( USART_TypeDef *usart, ControlRegister1 reg, uint8_t value );
+void set_baudrate( USART_TypeDef *usart, uint32_t base_clock_rate, uint32_t baudrate );
 
 
 };  // namespace USART

@@ -75,7 +75,6 @@ enum class PullMode : unsigned
 
 /**
  * \brief specification for GPIO pin alternate mode, which are used for other peripherals
- * 
  */
 enum class AlternateMode : unsigned
 {
@@ -99,7 +98,6 @@ enum class AlternateMode : unsigned
 
 /**
  * \brief enumeration of GPIO pins that can be OR'd together
- * 
  */
 enum class Pins : unsigned
 {
@@ -124,7 +122,6 @@ enum class Pins : unsigned
 
 /**
  * \brief class type for a GPIO output pin
- * 
  */
 class OutputPin
 {
@@ -145,6 +142,8 @@ class OutputPin
 /*********************************** Macros ********************************************/
 
 /****************************** Function Declarations ************************************/
+void initialize_pin( GPIO_TypeDef *bank, Pins pin, Speed speed, PullMode pull_mode, OutputMode output_mode );
+void set_alternate_mode( GPIO_TypeDef *bank, Pins pins, AlternateMode alternate );
 
 };  // namespace GPIO
 };  // namespace HAL
