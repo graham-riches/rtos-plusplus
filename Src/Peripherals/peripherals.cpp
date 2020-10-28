@@ -15,6 +15,7 @@
 
 
 /*********************************** Consts ********************************************/
+constexpr uint32_t HSE_FREQUENCY = 8000000;
 constexpr uint8_t RCC_PLL_M_FACTOR = 8;
 constexpr uint16_t RCC_PLL_N_FACTOR = 336;
 constexpr uint8_t RCC_PLL_Q_FACTOR = 7;
@@ -85,7 +86,7 @@ void PERIPHERAL_systemBoot( void )
 
    /* configure the main phase locked loop */
    ResetControlClock::configure_main_pll(
-      RCC_PLL_SOURCE, RCC_PLL_M_FACTOR, RCC_PLL_N_FACTOR, RCC_PLL_P_FACTOR, RCC_PLL_Q_FACTOR );
+      RCC_PLL_SOURCE, HSE_FREQUENCY, RCC_PLL_M_FACTOR, RCC_PLL_N_FACTOR, RCC_PLL_P_FACTOR, RCC_PLL_Q_FACTOR );
 
    /* enable the phase locked loop */
    ResetControlClock::set_control_register( ResetControlClock::RCCRegister::main_pll_on, 0x01 );

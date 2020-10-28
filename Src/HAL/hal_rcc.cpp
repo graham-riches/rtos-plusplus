@@ -8,11 +8,30 @@
 
 /********************************** Includes *******************************************/
 #include "hal_rcc.h"
+#include <map>
 
 namespace HAL
 {
 namespace ResetControlClock
 {
+/************************************ Local Variables ********************************************/
+static ClockSpeed clock_configuration; //!< structure to store configured clock speeds in memory
+
+/* map ahb prescaler values to integers */
+static std::map<AHBPrescaler, uint32_t> ahb_scaler_map
+{
+   {AHBPrescaler::prescaler_none, 1}, {AHBPrescaler::prescaler_2, 2}, {AHBPrescaler::prescaler_4, 4},
+   {AHBPrescaler::prescaler_8, 8}, {AHBPrescaler::prescaler_16, 16}, {AHBPrescaler::prescaler_64, 64},
+   {AHBPrescaler::prescaler_128, 128}, {AHBPrescaler::prescaler_256, 256}, {AHBPrescaler::prescaler_512, 512},
+};
+
+/* map apb prescalers to integers */
+static std::map<APBPrescaler, uint32_t> apb_scaler_map
+{
+   {APBPrescaler::prescaler_none, 1}, {APBPrescaler::prescaler_2, 2}, {APBPrescaler::prescaler_4, 4},
+   {APBPrescaler::prescaler_8, 8}, {APBPrescaler::prescaler_16, 16},
+};
+
 /************************************ Function Definitions ********************************************/
 /**
  * \brief get a control register value
@@ -69,12 +88,17 @@ void set_control_register( RCCRegister reg, uint8_t value )
 }
 
 /**
- * \brief setup the main phase-locked loop
+ * \brief setup the main PLL
  * 
- * \param pll_config the configuration
+ * \param clock_source clock source (HSI, HSE)
+ * \param oscillator_speed how fast the oscillator is running
+ * \param pll_m m prescaler
+ * \param pll_n n prescaler
+ * \param pll_p p prescaler
+ * \param pll_q q prescaler
  */
 void configure_main_pll(
-   PLLSource clock_source, uint8_t pll_m, uint16_t pll_n, PLLOutputPrescaler pll_p, uint8_t pll_q )
+   PLLSource clock_source, uint32_t oscillator_speed, uint8_t pll_m, uint16_t pll_n, PLLOutputPrescaler pll_p, uint8_t pll_q )
 {
    /* set the phase locked loop clock source */
    RCC->PLLCFGR |= ( static_cast<uint8_t>( clock_source ) << static_cast<uint8_t>( PLLRegister::pll_source ) );
@@ -90,6 +114,10 @@ void configure_main_pll(
 
    /* set the output for the 48 MHz clock source: PLL_Q */
    RCC->PLLCFGR |= ( pll_q << static_cast<uint8_t>( PLLRegister::pll_q ) );
+
+   /* set the system clock speed */
+   uint8_t pll_p_scaler = ( static_cast<uint8_t>( pll_p ) + 1 ) * 2;
+   clock_configuration.system_clock = ( oscillator_speed * pll_n ) / ( pll_m * pll_p_scaler );
 }
 
 /**
@@ -119,6 +147,9 @@ void set_system_clock_source( SystemClockSource source )
 void configure_ahb_clock( AHBPrescaler prescaler )
 {
    RCC->CFGR |= ( static_cast<uint8_t>( prescaler ) << static_cast<uint8_t>( ConfigurationRegister::ahb_prescaler ) );
+
+   /* store the clock configuration for the AHB clock */
+   clock_configuration.ahb = clock_configuration.system_clock / ahb_scaler_map[prescaler];
 }
 
 /**
@@ -129,6 +160,9 @@ void configure_ahb_clock( AHBPrescaler prescaler )
 void configure_apb2_clock( APBPrescaler prescaler )
 {
    RCC->CFGR |= ( static_cast<uint8_t>( prescaler ) << static_cast<uint8_t>( ConfigurationRegister::apb2_prescaler ) );
+
+   /* store the clock configuration for the APB1 clock */
+   clock_configuration.ahb = clock_configuration.system_clock / apb_scaler_map[prescaler];
 }
 
 /**
@@ -139,6 +173,9 @@ void configure_apb2_clock( APBPrescaler prescaler )
 void configure_apb1_clock( APBPrescaler prescaler )
 {
    RCC->CFGR |= ( static_cast<uint8_t>( prescaler ) << static_cast<uint8_t>( ConfigurationRegister::apb1_prescaler ) );
+
+   /* store the clock configuration for the APB1 clock */
+   clock_configuration.ahb = clock_configuration.system_clock / apb_scaler_map[prescaler];
 }
 
 /**
@@ -229,6 +266,38 @@ void set_apb2_clock( APB2Clocks clock, bool enable )
    {
       RCC->APB2ENR &= ~( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
    }
+}
+
+/**
+ * \brief Get the clock speed for a specific bus
+ * 
+ * \param clock the clock bus
+ * \retval uint32_t speed in Hz
+ */
+uint32_t get_clock_speed( Clocks clock ) 
+{
+   uint32_t clock_speed = clock_configuration.system_clock;
+   switch ( clock )
+   {
+      /* intentional fallthrough */
+      case Clocks::AHB1:
+      case Clocks::AHB2:
+      case Clocks::AHB3:
+         clock_speed = clock_configuration.ahb;
+         break;
+      
+      case Clocks::APB1:
+         clock_speed = clock_configuration.apb1;
+         break;
+      
+      case Clocks::APB2:
+         clock_speed = clock_configuration.apb2;
+         break;
+      
+      default:
+         break;
+   }
+   return clock_speed;
 }
 
 };  // namespace ResetControlClock

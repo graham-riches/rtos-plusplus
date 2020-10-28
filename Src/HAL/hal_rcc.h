@@ -23,6 +23,30 @@ namespace ResetControlClock
 
 /************************************ Types ********************************************/
 /**
+ * \brief enumeration of RCC clocks
+ */
+enum class Clocks : unsigned
+{
+   AHB1 = 0, //!< clock speed for AHB1 bus
+   AHB2,     //!< clock speed for AHB2 bus
+   AHB3,     //!< clock speed for AHB3 bus
+   APB1,     //!< clock speed for APB1 bus
+   APB2,     //!< clock speed for APB2 bus
+};
+
+/**
+ * \brief structure to store clock speeds
+ */
+typedef struct
+{
+   uint32_t system_clock;
+   uint32_t ahb;
+   uint32_t apb1;
+   uint32_t apb2;
+} ClockSpeed;
+
+
+/**
  * \brief main control registers bit offsets for the reset and control clock
  */
 enum class RCCRegister : unsigned
@@ -230,19 +254,19 @@ enum class APB2Clocks : unsigned
 /*********************************** Macros ********************************************/
 
 /****************************** Function Declarations ************************************/
-uint8_t get_control_register( RCCRegister reg );
-void    set_control_register( RCCRegister reg, uint8_t value );
-void    configure_main_pll( PLLSource clock_source, uint8_t pll_m, uint16_t pll_n, PLLOutputPrescaler pll_p, uint8_t pll_q );
-void    set_system_clock_source( SystemClockSource source );
-void    configure_ahb_clock( AHBPrescaler prescaler );
-void    configure_apb2_clock( APBPrescaler prescaler );
-void    configure_apb1_clock( APBPrescaler prescaler );
-void    set_ahb1_clock( AHB1Clocks clock, bool enable );
-void    set_ahb2_clock( AHB2Clocks clock, bool enable );
-void    set_ahb3_clock( AHB3Clocks clock, bool enable );
-void    set_apb1_clock( APB1Clocks clock, bool enable );
-void    set_apb2_clock( APB2Clocks clock, bool enable );
-
+uint8_t  get_control_register( RCCRegister reg );
+void     set_control_register( RCCRegister reg, uint8_t value );
+void     configure_main_pll( PLLSource clock_source, uint32_t oscillator_speed, uint8_t pll_m, uint16_t pll_n, PLLOutputPrescaler pll_p, uint8_t pll_q );
+void     set_system_clock_source( SystemClockSource source );
+void     configure_ahb_clock( AHBPrescaler prescaler );
+void     configure_apb2_clock( APBPrescaler prescaler );
+void     configure_apb1_clock( APBPrescaler prescaler );
+void     set_ahb1_clock( AHB1Clocks clock, bool enable );
+void     set_ahb2_clock( AHB2Clocks clock, bool enable );
+void     set_ahb3_clock( AHB3Clocks clock, bool enable );
+void     set_apb1_clock( APB1Clocks clock, bool enable );
+void     set_apb2_clock( APB2Clocks clock, bool enable );
+uint32_t get_clock_speed( Clocks clock );
 
 
 };  // namespace ResetControlClock

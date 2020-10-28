@@ -61,12 +61,21 @@ static void initialize_debug_usart( void )
    GPIO::set_alternate_mode( GPIOA, GPIO::Pins::pin_2, GPIO::AlternateMode::af7 );
    GPIO::set_alternate_mode( GPIOA, GPIO::Pins::pin_3, GPIO::AlternateMode::af7 );
 
-   /* enable the usart */
+   /* configure the usart */
+   USART::write_control_register( USART2, USART::ControlRegister1::parity_selection, 0x00 );
+   USART::write_control_register( USART2, USART::ControlRegister1::word_length, 0x00 );
+   USART::write_control_register( USART2, USART::ControlRegister2::stop_bits, 0x00 );
+   USART::write_control_register( USART2, USART::ControlRegister3::cts_enable, 0x00 );
+   USART::write_control_register( USART2, USART::ControlRegister3::rts_enable, 0x00 );
+   USART::set_baudrate( USART2, ResetControlClock::Clocks::APB1, 115200 );
+
+   /* enable the usart and interrupts */
    USART::write_control_register( USART2, USART::ControlRegister1::receiver_enable, 0x01 );
    USART::write_control_register( USART2, USART::ControlRegister1::transmitter_enable, 0x01 );
    USART::write_control_register( USART2, USART::ControlRegister1::receive_interrupt_enable, 0x01 );
-   
 
    /* enable the interrupts */
 
 }
+
+
