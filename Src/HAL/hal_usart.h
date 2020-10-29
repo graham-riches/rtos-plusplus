@@ -108,6 +108,8 @@ enum class ControlRegister3 : unsigned
  */
 bool read_status_register( USART_TypeDef *usart, StatusRegister reg );
 void write_control_register( USART_TypeDef *usart, ControlRegister1 reg, uint8_t value );
+void write_control_register( USART_TypeDef *usart, ControlRegister2 reg, uint8_t value );
+void write_control_register( USART_TypeDef *usart, ControlRegister3 reg, uint8_t value );
 void set_baudrate( USART_TypeDef *usart, HAL::ResetControlClock::Clocks clock, uint32_t baudrate );
 
 

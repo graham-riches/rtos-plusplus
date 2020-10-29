@@ -162,7 +162,7 @@ void configure_apb2_clock( APBPrescaler prescaler )
    RCC->CFGR |= ( static_cast<uint8_t>( prescaler ) << static_cast<uint8_t>( ConfigurationRegister::apb2_prescaler ) );
 
    /* store the clock configuration for the APB1 clock */
-   clock_configuration.ahb = clock_configuration.system_clock / apb_scaler_map[prescaler];
+   clock_configuration.apb2 = clock_configuration.system_clock / apb_scaler_map[prescaler];
 }
 
 /**
@@ -175,7 +175,7 @@ void configure_apb1_clock( APBPrescaler prescaler )
    RCC->CFGR |= ( static_cast<uint8_t>( prescaler ) << static_cast<uint8_t>( ConfigurationRegister::apb1_prescaler ) );
 
    /* store the clock configuration for the APB1 clock */
-   clock_configuration.ahb = clock_configuration.system_clock / apb_scaler_map[prescaler];
+   clock_configuration.apb1 = clock_configuration.system_clock / apb_scaler_map[prescaler];
 }
 
 /**

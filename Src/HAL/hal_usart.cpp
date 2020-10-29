@@ -57,6 +57,39 @@ void write_control_register( USART_TypeDef *usart, ControlRegister1 reg, uint8_t
 }
 
 /**
+ * \brief write a value into a usart peripherals CR2
+ * 
+ * \param usart the usart to write to
+ * \param reg the register
+ * \param value value
+ */
+void write_control_register( USART_TypeDef *usart, ControlRegister2 reg, uint8_t value )
+{
+   /* clear the register */
+   usart->CR2 &= ~static_cast<uint16_t>( ( static_cast<uint8_t>( 0x01 ) << static_cast<uint8_t>( reg ) ) );
+
+   /* write the value */
+   usart->CR2 |= static_cast<uint16_t>( ( ( value & 0x01 ) << static_cast<uint8_t>( reg ) ) );
+}
+
+/**
+ * \brief write a value into a usart peripherals CR3
+ * 
+ * \param usart the usart to write to
+ * \param reg the register
+ * \param value value
+ */
+void write_control_register( USART_TypeDef *usart, ControlRegister3 reg, uint8_t value )
+{
+   /* clear the register */
+   usart->CR3 &= ~static_cast<uint16_t>( ( static_cast<uint8_t>( 0x01 ) << static_cast<uint8_t>( reg ) ) );
+
+   /* write the value */
+   usart->CR3 |= static_cast<uint16_t>( ( ( value & 0x01 ) << static_cast<uint8_t>( reg ) ) );
+}
+
+
+/**
  * \brief Set the baudrate for a usart peripheral
  * 
  * \param usart the usart peripheral

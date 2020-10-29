@@ -12,6 +12,7 @@
 #include "hal_usart.h"
 #include "hal_rcc.h"
 #include "hal_gpio.h"
+#include "core_cm4.h"
 
 /*********************************** Consts ********************************************/
 
@@ -26,7 +27,7 @@
 
 
 /******************************** Local Variables **************************************/
-
+static uint8_t test_point;
 
 /****************************** Functions Prototype ************************************/
 static void initialize_debug_usart( void );
@@ -41,9 +42,10 @@ static void initialize_debug_usart( void );
 void USART_initialize( void )
 {
    /* Initialize the module here*/
+   test_point = 0;
+   initialize_debug_usart();
 
 }
-
 
 /**
  * \brief setup the debug port USART2
@@ -75,7 +77,16 @@ static void initialize_debug_usart( void )
    USART::write_control_register( USART2, USART::ControlRegister1::receive_interrupt_enable, 0x01 );
 
    /* enable the interrupts */
+   NVIC_SetPriority( USART2_IRQn, 2 ); //!< TODO: set priority based on logical reasoning :D
+   NVIC_EnableIRQ( USART2_IRQn );
 
 }
 
-
+/**
+ * \brief interrupt callback for the uart
+ * 
+ */
+void USART2_IRQHandler( void )
+{   
+   test_point += 1;
+}

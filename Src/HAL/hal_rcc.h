@@ -43,6 +43,9 @@ typedef struct
    uint32_t ahb;
    uint32_t apb1;
    uint32_t apb2;
+   uint8_t ahb_scaler;
+   uint8_t apb1_scaler;
+   uint8_t apb2_scaler;
 } ClockSpeed;
 
 

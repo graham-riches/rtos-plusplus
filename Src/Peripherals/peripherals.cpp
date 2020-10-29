@@ -12,6 +12,7 @@
 #include "hal_flash.h"
 #include "hal_power.h"
 #include "hal_rcc.h"
+#include "usart.h"
 
 
 /*********************************** Consts ********************************************/
@@ -49,6 +50,9 @@ void PERIPHERAL_moduleInitialize( void )
 
    /* Initialize all configured peripherals */
    GPIO_initialize( );
+
+   /* enable the debug usart */
+   USART_initialize( );
 }
 
 /**
