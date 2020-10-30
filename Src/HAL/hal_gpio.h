@@ -142,7 +142,7 @@ class OutputPin
 /*********************************** Macros ********************************************/
 
 /****************************** Function Declarations ************************************/
-void initialize_pin( GPIO_TypeDef *bank, Pins pin, Speed speed, PullMode pull_mode, OutputMode output_mode );
+void initialize_pin( GPIO_TypeDef *bank, Pins pin, PinMode mode, Speed speed, PullMode pull_mode, OutputMode output_mode );
 void set_alternate_mode( GPIO_TypeDef *bank, Pins pins, AlternateMode alternate );
 
 };  // namespace GPIO

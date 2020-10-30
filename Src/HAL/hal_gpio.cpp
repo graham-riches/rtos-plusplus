@@ -85,7 +85,7 @@ void set_alternate_mode( GPIO_TypeDef *bank, Pins pins, AlternateMode alternate 
          /* clear the register and set it to the appropriate value */
          uint32_t mask = 0x0F;
          bank->AFR[afr_array_index] &= ~( ( mask ) << ( static_cast<uint8_t>(alternate) * 4 ) );
-         bank->AFR[afr_array_index] |= ( static_cast<uint8_t>( alternate ) << ( static_cast<uint8_t>( alternate ) * 4 ) );
+         bank->AFR[afr_array_index] |= ( static_cast<uint8_t>( alternate ) << ( i * 4 ) );
       }
    }
 }

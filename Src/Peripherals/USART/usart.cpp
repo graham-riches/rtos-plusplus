@@ -62,6 +62,8 @@ static void initialize_debug_usart( void )
    /* setup the GPIO pins with the appropriate AF modes and outputs: see data sheet for pin AF mapping */
    GPIO::set_alternate_mode( GPIOA, GPIO::Pins::pin_2, GPIO::AlternateMode::af7 );
    GPIO::set_alternate_mode( GPIOA, GPIO::Pins::pin_3, GPIO::AlternateMode::af7 );
+   GPIO::initialize_pin( GPIOA, GPIO::Pins::pin_2, GPIO::PinMode::alternate, GPIO::Speed::very_high, GPIO::PullMode::pull_up, GPIO::OutputMode::push_pull );
+   GPIO::initialize_pin( GPIOA, GPIO::Pins::pin_3, GPIO::PinMode::alternate, GPIO::Speed::very_high, GPIO::PullMode::pull_up, GPIO::OutputMode::push_pull );
 
    /* configure the usart */
    USART::write_control_register( USART2, USART::ControlRegister1::parity_selection, 0x00 );
@@ -75,18 +77,23 @@ static void initialize_debug_usart( void )
    USART::write_control_register( USART2, USART::ControlRegister1::receiver_enable, 0x01 );
    USART::write_control_register( USART2, USART::ControlRegister1::transmitter_enable, 0x01 );
    USART::write_control_register( USART2, USART::ControlRegister1::receive_interrupt_enable, 0x01 );
-
+   
    /* enable the interrupts */
    NVIC_SetPriority( USART2_IRQn, 2 ); //!< TODO: set priority based on logical reasoning :D
-   NVIC_EnableIRQ( USART2_IRQn );
+   NVIC_EnableIRQ( USART2_IRQn );   
 
+   /* enable the UART */
+   USART::write_control_register( USART2, USART::ControlRegister1::usart_enable, 0x01 );
+   USART2->DR = 97;
 }
 
 /**
  * \brief interrupt callback for the uart
- * 
+ * \note these are defined in the vector table, and therefore need C linkage!!!
  */
+extern "C" {
 void USART2_IRQHandler( void )
 {   
    test_point += 1;
+}
 }

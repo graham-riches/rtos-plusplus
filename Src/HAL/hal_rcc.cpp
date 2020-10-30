@@ -14,6 +14,10 @@ namespace HAL
 {
 namespace ResetControlClock
 {
+/************************************ Local Function Definitions ********************************************/
+static void save_clock_configuration( void );
+
+
 /************************************ Local Variables ********************************************/
 static ClockSpeed clock_configuration; //!< structure to store configured clock speeds in memory
 
@@ -118,6 +122,7 @@ void configure_main_pll(
    /* set the system clock speed */
    uint8_t pll_p_scaler = ( static_cast<uint8_t>( pll_p ) + 1 ) * 2;
    clock_configuration.system_clock = ( oscillator_speed * pll_n ) / ( pll_m * pll_p_scaler );
+   save_clock_configuration();
 }
 
 /**
@@ -149,7 +154,8 @@ void configure_ahb_clock( AHBPrescaler prescaler )
    RCC->CFGR |= ( static_cast<uint8_t>( prescaler ) << static_cast<uint8_t>( ConfigurationRegister::ahb_prescaler ) );
 
    /* store the clock configuration for the AHB clock */
-   clock_configuration.ahb = clock_configuration.system_clock / ahb_scaler_map[prescaler];
+   clock_configuration.ahb_scaler = ahb_scaler_map[prescaler];
+   save_clock_configuration();
 }
 
 /**
@@ -162,7 +168,8 @@ void configure_apb2_clock( APBPrescaler prescaler )
    RCC->CFGR |= ( static_cast<uint8_t>( prescaler ) << static_cast<uint8_t>( ConfigurationRegister::apb2_prescaler ) );
 
    /* store the clock configuration for the APB1 clock */
-   clock_configuration.apb2 = clock_configuration.system_clock / apb_scaler_map[prescaler];
+   clock_configuration.apb2_scaler = apb_scaler_map[prescaler];
+   save_clock_configuration();
 }
 
 /**
@@ -175,7 +182,8 @@ void configure_apb1_clock( APBPrescaler prescaler )
    RCC->CFGR |= ( static_cast<uint8_t>( prescaler ) << static_cast<uint8_t>( ConfigurationRegister::apb1_prescaler ) );
 
    /* store the clock configuration for the APB1 clock */
-   clock_configuration.apb1 = clock_configuration.system_clock / apb_scaler_map[prescaler];
+   clock_configuration.apb1_scaler = apb_scaler_map[prescaler];
+   save_clock_configuration();
 }
 
 /**
@@ -298,6 +306,16 @@ uint32_t get_clock_speed( Clocks clock )
          break;
    }
    return clock_speed;
+}
+
+/**
+ * \brief save the current clock speed
+ */
+static void save_clock_configuration( void )
+{
+   clock_configuration.ahb = clock_configuration.system_clock / clock_configuration.ahb_scaler;
+   clock_configuration.apb1 = clock_configuration.system_clock / clock_configuration.apb1_scaler;
+   clock_configuration.apb2 = clock_configuration.system_clock / clock_configuration.apb2_scaler;
 }
 
 };  // namespace ResetControlClock
