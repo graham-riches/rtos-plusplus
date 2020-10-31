@@ -28,9 +28,7 @@
 
 
 /******************************** Local Variables **************************************/
-static RingBuffer<uint8_t> usart_buffer(100);
-static uint8_t buffer[10] = { 0 };
-static uint8_t count = 0;
+
 
 /****************************** Functions Prototype ************************************/
 static void initialize_debug_usart( void );
@@ -95,7 +93,6 @@ static void initialize_debug_usart( void )
 extern "C" {
 void USART2_IRQHandler( void )
 {   
-   //usart_buffer.put( USART2->DR );
-   buffer[count++] = USART2->DR & 0xFF;
+
 }
 }

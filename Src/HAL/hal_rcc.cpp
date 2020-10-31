@@ -104,6 +104,9 @@ void set_control_register( RCCRegister reg, uint8_t value )
 void configure_main_pll(
    PLLSource clock_source, uint32_t oscillator_speed, uint8_t pll_m, uint16_t pll_n, PLLOutputPrescaler pll_p, uint8_t pll_q )
 {
+   /* clear the register */
+   RCC->PLLCFGR = 0;
+
    /* set the phase locked loop clock source */
    RCC->PLLCFGR |= ( static_cast<uint8_t>( clock_source ) << static_cast<uint8_t>( PLLRegister::pll_source ) );
 

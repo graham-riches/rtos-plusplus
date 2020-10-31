@@ -103,9 +103,6 @@ enum class ControlRegister3 : unsigned
 /******************************* Global Variables **************************************/
 
 /****************************** Functions Prototype ************************************/
-/* TODO: these are all that is needed to get a basic interrupt based uart setup
-         this will for sure need a little refactoring later.
- */
 bool read_status_register( USART_TypeDef *usart, StatusRegister reg );
 void write_control_register( USART_TypeDef *usart, ControlRegister1 reg, uint8_t value );
 void write_control_register( USART_TypeDef *usart, ControlRegister2 reg, uint8_t value );
