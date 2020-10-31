@@ -8,6 +8,7 @@
 
 /********************************** Includes *******************************************/
 #include "hal_usart.h"
+#include <string.h>
 
 namespace HAL
 {
@@ -130,8 +131,8 @@ void USARTInterrupt::irq_handler( uint8_t type )
    uint32_t control_reg1 = this->peripheral->CR1;
 
    /* handle any rx interrupts */
-   bool rx_data_available = static_cast<bool>( status & static_cast<uint32_t>( StatusRegister::receive_data_available ) );
-   bool rx_interrupt_enabled = static_cast<bool>( control_reg1 & static_cast<uint32_t>( ControlRegister1::receive_interrupt_enable ) );
+   bool rx_data_available = static_cast<bool>( status & ( 0x01 << static_cast<uint32_t>( StatusRegister::receive_data_available ) ) );
+   bool rx_interrupt_enabled = static_cast<bool>( control_reg1 & ( 0x01 << static_cast<uint32_t>( ControlRegister1::receive_interrupt_enable ) ) );
 
    if ( ( rx_data_available ) && ( rx_interrupt_enabled ) )
    {
@@ -140,8 +141,8 @@ void USARTInterrupt::irq_handler( uint8_t type )
    }
 
    /* handle any tx interrupts */
-   bool tx_data_empty = static_cast<bool>( status & static_cast<uint32_t>( StatusRegister::transmit_data_empty ) );
-   bool tx_interrupt_enabled = static_cast<bool>( control_reg1 & static_cast<uint32_t>( ControlRegister1::transmit_interrupt_enable ) );
+   bool tx_data_empty = static_cast<bool>( status & ( 0x01 << static_cast<uint32_t>( StatusRegister::transmit_data_empty ) ) );
+   bool tx_interrupt_enabled = static_cast<bool>( control_reg1 & ( 0x01 << static_cast<uint32_t>( ControlRegister1::transmit_interrupt_enable ) ) );
 
    if ( ( tx_data_empty ) && ( tx_interrupt_enabled ) )
    {
@@ -154,6 +155,53 @@ void USARTInterrupt::irq_handler( uint8_t type )
          write_control_register( this->peripheral, ControlRegister1::transmit_interrupt_enable, 0x00 );
       }
    }
+}
+
+/**
+ * \brief send data over a interrupt based usart
+ * 
+ * \param data pointer to the data to send
+ * \param size amount of data
+ */
+void USARTInterrupt::send( uint8_t *data, uint16_t size )
+{
+   /* put the data on the buffer */
+   while ( size-- )
+   {
+      this->tx_buffer.put( *data++ );
+      if ( this->tx_buffer.is_full( ) )
+      {
+         break;
+      }
+   }
+
+   /* enable the tx interrupt */
+   write_control_register( this->peripheral, ControlRegister1::transmit_interrupt_enable, 0x01 );
+}
+
+/**
+ * \brief overloaded send for string based messages
+ * 
+ * \param data string data
+ */
+void USARTInterrupt::send( const char *data )
+{
+   //!< TODO: possible unsafe strlen here?
+   uint16_t size = strlen( data );
+
+   for ( uint16_t i = 0; i < size; i++ )
+   {
+      uint8_t dataByte = (uint8_t)data[i];
+      this->tx_buffer.put( dataByte );
+
+      if ( this->tx_buffer.is_full( ) )
+      {
+         break;
+      }
+   }
+
+   /* enable the tx interrupt */
+   write_control_register( this->peripheral, ControlRegister1::transmit_interrupt_enable, 0x01 );
 }
 
 };  // namespace USART

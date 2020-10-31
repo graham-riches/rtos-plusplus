@@ -33,8 +33,7 @@ DebugPort debug_port( USART2, debug_port_buffer_size, debug_port_buffer_size );
 
 /****************************** Functions Definition ***********************************/
 /**
- * \brief initialize the debug port
- * 
+ * \brief initialize the debug port with the correct HW settings
  */
 void DebugPort::initialize( void )
 {
