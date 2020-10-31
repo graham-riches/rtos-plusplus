@@ -13,6 +13,7 @@
 #include "hal_rcc.h"
 #include "hal_gpio.h"
 #include "core_cm4.h"
+#include "ring_buffer.h"
 
 /*********************************** Consts ********************************************/
 
@@ -27,10 +28,13 @@
 
 
 /******************************** Local Variables **************************************/
-static uint8_t test_point;
+static RingBuffer<uint8_t> usart_buffer(100);
+static uint8_t buffer[10] = { 0 };
+static uint8_t count = 0;
 
 /****************************** Functions Prototype ************************************/
 static void initialize_debug_usart( void );
+
 
 /****************************** Functions Definition ***********************************/
 /**
@@ -42,9 +46,7 @@ static void initialize_debug_usart( void );
 void USART_initialize( void )
 {
    /* Initialize the module here*/
-   test_point = 0;
    initialize_debug_usart();
-
 }
 
 /**
@@ -84,16 +86,16 @@ static void initialize_debug_usart( void )
 
    /* enable the UART */
    USART::write_control_register( USART2, USART::ControlRegister1::usart_enable, 0x01 );
-   USART2->DR = 97;
 }
 
 /**
  * \brief interrupt callback for the uart
- * \note these are defined in the vector table, and therefore need C linkage!!!
+ * \note these are defined in the vector table, and therefore need C linkage :(
  */
 extern "C" {
 void USART2_IRQHandler( void )
 {   
-   test_point += 1;
+   //usart_buffer.put( USART2->DR );
+   buffer[count++] = USART2->DR & 0xFF;
 }
 }
