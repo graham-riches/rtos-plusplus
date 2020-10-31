@@ -25,8 +25,7 @@ set(APP_SOURCES
 		
 		# Application Source Files
 		Src/Application/main.cpp
-      Src/Application/Events/event.c
-      Src/Application/Utilities/ring_buffer.cpp
+      Src/Application/Events/event.c      
       Src/Peripherals/GPIO/gpio.cpp
       Src/Peripherals/USART/usart.cpp
 		Src/Peripherals/peripherals.cpp
