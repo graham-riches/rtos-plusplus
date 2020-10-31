@@ -9,7 +9,6 @@
 /********************************** Includes *******************************************/
 #include "hal_usart.h"
 
-
 namespace HAL
 {
 namespace USART
@@ -88,7 +87,6 @@ void write_control_register( USART_TypeDef *usart, ControlRegister3 reg, uint8_t
    usart->CR3 |= static_cast<uint16_t>( ( ( value & 0x01 ) << static_cast<uint8_t>( reg ) ) );
 }
 
-
 /**
  * \brief Set the baudrate for a usart peripheral
  * 
@@ -109,15 +107,53 @@ void set_baudrate( USART_TypeDef *usart, HAL::ResetControlClock::Clocks clock, u
 
    /* calculate the fractional component */
    uint32_t fractional_temp = usart_div - ( 100 * integer_component );
-   
+
    /* round the fractional component */
-   uint32_t fractional_component = (((fractional_temp * 16) + 50 ) / 100 );
+   uint32_t fractional_component = ( ( ( fractional_temp * 16 ) + 50 ) / 100 );
 
    /* build out the register value */
-   uint32_t register_value = (integer_component << 4) | ( fractional_component & 0x0F );
+   uint32_t register_value = ( integer_component << 4 ) | ( fractional_component & 0x0F );
 
    /* write it to the register */
    usart->BRR = static_cast<uint16_t>( register_value );
+}
+
+/**
+ * \brief handle an interrupt on a usart peripheral
+ * \param type type of the interrupt
+ */
+void USARTInterrupt::irq_handler( uint8_t type )
+{
+   PARAMETER_NOT_USED( type );
+
+   uint32_t status = this->peripheral->SR;
+   uint32_t control_reg1 = this->peripheral->CR1;
+
+   /* handle any rx interrupts */
+   bool rx_data_available = static_cast<bool>( status & static_cast<uint32_t>( StatusRegister::receive_data_available ) );
+   bool rx_interrupt_enabled = static_cast<bool>( control_reg1 & static_cast<uint32_t>( ControlRegister1::receive_interrupt_enable ) );
+
+   if ( ( rx_data_available ) && ( rx_interrupt_enabled ) )
+   {
+      uint8_t data = static_cast<uint8_t>( this->peripheral->DR & 0xFF );
+      this->rx_buffer.put( data );
+   }
+
+   /* handle any tx interrupts */
+   bool tx_data_empty = static_cast<bool>( status & static_cast<uint32_t>( StatusRegister::transmit_data_empty ) );
+   bool tx_interrupt_enabled = static_cast<bool>( control_reg1 & static_cast<uint32_t>( ControlRegister1::transmit_interrupt_enable ) );
+
+   if ( ( tx_data_empty ) && ( tx_interrupt_enabled ) )
+   {
+      uint8_t data = this->tx_buffer.get( );
+      this->peripheral->DR = data;
+
+      /* if there is no more data to send, disable the interrupt */
+      if ( this->tx_buffer.is_empty( ) )
+      {
+         write_control_register( this->peripheral, ControlRegister1::transmit_interrupt_enable, 0x00 );
+      }
+   }
 }
 
 };  // namespace USART

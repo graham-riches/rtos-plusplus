@@ -11,22 +11,23 @@
 
 /********************************** Includes *******************************************/
 #include "hal_bitwise_operators.h"
+#include "hal_interrupt.h"
+#include "hal_rcc.h"
+#include "ring_buffer.h"
 #include "stm32f4xx.h"
 #include <stdint.h>
-#include "hal_rcc.h"
 
 namespace HAL
 {
 namespace USART
 {
-
 /*********************************** Consts ********************************************/
 
 /************************************ Types ********************************************/
 /**
  * \brief bit offsets for USART status register
  */
-enum class StatusRegister : unsigned 
+enum class StatusRegister : unsigned
 {
    parity_error = 0,
    framing_error = 1,
@@ -43,7 +44,7 @@ enum class StatusRegister : unsigned
 /**
  * \brief bit offsets for USART control register one
  */
-enum class ControlRegister1 : unsigned 
+enum class ControlRegister1 : unsigned
 {
    send_break = 0,
    receiver_wakeup = 1,
@@ -65,7 +66,7 @@ enum class ControlRegister1 : unsigned
 /**
  * \brief bit offsets for USART control register two
  */
-enum class ControlRegister2 : unsigned 
+enum class ControlRegister2 : unsigned
 {
    address = 0,
    line_break_detection_length = 5,
@@ -81,7 +82,7 @@ enum class ControlRegister2 : unsigned
 /**
  * \brief bit offsets for USART control register three
  */
-enum class ControlRegister3 : unsigned 
+enum class ControlRegister3 : unsigned
 {
    error_interrupt_enable = 0,
    irda_mode_enable = 1,
@@ -97,6 +98,41 @@ enum class ControlRegister3 : unsigned
    onebit_mode_enable = 11,
 };
 
+/**
+ * \brief base class for uart peripherals
+ */
+class USARTBase
+{
+   protected:
+   USART_TypeDef *peripheral;
+
+   public:
+   USARTBase( USART_TypeDef *usart )
+   {
+      this->peripheral = usart;
+   }
+   virtual void initialize( ){ };
+};
+
+/**
+ * \brief base class for interrupt driven usart peripherals. This is meant to be inherited
+ *        to create an interrupt driven object
+ */
+class USARTInterrupt : protected USARTBase, public HAL::Interrupt::InterruptPeripheral
+{
+   protected:
+   RingBuffer<uint8_t> tx_buffer;
+   RingBuffer<uint8_t> rx_buffer;
+
+   public:
+   USARTInterrupt( USART_TypeDef *usart, size_t tx_size, size_t rx_size )
+      : USARTBase( usart )
+      , tx_buffer( tx_size )
+      , rx_buffer( rx_size )
+   { }
+
+   void irq_handler( uint8_t type );
+};
 
 /*********************************** Macros ********************************************/
 
@@ -108,7 +144,6 @@ void write_control_register( USART_TypeDef *usart, ControlRegister1 reg, uint8_t
 void write_control_register( USART_TypeDef *usart, ControlRegister2 reg, uint8_t value );
 void write_control_register( USART_TypeDef *usart, ControlRegister3 reg, uint8_t value );
 void set_baudrate( USART_TypeDef *usart, HAL::ResetControlClock::Clocks clock, uint32_t baudrate );
-
 
 };  // namespace USART
 };  // namespace HAL

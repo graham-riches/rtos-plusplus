@@ -22,12 +22,14 @@ set(APP_SOURCES
       Src/HAL/hal_flash.cpp
       Src/HAL/hal_power.cpp
       Src/HAL/hal_usart.cpp
+      Src/HAL/hal_interrupt.cpp
 		
 		# Application Source Files
 		Src/Application/main.cpp
       Src/Application/Events/event.c      
       Src/Peripherals/GPIO/gpio.cpp
       Src/Peripherals/USART/usart.cpp
+      Src/Peripherals/USART/debug_port.cpp
 		Src/Peripherals/peripherals.cpp
 		Src/Peripherals/stm32f4xx_it.c
 		
@@ -42,7 +44,6 @@ target_compile_definitions(${BINARY} PRIVATE
 		-DARM_MATH_CM4
 		-DSTM32F40XX
 		-DSTM32F407xx
-      -DSTM32F40_41xxx    
         )
 
 target_include_directories(${BINARY} PRIVATE
@@ -76,7 +77,6 @@ target_compile_options(${BINARY} PRIVATE
 		  -g3
         -Wall
 		  -Wextra
-		  -Wconversion
 		  -fmessage-length=0        
         )
 

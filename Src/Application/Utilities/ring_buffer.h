@@ -26,20 +26,29 @@ class RingBuffer
 {
    private:
    std::unique_ptr<T[]> buffer;
-   const size_t max_size;
+   size_t max_size;
    size_t head = 0;
    size_t tail = 0;
    bool full = false;
    
 
    public:
-      /* constructor */
-      explicit RingBuffer( size_t size )
+      RingBuffer( size_t size )
          : buffer( std::make_unique<T[]>( size ) )
          , max_size( size )
       { }
 
-      
+      /**
+       * \brief initialize the container
+       * 
+       * \param size size of the container
+       */
+      void initialize( size_t size )
+      {
+         this->max_size = size;
+         this->buffer = std::make_unique<T[]>( size );
+      }
+
       /**
        * \brief put data onto the ring buffer
        * 
