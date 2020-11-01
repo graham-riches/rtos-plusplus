@@ -134,6 +134,7 @@ class USARTInterrupt : protected USARTBase, public HAL::Interrupt::InterruptPeri
    void irq_handler( uint8_t type );
    void send( uint8_t *data, uint16_t size );
    void send( const char *data );
+   void send( const char data );
 };
 
 /*********************************** Macros ********************************************/

@@ -39,6 +39,6 @@
 void USART_initialize( void )
 {
    debug_port.initialize();
-   debug_port.send( "Hello World\n" );
+   debug_port.debug( "this is a test message" );
 }
 

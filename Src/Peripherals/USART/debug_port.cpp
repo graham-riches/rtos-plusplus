@@ -6,30 +6,27 @@
 *  \author Graham Riches
 */
 
-
 /********************************** Includes *******************************************/
 #include "debug_port.h"
-#include "hal_interrupt.h"
 #include "hal_gpio.h"
+#include "hal_interrupt.h"
 #include "hal_rcc.h"
+#include <stdio.h>
+
 
 /*********************************** Consts ********************************************/
 constexpr uint8_t debug_port_buffer_size = 128;
 
 /************************************ Types ********************************************/
 
-
 /*********************************** Macros ********************************************/
-
 
 /******************************* Global Variables **************************************/
 DebugPort debug_port( USART2, debug_port_buffer_size, debug_port_buffer_size );
 
 /******************************** Local Variables **************************************/
 
-
 /****************************** Functions Prototype ************************************/
-
 
 /****************************** Functions Definition ***********************************/
 /**
@@ -61,10 +58,21 @@ void DebugPort::initialize( void )
    USART::write_control_register( USART2, USART::ControlRegister1::receiver_enable, 0x01 );
    USART::write_control_register( USART2, USART::ControlRegister1::transmitter_enable, 0x01 );
    USART::write_control_register( USART2, USART::ControlRegister1::receive_interrupt_enable, 0x01 );
-   
+
    /* register the interrupt in the hal interrupts table */
    Interrupt::register_callback( Interrupt::InterruptName::usart_2, this, 0, 2 );
 
    /* enable the UART */
    USART::write_control_register( USART2, USART::ControlRegister1::usart_enable, 0x01 );
+}
+
+/**
+ * \brief debug print function with variadic arguments (unsafe)
+ * 
+ * \param message the message string
+ * \param ... any formatting arguments
+ */
+void DebugPort::debug( const char *message, ... )
+{
+   this->send( message );
 }

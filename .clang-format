@@ -12,7 +12,7 @@ Language: Cpp
 
 DisableFormat:   false
 
-AccessModifierOffset: -4
+AccessModifierOffset: 0
 AlignAfterOpenBracket: true
 AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: false

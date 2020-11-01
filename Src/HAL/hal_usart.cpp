@@ -204,5 +204,19 @@ void USARTInterrupt::send( const char *data )
    write_control_register( this->peripheral, ControlRegister1::transmit_interrupt_enable, 0x01 );
 }
 
+/**
+ * \brief overloaded send for a single character
+ * 
+ * \param data the character to send
+ */
+void USARTInterrupt::send( const char data )
+{
+   this->tx_buffer.put( static_cast<uint8_t>( data ) );
+   
+   /* enable the tx interrupt */
+   write_control_register( this->peripheral, ControlRegister1::transmit_interrupt_enable, 0x01 );
+}
+
+
 };  // namespace USART
 };  // namespace HAL
