@@ -1,30 +1,19 @@
-/*! \file accelerometer.h
+/*! \file scheduler.c
 *
-*  \brief accelerometer module functions and variables declarations.
+*  \brief A simple cooperative scheduler for concurrent tasks.
 *
 *
 *  \author Graham Riches
 */
 
-#ifndef __ACCELEROMETER_H__
-#define __ACCELEROMETER_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /********************************** Includes *******************************************/
-#include "common.h"
+#include "scheduler.h"
 
 /*********************************** Consts ********************************************/
 
 
 /************************************ Types ********************************************/
-typedef enum
-{
-    ACCEL_CONTROL_MODE_LED = 0,
-    ACCEL_CONTROL_MODE_NONE,
-    ACCEL_CONTROL_TOTAL_MODES
-} ACCEL_controlMode_t;
 
 
 /*********************************** Macros ********************************************/
@@ -33,15 +22,10 @@ typedef enum
 /******************************* Global Variables **************************************/
 
 
+/******************************** Local Variables **************************************/
+
+
 /****************************** Functions Prototype ************************************/
-void ACCEL_init( void );
-void ACCEL_test( void );
-void ACCEL_printData( void );
-void ACCEL_processDataBuffer( void );
-void ACCEL_setControlMode( ACCEL_controlMode_t mode );
 
-#ifdef __cplusplus
-}
-#endif
 
-#endif /* __ACCELEROMETER_H__ */
+/****************************** Functions Definition ***********************************/

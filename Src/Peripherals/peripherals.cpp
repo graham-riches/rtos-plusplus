@@ -10,6 +10,7 @@
 #include "peripherals.h"
 #include "gpio.h"
 #include "hal_flash.h"
+#include "hal_interrupt.h"
 #include "hal_power.h"
 #include "hal_rcc.h"
 #include "usart.h"
@@ -20,8 +21,7 @@ constexpr uint32_t HSE_FREQUENCY = 8000000;
 constexpr uint8_t RCC_PLL_M_FACTOR = 8;
 constexpr uint16_t RCC_PLL_N_FACTOR = 336;
 constexpr uint8_t RCC_PLL_Q_FACTOR = 7;
-constexpr HAL::ResetControlClock::PLLOutputPrescaler RCC_PLL_P_FACTOR =
-   HAL::ResetControlClock::PLLOutputPrescaler::prescaler_2;
+constexpr HAL::ResetControlClock::PLLOutputPrescaler RCC_PLL_P_FACTOR = HAL::ResetControlClock::PLLOutputPrescaler::prescaler_2;
 constexpr HAL::ResetControlClock::PLLSource RCC_PLL_SOURCE = HAL::ResetControlClock::PLLSource::high_speed_external;
 
 /************************************ Types ********************************************/
@@ -53,6 +53,7 @@ void PERIPHERAL_moduleInitialize( void )
 
    /* enable the debug usart */
    USART_initialize( );
+
 }
 
 /**
@@ -80,7 +81,7 @@ void PERIPHERAL_systemBoot( void )
    } while ( hse_ready == false );
 
    /* Select regulator voltage output Scale 1 mode */
-   ResetControlClock::set_apb1_clock(ResetControlClock::APB1Clocks::power_management, true );   
+   ResetControlClock::set_apb1_clock( ResetControlClock::APB1Clocks::power_management, true );
    PowerManagement::set_control_register( PowerManagement::ControlRegister::voltage_output_selection, 0x03 );
 
    /* setup the clock prescalers */
@@ -89,8 +90,7 @@ void PERIPHERAL_systemBoot( void )
    ResetControlClock::configure_apb2_clock( ResetControlClock::APBPrescaler::prescaler_2 );
 
    /* configure the main phase locked loop */
-   ResetControlClock::configure_main_pll(
-      RCC_PLL_SOURCE, HSE_FREQUENCY, RCC_PLL_M_FACTOR, RCC_PLL_N_FACTOR, RCC_PLL_P_FACTOR, RCC_PLL_Q_FACTOR );
+   ResetControlClock::configure_main_pll( RCC_PLL_SOURCE, HSE_FREQUENCY, RCC_PLL_M_FACTOR, RCC_PLL_N_FACTOR, RCC_PLL_P_FACTOR, RCC_PLL_Q_FACTOR );
 
    /* enable the phase locked loop */
    ResetControlClock::set_control_register( ResetControlClock::RCCRegister::main_pll_on, 0x01 );
@@ -110,4 +110,9 @@ void PERIPHERAL_systemBoot( void )
 
    /* set the system clock source */
    ResetControlClock::set_system_clock_source( ResetControlClock::SystemClockSource::phase_locked_loop );
+
+
+   /* set the systick interrupt frequency to every ms */
+   uint32_t sys_clock = ResetControlClock::get_clock_speed( ResetControlClock::Clocks::AHB1 );
+   Interrupt::set_systick_frequency( sys_clock / 1000 );
 }

@@ -1,17 +1,15 @@
-/*! \file audioin.h
+/*! \file scheduler.h
 *
-*  \brief audioin module functions and variables declarations.
+*  \brief simple cooperative scheduler for multi-tasking
 *
 *
 *  \author Graham Riches
 */
 
-#ifndef __AUDIOIN_H__
-#define __AUDIOIN_H__
+#ifndef __SCHEDULER_H__
+#define __SCHEDULER_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+
 /********************************** Includes *******************************************/
 #include "common.h"
 
@@ -28,11 +26,7 @@ extern "C" {
 
 
 /****************************** Functions Prototype ************************************/
-void AUDIOIN_init( void );
-void AUDIOIN_processDataBuffer( void );
 
-#ifdef __cplusplus
-}
-#endif
 
-#endif /* __AUDIOIN_H__ */
+
+#endif /* __SCHEDULER_H__ */

@@ -22,7 +22,6 @@ namespace GPIO
 
 /****************************** Local Function Prototypes ***********************************/
 
-
 /****************************** Functions Definitions ***********************************/
 /**
  * \brief initialize a GPIO pin
@@ -30,8 +29,7 @@ namespace GPIO
  * \param bank reference to the internal GPIO registers for the peripheral
  * \param configuration configuration structure 
  */
-void initialize_pin(
-   GPIO_TypeDef *bank, Pins pin, PinMode mode, Speed speed, PullMode pull_mode, OutputMode output_mode )
+void initialize_pin( GPIO_TypeDef *bank, Pins pin, PinMode mode, Speed speed, PullMode pull_mode, OutputMode output_mode )
 {
    /* find the appropriate bits and set them */
    /* TODO fix magic number  */
@@ -81,10 +79,10 @@ void set_alternate_mode( GPIO_TypeDef *bank, Pins pins, AlternateMode alternate 
       {
          /* select the appropriate register (high/low) from the AFR array */
          uint8_t afr_array_index = ( test_pin <= 8 ) ? 0 : 1;
-         
+
          /* clear the register and set it to the appropriate value */
          uint32_t mask = 0x0F;
-         bank->AFR[afr_array_index] &= ~( ( mask ) << ( static_cast<uint8_t>(alternate) * 4 ) );
+         bank->AFR[afr_array_index] &= ~( ( mask ) << ( static_cast<uint8_t>( alternate ) * 4 ) );
          bank->AFR[afr_array_index] |= ( static_cast<uint8_t>( alternate ) << ( i * 4 ) );
       }
    }
@@ -127,8 +125,15 @@ void OutputPin::set( bool high )
    }
 }
 
-
-
+/**
+ * \brief toggle an output pin
+ * 
+ */
+void OutputPin::toggle( void )
+{
+   uint16_t pin_mask = static_cast<uint16_t>( this->pin );
+   this->bank->BSRRL ^= pin_mask;
+}
 
 };  // namespace GPIO
 };  // namespace HAL

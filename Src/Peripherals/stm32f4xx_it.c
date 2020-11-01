@@ -7,15 +7,17 @@
 */
 
 /********************************** Includes *******************************************/
+#include "stm32f4xx_it.h"
 #include "board.h"
 #include "common.h"
-#include "stm32f4xx_it.h"
 
 /*********************************** Consts ********************************************/
 
-
 /************************************ Types ********************************************/
-#pragma pack(0)
+/**
+ * \brief struct for storing stack context during a crash
+ */
+#pragma pack( 0 )
 typedef struct
 {
    uint32_t r0;
@@ -27,128 +29,97 @@ typedef struct
    uint32_t return_address;
    uint32_t xpsr;
 } StackContext_t;
-#pragma pack(1)
-
+#pragma pack( 1 )
 
 /*********************************** Macros ********************************************/
-#define HALT_IF_DEBUGGING()                              \
-  do {                                                   \
-    if ((*(volatile uint32_t *)0xE000EDF0) & (1 << 0)) { \
-      __asm("bkpt 1");                                   \
-    }                                                    \
-} while (0)
-
-
+#define HALT_IF_DEBUGGING( )                                   \
+   do                                                          \
+   {                                                           \
+      if ( ( *(volatile uint32_t *)0xE000EDF0 ) & ( 1 << 0 ) ) \
+      {                                                        \
+         __asm( "bkpt 1" );                                    \
+      }                                                        \
+   } while ( 0 )
 
 /******************************* Global Variables **************************************/
 
+/******************************* Local Variables **************************************/
+static uint32_t tick_counter = 0;
 
-/****************************** Functions Definitions ************************************/
+
+/****************************** Functions Declarations ************************************/
 void fault_handler( StackContext_t *context );
 
-/******************************************************************************/
-/*           Cortex-M4 Processor Interruption and Exception Handlers          */ 
-/******************************************************************************/
+/****************************** Functions Definitions - Includes Cortex M4 Interrupts ************************************/
 /**
   * @brief This function handles Non maskable interrupt.
   */
-void NMI_Handler( void )
-{
-
-}
-
+void NMI_Handler( void ) { }
 
 /**
   * @brief This function handles Hard fault interrupt.
   */
 void HardFault_Handler( void )
 {
-  while (1)
-  {
-      __asm volatile(
-         "tst lr, #4 \n"
-         "ite eq \n"
-         "mrseq r0, msp \n"
-         "mrsne r0, psp \n"
-         "b fault_handler \n"
-      );
-  }
+   while ( 1 )
+   {
+      __asm volatile( "tst lr, #4 \n"
+                      "ite eq \n"
+                      "mrseq r0, msp \n"
+                      "mrsne r0, psp \n"
+                      "b fault_handler \n" );
+   }
 }
-
 
 /**
   * @brief This function handles Memory management fault.
   */
-void MemManage_Handler(void)
+void MemManage_Handler( void )
 {
-
-  while (1)
-  {
-
-  }
+   while ( 1 )
+   { }
 }
-
 
 /**
   * @brief This function handles Pre-fetch fault, memory access fault.
   */
-void BusFault_Handler(void)
+void BusFault_Handler( void )
 {
-
-  while (1)
-  {
-
-  }
+   while ( 1 )
+   { }
 }
-
 
 /**
   * @brief This function handles Undefined instruction or illegal state.
   */
-void UsageFault_Handler(void)
+void UsageFault_Handler( void )
 {
-  while (1)
-  {
-
-  }
+   while ( 1 )
+   { }
 }
-
 
 /**
   * @brief This function handles System service call via SWI instruction.
   */
-void SVC_Handler(void)
-{
-
-}
-
+void SVC_Handler( void ) { }
 
 /**
   * @brief This function handles Debug monitor.
   */
-void DebugMon_Handler(void)
-{
-
-}
-
+void DebugMon_Handler( void ) { }
 
 /**
   * @brief This function handles Pendable request for system service.
   */
-void PendSV_Handler(void)
-{
-
-}
-
+void PendSV_Handler( void ) { }
 
 /**
   * @brief This function handles System tick timer.
   */
-void SysTick_Handler(void)
+void SysTick_Handler( void ) 
 {
-   
+   tick_counter += 1;
 }
-
 
 /**
  * \brief custom hardfault handler to save the register state
@@ -159,5 +130,5 @@ void SysTick_Handler(void)
 void fault_handler( StackContext_t *context )
 {
    PARAMETER_NOT_USED( context );
-   HALT_IF_DEBUGGING();
+   HALT_IF_DEBUGGING( );
 }

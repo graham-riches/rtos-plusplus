@@ -137,6 +137,7 @@ class OutputPin
    void initialize( GPIO_TypeDef *bank, Pins pin, Speed speed, PullMode pull_mode, OutputMode output_mode );
 
    void set( bool high );
+   void toggle( void );
 };
 
 /*********************************** Macros ********************************************/

@@ -158,6 +158,7 @@ typedef struct
 
 /****************************** Functions Prototype ************************************/
 void register_callback( InterruptName interrupt, InterruptPeripheral *peripheral, uint8_t type, uint32_t priority );
+void set_systick_frequency( uint32_t ticks );
 
 };  // namespace Interrupt
 };  // namespace HAL

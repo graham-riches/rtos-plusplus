@@ -59,6 +59,16 @@ void register_callback( InterruptName interrupt, InterruptPeripheral *peripheral
 }
 
 /**
+ * \brief Set the systick timer frequency
+ * 
+ * \param ticks of the main sysclock per interrupt
+ */
+void set_systick_frequency( uint32_t ticks )
+{
+   SysTick_Config( ticks );
+}
+
+/**
  * \brief default ISR handler to map specific function pointers from the startup file into 
  *        the registered interrupts table
  * 
@@ -74,6 +84,7 @@ static void default_isr_handler( void )
 
 };  // namespace Interrupt
 };  // namespace HAL
+
 
 /****************************** Vector Table Function Pointer Definitions ***********************************/
 /*

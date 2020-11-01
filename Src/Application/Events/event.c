@@ -9,9 +9,6 @@
 
 /********************************** Includes *******************************************/
 #include "event.h"
-#include "accelerometer.h"
-#include "audioin.h"
-#include "command_line.h"
 #include "board.h"
 
 /*********************************** Consts ********************************************/
@@ -46,9 +43,7 @@ void EVENT_init( void )
    mainEventFlags = 0;
 
    /* assign the function pointers for the event group */
-   //mainEventHandler.cbs[EVENT_USART_DEBUG_RX] = (EVENT_cb_t)&CLI_mainEventFunc;
-   //mainEventHandler.cbs[EVENT_ACCEL_BUFF_FULL] = (EVENT_cb_t)&ACCEL_processDataBuffer;
-   //mainEventHandler.cbs[EVENT_AUDIO_IN_BUFF_FULL] = (EVENT_cb_t)&AUDIOIN_processDataBuffer;
+
    return;
 }
 

@@ -39,6 +39,12 @@
 void USART_initialize( void )
 {
    debug_port.initialize();
-   debug_port.debug( "this is a test message" );
+
+   /* print out a splash screen */
+   debug_port.send( "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
+   debug_port.send( "STM32F407 Debug Terminal \n");
+   debug_port.send( "   Author: Graham Riches \n");
+   debug_port.send( "   Date: November 1, 2020 \n");
+   debug_port.send( "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
 }
 
