@@ -70,8 +70,8 @@ target_compile_options(${BINARY} PRIVATE
         -mthumb
         -mfpu=fpv4-sp-d16
         -mfloat-abi=hard
-        -fdata-sections
-        -ffunction-sections
+        -fno-data-sections
+        -fno-function-sections
         -fno-exceptions
 		  -O0
 		  -g3
@@ -103,4 +103,15 @@ add_custom_command(TARGET ${BINARY}
 add_custom_command(TARGET ${BINARY}
         POST_BUILD
         COMMAND arm-none-eabi-objcopy -O ihex ${BINARY} ${PROJECT_NAME}.hex
-        COMMAND arm-none-eabi-objcopy -O binary ${BINARY} ${PROJECT_NAME}.bin)
+        COMMAND arm-none-eabi-objcopy -O binary ${BINARY} ${PROJECT_NAME}.bin
+        )
+
+# Create disassembly
+add_custom_command( TARGET ${BINARY}
+         POST_BUILD
+         COMMAND arm-none-eabi-objdump -d ${BINARY} > ${PROJECT_NAME}_dasm.txt)
+
+# flash the build
+add_custom_command( TARGET ${BINARY}
+         POST_BUILD
+         COMMAND openocd -f ../stm32f407.cfg -c "program stm32_discovery.elf verify reset exit")

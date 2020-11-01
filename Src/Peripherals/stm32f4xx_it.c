@@ -7,23 +7,44 @@
 */
 
 /********************************** Includes *******************************************/
-#include <board.h>
+#include "board.h"
+#include "common.h"
 #include "stm32f4xx_it.h"
 
 /*********************************** Consts ********************************************/
 
 
 /************************************ Types ********************************************/
+#pragma pack(0)
+typedef struct
+{
+   uint32_t r0;
+   uint32_t r1;
+   uint32_t r2;
+   uint32_t r3;
+   uint32_t r12;
+   uint32_t lr;
+   uint32_t return_address;
+   uint32_t xpsr;
+} StackContext_t;
+#pragma pack(1)
 
 
 /*********************************** Macros ********************************************/
+#define HALT_IF_DEBUGGING()                              \
+  do {                                                   \
+    if ((*(volatile uint32_t *)0xE000EDF0) & (1 << 0)) { \
+      __asm("bkpt 1");                                   \
+    }                                                    \
+} while (0)
+
 
 
 /******************************* Global Variables **************************************/
 
 
 /****************************** Functions Definitions ************************************/
-
+void fault_handler( StackContext_t *context );
 
 /******************************************************************************/
 /*           Cortex-M4 Processor Interruption and Exception Handlers          */ 
@@ -44,18 +65,13 @@ void HardFault_Handler( void )
 {
   while (1)
   {
-      /*
-      asm volatile(
-                  "tst lr, #4\t\n" // Check EXC_RETURN[2]
-                  "ite eq\t\n"
-                  "mrseq r0, msp\t\n"
-                  "mrsne r0, psp\t\n"
-                  "b HardFault_Handler\t\n"
-                  : // no output
-                  : // no input
-                  : "r0" // clobber
-                  );
-      */
+      __asm volatile(
+         "tst lr, #4 \n"
+         "ite eq \n"
+         "mrseq r0, msp \n"
+         "mrsne r0, psp \n"
+         "b fault_handler \n"
+      );
   }
 }
 
@@ -131,4 +147,17 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
    
+}
+
+
+/**
+ * \brief custom hardfault handler to save the register state
+ * 
+ * \param context register context
+ * \note this should not be optimized ***
+ */
+void fault_handler( StackContext_t *context )
+{
+   PARAMETER_NOT_USED( context );
+   HALT_IF_DEBUGGING();
 }

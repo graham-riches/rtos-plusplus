@@ -26,7 +26,7 @@ class RingBuffer
 {
    private:
    std::unique_ptr<T[]> buffer;
-   size_t max_size;
+   const size_t max_size;
    size_t head = 0;
    size_t tail = 0;
    bool full = false;

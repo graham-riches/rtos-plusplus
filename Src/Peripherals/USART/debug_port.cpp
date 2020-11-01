@@ -11,8 +11,8 @@
 #include "hal_gpio.h"
 #include "hal_interrupt.h"
 #include "hal_rcc.h"
-#include <stdio.h>
-
+#include <cstdio>
+#include <cstring>
 
 /*********************************** Consts ********************************************/
 constexpr uint8_t debug_port_buffer_size = 128;
@@ -67,12 +67,49 @@ void DebugPort::initialize( void )
 }
 
 /**
- * \brief debug print function with variadic arguments (unsafe)
+ * \brief log a debug message
  * 
- * \param message the message string
- * \param ... any formatting arguments
+ * \param message the message to send
  */
-void DebugPort::debug( const char *message, ... )
+void DebugPort::debug( const char *message )
 {
+   this->send( "DEBUG: " );
    this->send( message );
+   this->send( "\r\n" );
+}
+
+/**
+ * \brief log an info message
+ * 
+ * \param message the message to send
+ */
+void DebugPort::info( const char *message )
+{
+   this->send( "INFO: " );
+   this->send( message );
+   this->send( "\r\n" );
+}
+
+/**
+ * \brief log a warning
+ * 
+ * \param message the warning message
+ */
+void DebugPort::warning( const char *message )
+{
+   this->send( "WARNING: " );
+   this->send( message );
+   this->send( "\r\n" );
+}
+
+/**
+ * \brief log an error
+ * 
+ * \param message the error to log
+ */
+void DebugPort::error( const char *message )
+{
+   this->send( "ERROR: " );
+   this->send( message );
+   this->send( "\r\n" );
 }
