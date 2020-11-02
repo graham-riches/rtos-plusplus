@@ -1,2 +1,3 @@
-# stm32-discovery
-Development on STM32F407 Discovery Board
+# Bare Metal OS
+
+Modern C++ HAL driver and simple RTOS development for use on ARM Cortex processors (mainly M4 at the moment).
