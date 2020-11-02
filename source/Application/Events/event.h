@@ -28,9 +28,9 @@ class EventFlags
    public:
    EventFlags( ) { }
 
-   void register_event( std::function<void( void )> callback ) { PARAMETER_NOT_USED( callback ); }
-   void set( ) {}
-   void get( ) {}
+   void register_event( std::function<void( void )> callback );
+   void set( );
+   void get( );
 };
 };  // namespace OS
 

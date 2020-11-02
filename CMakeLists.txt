@@ -17,21 +17,21 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(APP_SOURCES 		      
       # HAL++ source files
-      Src/HAL/hal_gpio.cpp
-      Src/HAL/hal_rcc.cpp
-      Src/HAL/hal_flash.cpp
-      Src/HAL/hal_power.cpp
-      Src/HAL/hal_usart.cpp
-      Src/HAL/hal_interrupt.cpp
+      source/HAL/hal_gpio.cpp
+      source/HAL/hal_rcc.cpp
+      source/HAL/hal_flash.cpp
+      source/HAL/hal_power.cpp
+      source/HAL/hal_usart.cpp
+      source/HAL/hal_interrupt.cpp
 		
 		# Application Source Files
-		Src/Application/main.cpp
-      Src/Application/Events/event.c      
-      Src/Peripherals/GPIO/gpio.cpp
-      Src/Peripherals/USART/usart.cpp
-      Src/Peripherals/USART/debug_port.cpp
-		Src/Peripherals/peripherals.cpp
-		Src/Peripherals/stm32f4xx_it.c
+		source/Application/main.cpp
+      source/Application/Events/event.cpp  
+      source/Peripherals/GPIO/gpio.cpp
+      source/Peripherals/USART/usart.cpp
+      source/Peripherals/USART/debug_port.cpp
+		source/Peripherals/peripherals.cpp
+		source/Peripherals/stm32f4xx_it.c
 		
 		# Start Up File
         startup/startup_stm32f407xx.s)
@@ -51,18 +51,18 @@ target_include_directories(${BINARY} PRIVATE
 		Drivers/CMSIS/Include
 		Drivers/CMSIS/DSP_Lib/Include
 		
-      Src
-      Src/HAL      
-		Src/Application
-		Src/Application/Accelerometer
-		Src/Application/Audio
-		Src/Application/Debug
-		Src/Application/Events
-		Src/Application/Utilities
+      source
+      source/HAL      
+		source/Application
+		source/Application/Accelerometer
+		source/Application/Audio
+		source/Application/Debug
+		source/Application/Events
+		source/Application/Utilities
 		
-		Src/Peripherals
-		Src/Peripherals/GPIO		
-		Src/Peripherals/USART
+		source/Peripherals
+		source/Peripherals/GPIO		
+		source/Peripherals/USART
         )
 
 target_compile_options(${BINARY} PRIVATE		
