@@ -11,6 +11,7 @@
 #include "gpio.h"
 #include "peripherals.h"
 #include "threading.h"
+#include "scheduler.h"
 #include <string.h>
 
 /*********************************** Consts ********************************************/
@@ -45,9 +46,12 @@ int main( void )
    /* register the threads */
    OS::system_thread_manager.register_thread( &thread_one );
    OS::system_thread_manager.register_thread( &thread_two );
-
+   
    /* configure the project specific HAL drivers and bootup the chip */
    PERIPHERAL_moduleInitialize( );
+
+   /* enter the OS kernel */
+   OS::enter_kernel( );
 
    /* main application loop */
    while ( 1 )

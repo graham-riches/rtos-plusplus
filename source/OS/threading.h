@@ -81,6 +81,7 @@ class ThreadManager
 
 /******************************* Global Variables **************************************/
 extern ThreadManager system_thread_manager;
+extern TaskControlBlock *system_active_task;
 
 /****************************** Functions Prototype ************************************/
 
