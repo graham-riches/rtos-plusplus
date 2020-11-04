@@ -25,14 +25,18 @@ set(APP_SOURCES
       source/HAL/hal_interrupt.cpp
 		
 		# Application Source Files
-		source/Application/main.cpp
+      source/Application/main.cpp      
       source/Application/Events/event.cpp  
       source/Peripherals/GPIO/gpio.cpp
       source/Peripherals/USART/usart.cpp
       source/Peripherals/USART/debug_port.cpp
 		source/Peripherals/peripherals.cpp
-		source/Peripherals/stm32f4xx_it.c
-		
+		source/Peripherals/stm32f4xx_it.cpp
+      
+      # OS files
+      source/OS/scheduler.cpp
+      source/OS/threading.cpp
+
 		# Start Up File
         startup/startup_stm32f407xx.s)
 
@@ -54,15 +58,19 @@ target_include_directories(${BINARY} PRIVATE
       source
       source/HAL      
 		source/Application
-		source/Application/Accelerometer
+      source/Application/Accelerometer      
 		source/Application/Audio
 		source/Application/Debug
 		source/Application/Events
 		source/Application/Utilities
-		
+      
+      source/OS/
+
 		source/Peripherals
 		source/Peripherals/GPIO		
-		source/Peripherals/USART
+      source/Peripherals/USART
+      
+
         )
 
 target_compile_options(${BINARY} PRIVATE		
@@ -115,3 +123,6 @@ add_custom_command( TARGET ${BINARY}
 add_custom_command( TARGET ${BINARY}
          POST_BUILD
          COMMAND openocd -f ../stm32f407.cfg -c "program stm32_discovery.elf verify reset exit")
+		 
+# build and run the unit tests
+#add_subdirectory(tests)

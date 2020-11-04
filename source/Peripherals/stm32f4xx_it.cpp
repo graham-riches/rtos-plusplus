@@ -10,6 +10,7 @@
 #include "stm32f4xx_it.h"
 #include "board.h"
 #include "common.h"
+#include "threading.h"
 
 /*********************************** Consts ********************************************/
 
@@ -44,17 +45,23 @@ typedef struct
 /******************************* Global Variables **************************************/
 
 /******************************* Local Variables **************************************/
-static uint32_t tick_counter = 0;
+
 
 
 /****************************** Functions Declarations ************************************/
+extern "C"{
+
 void fault_handler( StackContext_t *context );
+
+}
+
 
 /****************************** Functions Definitions - Includes Cortex M4 Interrupts ************************************/
 /**
   * @brief This function handles Non maskable interrupt.
   */
 void NMI_Handler( void ) { }
+
 
 /**
   * @brief This function handles Hard fault interrupt.
@@ -71,6 +78,7 @@ void HardFault_Handler( void )
    }
 }
 
+
 /**
   * @brief This function handles Memory management fault.
   */
@@ -79,6 +87,7 @@ void MemManage_Handler( void )
    while ( 1 )
    { }
 }
+
 
 /**
   * @brief This function handles Pre-fetch fault, memory access fault.
@@ -89,6 +98,7 @@ void BusFault_Handler( void )
    { }
 }
 
+
 /**
   * @brief This function handles Undefined instruction or illegal state.
   */
@@ -98,27 +108,43 @@ void UsageFault_Handler( void )
    { }
 }
 
+
 /**
   * @brief This function handles System service call via SWI instruction.
   */
 void SVC_Handler( void ) { }
+
 
 /**
   * @brief This function handles Debug monitor.
   */
 void DebugMon_Handler( void ) { }
 
+
 /**
   * @brief This function handles Pendable request for system service.
   */
 void PendSV_Handler( void ) { }
 
+
 /**
   * @brief This function handles System tick timer.
   */
-void SysTick_Handler( void ) 
-{
-   tick_counter += 1;
+__attribute__((naked)) void SysTick_Handler( void ) 
+{   
+   OS::TaskControlBlock *task = OS::system_thread_manager.activeTask;
+
+   /* disable interrupts */
+   __asm( "CPSID   I" );
+
+   /* push the remaining core registers */
+   __asm( "PUSH {R4-R11}" );
+
+
+
+
+
+   
 }
 
 /**

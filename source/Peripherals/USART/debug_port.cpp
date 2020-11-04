@@ -15,7 +15,7 @@
 #include <cstring>
 
 /*********************************** Consts ********************************************/
-constexpr uint8_t debug_port_buffer_size = 256;
+constexpr uint16_t debug_port_buffer_size = 256;
 
 /************************************ Types ********************************************/
 
