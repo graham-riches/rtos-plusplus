@@ -51,12 +51,14 @@ class Thread
 /**
  * \brief task control block for thread management 
  */
+#pragma pack(0)
 struct TaskControlBlock
 {
+   uint32_t *active_stack_pointer;   
    TaskControlBlock *next;
-   Thread *thread;
-   uint32_t *active_stack_pointer;
+   Thread *thread;      
 };
+#pragma pack(1)
 
 
 /**

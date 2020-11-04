@@ -140,8 +140,22 @@ __attribute__((naked)) void SysTick_Handler( void )
    /* push the remaining core registers */
    __asm( "PUSH {R4-R11}" );
 
+   /* load the active task pointer into r0*/
+   __asm( "LDR  R0, =task" );
 
+   /* load the stack pointer from the contents of task into R1 */
+   __asm( "LDR R1, [R0]" );
 
+   /* move the CPU stack pointer to R4 */
+   __asm( "MOV R4, SP" );
+
+   /* store the stack pointer into task */
+   __asm( "STR R4, [R1]" );
+
+   /* Context has now been saved !!! */
+
+   /* get the next task pointer and load it into R1*/
+   __asm( "LDR R1, [R1, #4]" );
 
 
    
