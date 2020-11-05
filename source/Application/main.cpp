@@ -12,6 +12,7 @@
 #include "peripherals.h"
 #include "threading.h"
 #include "scheduler.h"
+#include "timer.h"
 #include <string.h>
 
 /*********************************** Consts ********************************************/
@@ -68,8 +69,15 @@ int main( void )
  * 
  */
 static void thread_one_task( void )
-{
-   green_led.toggle( );
+{   
+   while (1)
+   {
+      green_led.set( false );
+      OS::delay_ms( 500 );
+      green_led.set( true );
+      OS::delay_ms( 500 );
+   }   
+   //green_led.toggle( ); //!< toggle might be broken?
 }
 
 
@@ -79,5 +87,12 @@ static void thread_one_task( void )
  */
 static void thread_two_task( void )
 {
-   red_led.toggle( );
+   while (1)
+   {
+      red_led.set(false);
+      OS::delay_ms( 500 );
+      red_led.set(true);
+      OS::delay_ms( 500 );
+   }   
+   //red_led.toggle( );
 }

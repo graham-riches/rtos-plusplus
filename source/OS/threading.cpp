@@ -83,7 +83,22 @@ Thread::Thread( THREAD_task_t task, uint32_t id, uint32_t *stack, uint32_t stack
    taskContext->psr = PSR_THUMB_MODE;
 
    /* set the program counter to the function pointer for the thread */
-   taskContext->pc = reinterpret_cast<uint32_t>( &this->task );
+   taskContext->pc = reinterpret_cast<uint32_t>( this->task );
+
+   /* set some garbo values to watch the registers during debugging */
+   taskContext->r0 = 0;
+   taskContext->r1 = 1;
+   taskContext->r2 = 2;
+   taskContext->r3 = 3;
+   taskContext->r4 = 4;
+   taskContext->r5 = 5;
+   taskContext->r6 = 6;
+   taskContext->r7 = 7;
+   taskContext->r8 = 8;
+   taskContext->r9 = 9;
+   taskContext->r10 = 10;
+   taskContext->r11 = 11;
+   taskContext->r12 = 12;
 }
 
 
@@ -112,7 +127,7 @@ void ThreadManager::register_thread( Thread *thread )
       this->task_control_blocks[this->thread_count].thread = thread;
       
       /* set the stack pointer to the pre-initialized values */
-      this->task_control_blocks[this->thread_count].active_stack_pointer = thread->stack + thread->stack_size - CONTEXT_STACK_SIZE;
+      this->task_control_blocks[this->thread_count].active_stack_pointer = thread->stack + thread->stack_size - CONTEXT_STACK_SIZE ;
 
       /* set the next pointer */
       this->task_control_blocks[this->thread_count].next = nullptr;

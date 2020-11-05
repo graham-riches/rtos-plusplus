@@ -11,6 +11,7 @@
 #include "board.h"
 #include "common.h"
 #include "threading.h"
+#include "timer.h"
 
 /*********************************** Consts ********************************************/
 
@@ -133,16 +134,15 @@ void PendSV_Handler( void ) { }
 __attribute__((naked)) void SysTick_Handler( void ) 
 {   
    using namespace OS;
+
+   /* increment the tick counter */
+   system_ticks++;
+
    /* disable interrupts */
    __asm( "CPSID      I" );
 
    /* push the remaining core registers */
-   /* TODO try this with single line */
-   __asm( "PUSH       {R4-R7}" );
-   __asm( "MOV        R4, R8" );
-   __asm( "MOV        R5, R9" );
-   __asm( "MOV        R6, R10" );
-   __asm( "MOV        R7, R11" );
+   __asm( "PUSH       {R4-R11}" );
 
    /* load the active task pointer into r0*/
    __asm( "LDR        R0, =system_active_task" );
@@ -166,15 +166,10 @@ __attribute__((naked)) void SysTick_Handler( void )
 
    /* get the new stack pointer and push it to the CPU stack pointer register */
    __asm( "LDR        R4, [R1]" );
-   __asm( "MOV        SP, R4" );
+   __asm( "MOV        SP, R4"   );
 
    /* pop the stored registers */
-   __asm( "POP        {R4-R7}" );
-   __asm( "MOV        R8, R4" );
-   __asm( "MOV        R9, R5" );
-   __asm( "MOV        R10, R6" );
-   __asm( "MOV        R11, R7" );
-   __asm( "POP        {R4-R7}" );
+   __asm( "POP        {R4-R11}"  );
 
    /* re-enable interrupts */
    __asm( "CPSIE      I" );

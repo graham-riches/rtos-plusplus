@@ -42,18 +42,11 @@ __attribute__((naked)) void enter_kernel( void )
    __asm("LDR     R4, [R2]");
    __asm("MOV     SP, R4");
 
-   /* Pop registers R8-R11 */
-   __asm("POP     {R4-R7}");
-   __asm("MOV     R8, R4");
-   __asm("MOV     R9, R5");
-   __asm("MOV     R10, R6");
-   __asm("MOV     R11, R7");
+   /* Pop registers R0-R11 */
+   __asm("POP     {R4-R11}");   
+   __asm("POP     {R0-R3}" );
 
-   /* Pop registers R4-R7 */
-   __asm("POP     {R4-R7}");
-
-   /*  Pop the cortex saved context registers */
-   __asm("POP     {R0-R3}");
+   /*  Pop the cortex saved context registers */   
    __asm("POP     {R4}");
    __asm("MOV     R12, R4");
 
