@@ -132,7 +132,7 @@ void OutputPin::set( bool high )
 void OutputPin::toggle( void )
 {
    uint16_t pin_mask = static_cast<uint16_t>( this->pin );
-   this->bank->BSRRL ^= pin_mask;
+   this->bank->ODR ^= pin_mask;
 }
 
 };  // namespace GPIO

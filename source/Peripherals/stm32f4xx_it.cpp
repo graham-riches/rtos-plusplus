@@ -156,8 +156,6 @@ __attribute__((naked)) void SysTick_Handler( void )
    /* store the stack pointer into task */
    __asm( "STR        R4, [R1]" );
 
-   /* Context has now been saved !!! */
-
    /* get the next task pointer and load it into R1 - 4 byte offset from stack pointer to next task */
    __asm( "LDR        R1, [R1, #4]" );
 
@@ -177,6 +175,7 @@ __attribute__((naked)) void SysTick_Handler( void )
    /* branch to the link register */
    __asm( "BX         LR");
 }
+
 
 /**
  * \brief custom hardfault handler to save the register state

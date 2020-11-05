@@ -54,12 +54,7 @@ int main( void )
    /* enter the OS kernel */
    OS::enter_kernel( );
 
-   /* main application loop */
-   while ( 1 )
-   {
-
-   }
-
+   /* NOTE: should never reach here! */
    return 0;
 }
 
@@ -72,12 +67,9 @@ static void thread_one_task( void )
 {   
    while (1)
    {
-      green_led.set( false );
+      green_led.toggle( );
       OS::delay_ms( 500 );
-      green_led.set( true );
-      OS::delay_ms( 500 );
-   }   
-   //green_led.toggle( ); //!< toggle might be broken?
+   }      
 }
 
 
@@ -89,10 +81,7 @@ static void thread_two_task( void )
 {
    while (1)
    {
-      red_led.set(false);
-      OS::delay_ms( 500 );
-      red_led.set(true);
-      OS::delay_ms( 500 );
-   }   
-   //red_led.toggle( );
+      red_led.toggle( );
+      OS::delay_ms( 500 );            
+   }      
 }
