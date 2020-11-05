@@ -48,7 +48,7 @@ add_executable(${BINARY} ${APP_SOURCES})
 target_compile_definitions(${BINARY} PRIVATE
 		-DARM_MATH_CM4
 		-DSTM32F40XX
-		-DSTM32F407xx
+      -DSTM32F407xx
         )
 
 target_include_directories(${BINARY} PRIVATE

@@ -34,8 +34,15 @@ extern "C" {
 #ifndef ARM_MATH_CM4
     #define ARM_MATH_CM4
 #endif                        
-                                                   
 
+
+#ifndef __STATIC_INLINE
+   #define __STATIC_INLINE static inline
+#endif
+
+#ifndef __GNUC__
+   #define __GNUC__
+#endif
 
 /******************************* Global Variables **************************************/
 

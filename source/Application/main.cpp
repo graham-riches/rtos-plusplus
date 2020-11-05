@@ -13,6 +13,7 @@
 #include "threading.h"
 #include "scheduler.h"
 #include "timer.h"
+#include "debug_port.h"
 #include <string.h>
 
 /*********************************** Consts ********************************************/
@@ -69,6 +70,7 @@ static void thread_one_task( void )
    {
       green_led.toggle( );
       OS::delay_ms( 500 );
+      debug_port.send("hello from thread one\n");
    }      
 }
 
@@ -82,6 +84,7 @@ static void thread_two_task( void )
    while (1)
    {
       red_led.toggle( );
-      OS::delay_ms( 500 );            
+      OS::delay_ms( 500 );
+      debug_port.send("hello from thread two\n");         
    }      
 }

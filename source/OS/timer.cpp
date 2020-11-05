@@ -34,7 +34,7 @@ uint32_t system_ticks;
 /**
  * \brief delay for a set period in milliseconds
  * 
- * \param milliseconds time to delay for
+ * \param delay time to delay for
  */
 void delay_ms( uint32_t delay )
 {

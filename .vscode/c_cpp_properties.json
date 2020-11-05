@@ -3,25 +3,25 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "D:/Code/Environments/MinGW GCC10.2/include"
             ],
             "defines": [
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE",
                 "ARM_MATH_CM4",
-		         "__FPU_PRESENT",
-		         "STM32F40XX",
-		         "STM32F407xx",
-               "STM32F40_41xxx",
-		         "USE_STDPERIPH_DRIVER"
+                "__FPU_PRESENT",
+                "STM32F407xx",
+                "__GNUC__"
             ],
             "windowsSdkVersion": "10.0.18362.0",
             "compilerPath": "C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/VC/Tools/MSVC/14.27.29110/bin/Hostx64/x64/cl.exe",
             "cStandard": "c11",
             "cppStandard": "c++17",
             "intelliSenseMode": "msvc-x64",
-            "compileCommands": "${workspaceFolder}/Build/compile_commands.json"
+            "compileCommands": "${workspaceFolder}/Build/compile_commands.json",
+            "configurationProvider": "ms-vscode.cmake-tools"
         }
     ],
     "version": 4
