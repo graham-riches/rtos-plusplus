@@ -1,13 +1,14 @@
-/*! \file stm32f4xx_it.c
+/*! \file interrupts.c
 *
-*  \brief This file contains the ISR routines for the M4 exception interrupts
+*  \brief Operating system level interrupts.
 *
 *
 *  \author Graham Riches
 */
 
+
 /********************************** Includes *******************************************/
-#include "stm32f4xx_it.h"
+#include "interrupts.h"
 #include "board.h"
 #include "common.h"
 #include "threading.h"
@@ -133,47 +134,28 @@ void PendSV_Handler( void ) { }
   */
 __attribute__((naked)) void SysTick_Handler( void ) 
 {   
+   /* use the OS namespace to access the task control block pointer */
    using namespace OS;
 
    /* increment the tick counter */
    system_ticks++;
 
-   /* disable interrupts */
-   __asm( "CPSID      I" );
-
-   /* push the remaining core registers */
-   __asm( "PUSH       {R4-R11}" );
-
-   /* load the active task pointer into r0*/
-   __asm( "LDR        R0, =system_active_task" );
-
-   /* load the stack pointer from the contents of task into R1 */
-   __asm( "LDR        R1, [R0]" );
-
-   /* move the CPU stack pointer to R4 */
-   __asm( "MOV        R4, SP" );
-
-   /* store the stack pointer into task */
-   __asm( "STR        R4, [R1]" );
-
-   /* get the next task pointer and load it into R1 - 4 byte offset from stack pointer to next task */
-   __asm( "LDR        R1, [R1, #4]" );
-
-   /* store the contents of R1 in R0 */
-   __asm( "STR        R1, [R0]" );
-
-   /* get the new stack pointer and push it to the CPU stack pointer register */
-   __asm( "LDR        R4, [R1]" );
-   __asm( "MOV        SP, R4"   );
-
-   /* pop the stored registers */
-   __asm( "POP        {R4-R11}"  );
-
-   /* re-enable interrupts */
-   __asm( "CPSIE      I" );
-
-   /* branch to the link register */
-   __asm( "BX         LR");
+   /* run the task context switching from the scheduler */
+   __asm( 
+      "CPSID      I                        \n" /* disable interrupts */
+      "PUSH       {R4-R11}                 \n" /* push the remaining core registers */
+      "LDR        R0, =system_active_task  \n" /* load the active task pointer into r0*/
+      "LDR        R1, [R0]                 \n" /* load the stack pointer from the contents of task into R1 */
+      "MOV        R4, SP                   \n" /* move the CPU stack pointer to R4 */
+      "STR        R4, [R1]                 \n" /* store the stack pointer into task */
+      "LDR        R1, [R1, #4]             \n" /* get the next task pointer and load it into R1 - 4 byte offset from stack pointer to next task */
+      "STR        R1, [R0]                 \n" /* store the contents of R1 in R0 */
+      "LDR        R4, [R1]                 \n" /* get the new stack pointer */
+      "MOV        SP, R4                   \n" /* push it to the CPU stack pointer register */
+      "POP        {R4-R11}                 \n" /* pop the stored registers */
+      "CPSIE      I                        \n" /* re-enable interrupts */
+      "BX         LR                       \n" /* branch to the link register */
+   );
 }
 
 

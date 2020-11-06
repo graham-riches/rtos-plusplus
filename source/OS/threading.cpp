@@ -41,11 +41,28 @@ typedef struct
 } ThreadContext_t;
 #pragma pack(0)
 
+
+/**
+ * \brief class for managing application threads
+ */
+class ThreadManager
+{
+   private:      
+      uint8_t thread_count;
+      TaskControlBlock task_control_blocks[max_system_threads];
+
+   public:      
+      TaskControlBlock *activeTask;
+
+      ThreadManager( );
+      void register_thread( Thread *thread );
+};
+
 /*********************************** Macros ********************************************/
 
 
 /******************************* Global Variables **************************************/
-ThreadManager system_thread_manager;
+static ThreadManager system_thread_manager;
 TaskControlBlock *system_active_task = system_thread_manager.activeTask;
 
 /******************************** Local Variables **************************************/
@@ -149,5 +166,14 @@ void ThreadManager::register_thread( Thread *thread )
    }
 }
 
+/**
+ * \brief register a new thread into the OS
+ * 
+ * \param thread pointer to the thread class
+ */
+void register_thread( Thread *thread )
+{
+   system_thread_manager.register_thread( thread );
+}
 
 };

@@ -1,38 +1,46 @@
-/*! \file scheduler.h
+/*! \file interrupts.h
 *
-*  \brief simple cooperative scheduler for multi-tasking
+*  \brief interrupts module functions and variables declarations.
 *
 *
 *  \author Graham Riches
 */
 
-#ifndef __SCHEDULER_H__
-#define __SCHEDULER_H__
+#ifndef __INTERRUPTS_H__
+#define __INTERRUPTS_H__
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 /********************************** Includes *******************************************/
-#include "common.h"
 
-namespace OS
-{
 /*********************************** Consts ********************************************/
+
 
 /************************************ Types ********************************************/
 
+
 /*********************************** Macros ********************************************/
+
 
 /******************************* Global Variables **************************************/
 
+
 /****************************** Functions Prototype ************************************/
-void enter_kernel( void );
+void NMI_Handler(void);
+void HardFault_Handler(void);
+void MemManage_Handler(void);
+void BusFault_Handler(void);
+void UsageFault_Handler(void);
+void SVC_Handler(void);
+void DebugMon_Handler(void);
+void PendSV_Handler(void);
+void SysTick_Handler(void);
+void OTG_FS_IRQHandler(void);
 
 
-};  // namespace OS
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __SCHEDULER_H__ */
+#endif /* __INTERRUPTS_H__ */

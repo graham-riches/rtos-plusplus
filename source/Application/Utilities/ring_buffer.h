@@ -33,7 +33,7 @@ class RingBuffer
    
 
    public:
-      RingBuffer( size_t size )
+      explicit RingBuffer( size_t size )
          : buffer( std::make_unique<T[]>( size ) )
          , max_size( size )
       { }

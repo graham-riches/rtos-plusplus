@@ -61,30 +61,15 @@ struct TaskControlBlock
 #pragma pack(1)
 
 
-/**
- * \brief class for managing application threads
- */
-class ThreadManager
-{
-   private:      
-      uint8_t thread_count;
-      TaskControlBlock task_control_blocks[max_system_threads];
 
-   public:      
-      TaskControlBlock *activeTask;
-
-      ThreadManager( );
-      void register_thread( Thread *thread );
-};
 
 /*********************************** Macros ********************************************/
 
 /******************************* Global Variables **************************************/
-extern ThreadManager system_thread_manager;
 extern TaskControlBlock *system_active_task;
 
 /****************************** Functions Prototype ************************************/
-
+void register_thread( Thread *thread );
 
 };  // namespace OS
 

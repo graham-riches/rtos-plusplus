@@ -27,19 +27,20 @@ set(APP_SOURCES
 		# Application Source Files
       source/Application/main.cpp      
       source/Application/Events/event.cpp  
-      source/Peripherals/GPIO/gpio.cpp
-      source/Peripherals/USART/usart.cpp
-      source/Peripherals/USART/debug_port.cpp
-		source/Peripherals/peripherals.cpp
-		source/Peripherals/stm32f4xx_it.cpp
+      source/Application/Peripherals/GPIO/gpio.cpp
+      source/Application/Peripherals/USART/usart.cpp
+      source/Application/Peripherals/USART/debug_port.cpp
+		source/Application/Peripherals/peripherals.cpp
+		
       
       # OS files
       source/OS/scheduler.cpp
       source/OS/threading.cpp
       source/OS/timer.cpp
+      source/OS/interrupts.cpp
 
 		# Start Up File
-        startup/startup_stm32f407xx.s)
+      startup/startup_stm32f407xx.s)
 
 set(BINARY ${PROJECT_NAME}.elf)
 
@@ -67,9 +68,9 @@ target_include_directories(${BINARY} PRIVATE
       
       source/OS/
 
-		source/Peripherals
-		source/Peripherals/GPIO		
-      source/Peripherals/USART
+		source/Application/Peripherals
+		source/Application/Peripherals/GPIO		
+      source/Application/Peripherals/USART
       
 
         )

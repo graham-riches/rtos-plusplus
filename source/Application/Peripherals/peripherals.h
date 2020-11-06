@@ -26,8 +26,6 @@
 
 
 /****************************** Functions Prototype ************************************/
-void PERIPHERAL_moduleInitialize( void );
-
-
+void initialize_peripherals( void );
 
 #endif /* __PERIPHERALS_H__ */

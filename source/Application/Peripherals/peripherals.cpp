@@ -15,7 +15,6 @@
 #include "hal_rcc.h"
 #include "usart.h"
 
-
 /*********************************** Consts ********************************************/
 constexpr uint32_t HSE_FREQUENCY = 8000000;
 constexpr uint8_t RCC_PLL_M_FACTOR = 8;
@@ -33,27 +32,25 @@ constexpr HAL::ResetControlClock::PLLSource RCC_PLL_SOURCE = HAL::ResetControlCl
 /******************************** Local Variables **************************************/
 
 /****************************** Functions Prototype ************************************/
-void PERIPHERAL_systemBoot( void );
+void system_boot( void );
 
 /****************************** Functions Definition ***********************************/
 /**
-* \name     PERIPHERAL_moculdeInitialize
 * \brief    setup all of the peripherals
 *
 * \param    None
 * \retval   None
 */
-void PERIPHERAL_moduleInitialize( void )
+void initialize_peripherals( void )
 {
-   /* boot-up the system */
-   PERIPHERAL_systemBoot( );
+   /* boot-up the system - RCC, Flash etc. */
+   system_boot( );
 
    /* Initialize all configured peripherals */
    GPIO_initialize( );
 
    /* enable the debug usart */
    USART_initialize( );
-
 }
 
 /**
@@ -66,53 +63,50 @@ void PERIPHERAL_moduleInitialize( void )
  *    - configure the flash prefetch, etc.
  *    - set the main system clock to be driven by the PLL
  */
-void PERIPHERAL_systemBoot( void )
+void system_boot( void )
 {
-   using namespace HAL;
-
    /* enable the high speed external clock source */
-   ResetControlClock::set_control_register( ResetControlClock::RCCRegister::hse_on, 0x01 );
+   HAL::ResetControlClock::set_control_register( HAL::ResetControlClock::RCCRegister::hse_on, 0x01 );
 
    /* wait for the high speed clock to stabilize */
    volatile bool hse_ready = false;
    do
    {
-      hse_ready = static_cast<bool>( ResetControlClock::get_control_register( ResetControlClock::RCCRegister::hse_ready ) );
+      hse_ready = static_cast<bool>( HAL::ResetControlClock::get_control_register( HAL::ResetControlClock::RCCRegister::hse_ready ) );
    } while ( hse_ready == false );
 
    /* Select regulator voltage output Scale 1 mode */
-   ResetControlClock::set_apb1_clock( ResetControlClock::APB1Clocks::power_management, true );
-   PowerManagement::set_control_register( PowerManagement::ControlRegister::voltage_output_selection, 0x03 );
+   HAL::ResetControlClock::set_apb1_clock( HAL::ResetControlClock::APB1Clocks::power_management, true );
+   HAL::PowerManagement::set_control_register( HAL::PowerManagement::ControlRegister::voltage_output_selection, 0x03 );
 
    /* setup the clock prescalers */
-   ResetControlClock::configure_ahb_clock( ResetControlClock::AHBPrescaler::prescaler_none );
-   ResetControlClock::configure_apb1_clock( ResetControlClock::APBPrescaler::prescaler_4 );
-   ResetControlClock::configure_apb2_clock( ResetControlClock::APBPrescaler::prescaler_2 );
+   HAL::ResetControlClock::configure_ahb_clock( HAL::ResetControlClock::AHBPrescaler::prescaler_none );
+   HAL::ResetControlClock::configure_apb1_clock( HAL::ResetControlClock::APBPrescaler::prescaler_4 );
+   HAL::ResetControlClock::configure_apb2_clock( HAL::ResetControlClock::APBPrescaler::prescaler_2 );
 
    /* configure the main phase locked loop */
-   ResetControlClock::configure_main_pll( RCC_PLL_SOURCE, HSE_FREQUENCY, RCC_PLL_M_FACTOR, RCC_PLL_N_FACTOR, RCC_PLL_P_FACTOR, RCC_PLL_Q_FACTOR );
+   HAL::ResetControlClock::configure_main_pll( RCC_PLL_SOURCE, HSE_FREQUENCY, RCC_PLL_M_FACTOR, RCC_PLL_N_FACTOR, RCC_PLL_P_FACTOR, RCC_PLL_Q_FACTOR );
 
    /* enable the phase locked loop */
-   ResetControlClock::set_control_register( ResetControlClock::RCCRegister::main_pll_on, 0x01 );
+   HAL::ResetControlClock::set_control_register( HAL::ResetControlClock::RCCRegister::main_pll_on, 0x01 );
 
    /* wait for the phase locked loop to stabilize */
    volatile bool pll_ready = false;
    do
    {
-      pll_ready = static_cast<bool>( ResetControlClock::get_control_register( ResetControlClock::RCCRegister::main_pll_ready ) );
+      pll_ready = static_cast<bool>( HAL::ResetControlClock::get_control_register( HAL::ResetControlClock::RCCRegister::main_pll_ready ) );
    } while ( pll_ready == false );
 
    /* Configure Flash prefetch, Instruction cache, Data cache and wait state */
-   Flash::set_access_control_register( Flash::AccessControlRegister::prefetch_enable, 0x01 );
-   Flash::set_access_control_register( Flash::AccessControlRegister::instruction_cache_enable, 0x01 );
-   Flash::set_access_control_register( Flash::AccessControlRegister::data_cache_enable, 0x01 );
-   Flash::set_access_control_register( Flash::AccessControlRegister::latency, 0x05 );
+   HAL::Flash::set_access_control_register( HAL::Flash::AccessControlRegister::prefetch_enable, 0x01 );
+   HAL::Flash::set_access_control_register( HAL::Flash::AccessControlRegister::instruction_cache_enable, 0x01 );
+   HAL::Flash::set_access_control_register( HAL::Flash::AccessControlRegister::data_cache_enable, 0x01 );
+   HAL::Flash::set_access_control_register( HAL::Flash::AccessControlRegister::latency, 0x05 );
 
    /* set the system clock source */
-   ResetControlClock::set_system_clock_source( ResetControlClock::SystemClockSource::phase_locked_loop );
-
+   HAL::ResetControlClock::set_system_clock_source( HAL::ResetControlClock::SystemClockSource::phase_locked_loop );
 
    /* set the systick interrupt frequency to every ms */
-   uint32_t sys_clock = ResetControlClock::get_clock_speed( ResetControlClock::Clocks::AHB1 );
-   Interrupt::set_systick_frequency( sys_clock / 1000 );
+   uint32_t sys_clock = HAL::ResetControlClock::get_clock_speed( HAL::ResetControlClock::Clocks::AHB1 );
+   HAL::Interrupt::set_systick_frequency( sys_clock / 1000 );
 }
