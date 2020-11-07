@@ -23,12 +23,12 @@
  * \brief class definition for a debug port
  * 
  */
-class DebugPort : public HAL::USART::USARTInterrupt
+class DebugPort : public HAL::USARTInterrupt
 {
    public:
    DebugPort( );
    DebugPort( USART_TypeDef *usart, size_t tx_size, size_t rx_size )
-      : HAL::USART::USARTInterrupt( usart, tx_size, rx_size )
+      : HAL::USARTInterrupt( usart, tx_size, rx_size )
    { };
    void initialize( void );
    void debug( const char *message );

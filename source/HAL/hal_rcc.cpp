@@ -38,6 +38,19 @@ static std::map<APBPrescaler, uint32_t> apb_scaler_map
 
 /************************************ Function Definitions ********************************************/
 /**
+ * \brief Construct a new Reset Control Clock:: Reset Control Clock object
+ * \note this is intended to be a single instance, but there is no restriction
+ *       placed on this via singleton or whatnot.
+ * 
+ * \param rcc_peripheral_address the address of the rcc
+ */
+ResetControlClock::ResetControlClock( RCC_TypeDef *rcc_peripheral_address )
+{
+   this->rcc = rcc_peripheral_address;
+}
+
+
+/**
  * \brief get a control register value
  * 
  * \param register the register to get

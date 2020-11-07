@@ -19,15 +19,14 @@
 
 namespace HAL
 {
-namespace USART
-{
+
 /*********************************** Consts ********************************************/
 
 /************************************ Types ********************************************/
 /**
  * \brief bit offsets for USART status register
  */
-enum class StatusRegister : unsigned
+enum class USARTStatusRegister : unsigned
 {
    parity_error = 0,
    framing_error = 1,
@@ -44,7 +43,7 @@ enum class StatusRegister : unsigned
 /**
  * \brief bit offsets for USART control register one
  */
-enum class ControlRegister1 : unsigned
+enum class USARTControlRegister1 : unsigned
 {
    send_break = 0,
    receiver_wakeup = 1,
@@ -66,7 +65,7 @@ enum class ControlRegister1 : unsigned
 /**
  * \brief bit offsets for USART control register two
  */
-enum class ControlRegister2 : unsigned
+enum class USARTControlRegister2 : unsigned
 {
    address = 0,
    line_break_detection_length = 5,
@@ -82,7 +81,7 @@ enum class ControlRegister2 : unsigned
 /**
  * \brief bit offsets for USART control register three
  */
-enum class ControlRegister3 : unsigned
+enum class USARTControlRegister3 : unsigned
 {
    error_interrupt_enable = 0,
    irda_mode_enable = 1,
@@ -111,7 +110,16 @@ class USARTBase
    {
       this->peripheral = usart;
    }
+
+   /* virtual methods for derived classes */
    virtual void initialize( ){ };
+
+   /* common methods for all derived classes */
+   bool read_status_register( USARTStatusRegister reg );
+   void write_control_register( USARTControlRegister1 reg, uint8_t value );
+   void write_control_register( USARTControlRegister2 reg, uint8_t value );
+   void write_control_register( USARTControlRegister3 reg, uint8_t value );
+   void set_baudrate( HAL::Clocks clock, uint32_t baudrate );
 };
 
 /**
@@ -142,13 +150,8 @@ class USARTInterrupt : protected USARTBase, public HAL::Interrupt::InterruptPeri
 /******************************* Global Variables **************************************/
 
 /****************************** Functions Prototype ************************************/
-bool read_status_register( USART_TypeDef *usart, StatusRegister reg );
-void write_control_register( USART_TypeDef *usart, ControlRegister1 reg, uint8_t value );
-void write_control_register( USART_TypeDef *usart, ControlRegister2 reg, uint8_t value );
-void write_control_register( USART_TypeDef *usart, ControlRegister3 reg, uint8_t value );
-void set_baudrate( USART_TypeDef *usart, HAL::ResetControlClock::Clocks clock, uint32_t baudrate );
 
-};  // namespace USART
+
 };  // namespace HAL
 
 #endif /* __HAL_USART_H__ */

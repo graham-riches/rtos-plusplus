@@ -47,23 +47,23 @@ void DebugPort::initialize( void )
    GPIO::initialize_pin( GPIOA, GPIO::Pins::pin_3, GPIO::PinMode::alternate, GPIO::Speed::very_high, GPIO::PullMode::pull_up, GPIO::OutputMode::push_pull );
 
    /* configure the usart with the application specific settings */
-   USART::write_control_register( USART2, USART::ControlRegister1::parity_selection, 0x00 );
-   USART::write_control_register( USART2, USART::ControlRegister1::word_length, 0x00 );
-   USART::write_control_register( USART2, USART::ControlRegister2::stop_bits, 0x00 );
-   USART::write_control_register( USART2, USART::ControlRegister3::cts_enable, 0x00 );
-   USART::write_control_register( USART2, USART::ControlRegister3::rts_enable, 0x00 );
-   USART::set_baudrate( USART2, Clocks::APB1, 115200 );
+   this->write_control_register( USARTControlRegister1::parity_selection, 0x00 );
+   this->write_control_register( USARTControlRegister1::word_length, 0x00 );
+   this->write_control_register( USARTControlRegister2::stop_bits, 0x00 );
+   this->write_control_register( USARTControlRegister3::cts_enable, 0x00 );
+   this->write_control_register( USARTControlRegister3::rts_enable, 0x00 );
+   this->set_baudrate( Clocks::APB1, 115200 );
 
    /* enable the usart and interrupts */
-   USART::write_control_register( USART2, USART::ControlRegister1::receiver_enable, 0x01 );
-   USART::write_control_register( USART2, USART::ControlRegister1::transmitter_enable, 0x01 );
-   USART::write_control_register( USART2, USART::ControlRegister1::receive_interrupt_enable, 0x01 );
+   this->write_control_register( USARTControlRegister1::receiver_enable, 0x01 );
+   this->write_control_register( USARTControlRegister1::transmitter_enable, 0x01 );
+   this->write_control_register( USARTControlRegister1::receive_interrupt_enable, 0x01 );
 
    /* register the interrupt in the hal interrupts table */
    Interrupt::register_callback( Interrupt::InterruptName::usart_2, this, 0, 2 );
 
    /* enable the UART */
-   USART::write_control_register( USART2, USART::ControlRegister1::usart_enable, 0x01 );
+   this->write_control_register( USARTControlRegister1::usart_enable, 0x01 );
 }
 
 /**
