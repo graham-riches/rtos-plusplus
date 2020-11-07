@@ -17,8 +17,6 @@
 
 namespace HAL
 {
-namespace Flash
-{
 /*********************************** Consts ********************************************/
 
 /************************************ Types ********************************************/
@@ -27,7 +25,7 @@ namespace Flash
  * \brief bit offsets for the flash peripheral access control register
  * 
  */
-enum class AccessControlRegister : unsigned
+enum class FlashAccessControlRegister : unsigned
 {
    latency = 0,
    prefetch_enable = 8,
@@ -38,15 +36,34 @@ enum class AccessControlRegister : unsigned
 };
 
 
+/**
+ * \brief flash memory peripheral class
+ * 
+ */
+class Flash
+{
+   private:
+   FLASH_TypeDef *peripheral;
+
+   public:
+   Flash( FLASH_TypeDef *flash_peripheral_address )
+   {
+      this->peripheral = flash_peripheral_address;
+   }
+
+   void set_access_control_register( FlashAccessControlRegister reg,  uint8_t value );
+};
+
+
 /*********************************** Macros ********************************************/
 
 /******************************* Global Variables **************************************/
+extern Flash flash;
 
 /****************************** Functions Prototype ************************************/
-void set_access_control_register( AccessControlRegister reg,  uint8_t value );
 
 
-};  // namespace Flash
+
 };  // namespace HAL
 
 #endif /* __HAL_FLASH_H__ */

@@ -106,10 +106,10 @@ void system_boot( void )
    } while ( pll_ready == false );
 
    /* Configure Flash prefetch, Instruction cache, Data cache and wait state */
-   HAL::Flash::set_access_control_register( HAL::Flash::AccessControlRegister::prefetch_enable, 0x01 );
-   HAL::Flash::set_access_control_register( HAL::Flash::AccessControlRegister::instruction_cache_enable, 0x01 );
-   HAL::Flash::set_access_control_register( HAL::Flash::AccessControlRegister::data_cache_enable, 0x01 );
-   HAL::Flash::set_access_control_register( HAL::Flash::AccessControlRegister::latency, 0x05 );
+   HAL::flash.set_access_control_register( HAL::FlashAccessControlRegister::prefetch_enable, 0x01 );
+   HAL::flash.set_access_control_register( HAL::FlashAccessControlRegister::instruction_cache_enable, 0x01 );
+   HAL::flash.set_access_control_register( HAL::FlashAccessControlRegister::data_cache_enable, 0x01 );
+   HAL::flash.set_access_control_register( HAL::FlashAccessControlRegister::latency, 0x05 );
 
    /* set the system clock source */
    HAL::reset_control_clock.set_system_clock_source( HAL::SystemClockSource::phase_locked_loop );
