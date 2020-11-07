@@ -14,6 +14,7 @@
 #include "hal_power.h"
 #include "hal_rcc.h"
 #include "usart.h"
+#include "scheduler.h"
 
 /*********************************** Consts ********************************************/
 constexpr uint32_t HSE_FREQUENCY = 8000000;
@@ -77,7 +78,7 @@ void system_boot( void )
 
    /* Select regulator voltage output Scale 1 mode */
    HAL::reset_control_clock.set_apb1_clock( HAL::APB1Clocks::power_management, true );
-   HAL::PowerManagement::set_control_register( HAL::PowerManagement::ControlRegister::voltage_output_selection, 0x03 );
+   HAL::power_management.set_control_register( HAL::PowerManagementControlRegister::voltage_output_selection, 0x03 );
 
    /* setup the clock prescalers */
    HAL::reset_control_clock.configure_ahb_clock( HAL::AHBPrescaler::prescaler_none );
@@ -108,5 +109,5 @@ void system_boot( void )
 
    /* set the systick interrupt frequency to every ms */
    uint32_t sys_clock = HAL::reset_control_clock.get_clock_speed( HAL::Clocks::AHB1 );
-   HAL::Interrupt::set_systick_frequency( sys_clock / 1000 );
+   OS::set_systick_frequency( sys_clock / 1000 );
 }

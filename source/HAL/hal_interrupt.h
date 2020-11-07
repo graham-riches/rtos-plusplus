@@ -18,8 +18,7 @@
 
 namespace HAL
 {
-namespace Interrupt
-{
+
 /*********************************** Consts ********************************************/
 
 /************************************ Types ********************************************/
@@ -139,7 +138,10 @@ enum class InterruptName : unsigned
 class InterruptPeripheral
 {
    public:
-   virtual void irq_handler( uint8_t irq_type ) { PARAMETER_NOT_USED( irq_type ); }
+   virtual void irq_handler( uint8_t irq_type )
+   {
+      PARAMETER_NOT_USED( irq_type );
+   }
 };
 
 /**
@@ -152,15 +154,29 @@ typedef struct
    uint8_t irq_type;                 //!< interrupt type (for peripherals with multiple interrupts)
 } InterruptHandler;
 
+/**
+ * \brief class to manage all peripheral interrupts
+ * 
+ */
+class InterruptManager
+{
+   private:
+   InterruptHandler isr_table[static_cast<uint8_t>( InterruptName::floating_point_unit )];
+
+   public:
+   InterruptManager( ){ };
+   void register_callback( InterruptName interrupt, InterruptPeripheral *peripheral, uint8_t type, uint32_t priority );
+   void default_isr_handler( void );
+};
+
 /*********************************** Macros ********************************************/
 
 /******************************* Global Variables **************************************/
+extern InterruptManager interrupt_manager;
 
 /****************************** Functions Prototype ************************************/
-void register_callback( InterruptName interrupt, InterruptPeripheral *peripheral, uint8_t type, uint32_t priority );
-void set_systick_frequency( uint32_t ticks );
 
-};  // namespace Interrupt
+
 };  // namespace HAL
 
 #endif /* __HAL_INTERRUPT_H__ */

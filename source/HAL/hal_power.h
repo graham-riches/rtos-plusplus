@@ -16,8 +16,7 @@
 
 namespace HAL
 {
-namespace PowerManagement
-{
+
 /*********************************** Consts ********************************************/
 
 /************************************ Types ********************************************/
@@ -25,7 +24,7 @@ namespace PowerManagement
  * \brief bit offsets for power management control register
  * 
  */
-enum class ControlRegister : unsigned 
+enum class PowerManagementControlRegister : unsigned 
 {
    low_power_deepsleep = 0,
    power_down_deepsleep = 1,
@@ -45,15 +44,29 @@ enum class ControlRegister : unsigned
 };
 
 
+/**
+ * \brief power management peripheral class
+ * 
+ */
+class PowerManagement
+{
+   private:
+   PWR_TypeDef *peripheral;
+
+   public:
+   PowerManagement( PWR_TypeDef *pwr_peripheral_address );
+   void set_control_register( PowerManagementControlRegister reg, uint8_t value );
+};
+
 /*********************************** Macros ********************************************/
 
 /******************************* Global Variables **************************************/
+extern PowerManagement power_management;
 
 /****************************** Functions Prototype ************************************/
-void set_control_register( ControlRegister reg, uint8_t value );
 
 
-};  // namespace PowerManagement
+
 };  // namespace HAL
 
 #endif /* __HAL_POWER_H__ */

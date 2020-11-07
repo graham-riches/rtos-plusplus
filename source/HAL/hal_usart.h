@@ -126,7 +126,7 @@ class USARTBase
  * \brief base class for interrupt driven usart peripherals. This is meant to be inherited
  *        to create an interrupt driven object
  */
-class USARTInterrupt : protected USARTBase, public HAL::Interrupt::InterruptPeripheral
+class USARTInterrupt : protected USARTBase, public HAL::InterruptPeripheral
 {
    protected:
    RingBuffer<uint8_t> tx_buffer;

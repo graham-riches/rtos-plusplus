@@ -9,6 +9,7 @@
 /********************************** Includes *******************************************/
 #include "scheduler.h"
 #include "threading.h"
+#include "stm32f4xx.h"
 
 namespace OS
 {
@@ -61,6 +62,17 @@ __attribute__((naked)) void enter_kernel( void )
    /* re-enable interrupts and jump to the first task */
    __asm("CPSIE   I ");
    __asm("BX      LR");
+}
+
+
+/**
+ * \brief Set the systick timer frequency
+ * 
+ * \param ticks of the main sysclock per interrupt
+ */
+void set_systick_frequency( uint32_t ticks )
+{
+   SysTick_Config( ticks );
 }
 
 };  // namespace OS

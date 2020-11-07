@@ -51,6 +51,7 @@ target_compile_definitions(${BINARY} PRIVATE
 		-DARM_MATH_CM4
 		-DSTM32F40XX
       -DSTM32F407xx
+      -D__FPU_PRESENT
         )
 
 target_include_directories(${BINARY} PRIVATE

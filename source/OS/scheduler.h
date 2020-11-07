@@ -28,7 +28,7 @@ namespace OS
 
 /****************************** Functions Prototype ************************************/
 void enter_kernel( void );
-
+void set_systick_frequency( uint32_t ticks );
 
 };  // namespace OS
 #ifdef __cplusplus
