@@ -97,7 +97,7 @@ enum class AlternateMode : unsigned
 };
 
 /**
- * \brief enumeration of GPIO pins that can be OR'd together
+ * \brief enumeration of GPIO pins by bit
  */
 enum class Pins : unsigned
 {

@@ -40,7 +40,8 @@ set(APP_SOURCES
       source/OS/interrupts.cpp
 
 		# Start Up File
-      startup/startup_stm32f407xx.s)
+      startup/startup_stm32f407xx.s
+   )
 
 set(BINARY ${PROJECT_NAME}.elf)
 
@@ -71,9 +72,7 @@ target_include_directories(${BINARY} PRIVATE
 		source/Application/Peripherals
 		source/Application/Peripherals/GPIO		
       source/Application/Peripherals/USART
-      
-
-        )
+      )
 
 target_compile_options(${BINARY} PRIVATE		
         -mcpu=cortex-m4

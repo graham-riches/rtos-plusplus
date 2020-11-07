@@ -12,15 +12,15 @@
 
 namespace HAL
 {
-namespace ResetControlClock
-{
+
 /************************************ Local Function Definitions ********************************************/
-static void save_clock_configuration( void );
+
+
+/************************************ Global Variables ********************************************/
+ResetControlClock reset_control_clock( RCC ); //!< single instance of the RCC peripheral object created with a pointer to the RCC address
 
 
 /************************************ Local Variables ********************************************/
-static ClockSpeed clock_configuration; //!< structure to store configured clock speeds in memory
-
 /* map ahb prescaler values to integers */
 static std::map<AHBPrescaler, uint32_t> ahb_scaler_map
 {
@@ -44,7 +44,7 @@ static std::map<APBPrescaler, uint32_t> apb_scaler_map
  * \retval register value
  * \note register sizes are not consistent, which makes this a tad annoying :(
  */
-uint8_t get_control_register( RCCRegister reg )
+uint8_t ResetControlClock::get_control_register( RCCRegister reg )
 {
    uint32_t mask = 0;
 
@@ -76,19 +76,19 @@ uint8_t get_control_register( RCCRegister reg )
          break;
    }
 
-   uint8_t value = static_cast<uint8_t>( ( RCC->CR & mask ) >> static_cast<uint8_t>( reg ) );
+   uint8_t value = static_cast<uint8_t>( ( this->rcc->CR & mask ) >> static_cast<uint8_t>( reg ) );
    return value;
 }
 
 /**
- * \brief Set the control register object
+ * \brief Set the control register
  * 
  * \param register the register to set
  * \param value to set
  */
-void set_control_register( RCCRegister reg, uint8_t value )
+void ResetControlClock::set_control_register( RCCRegister reg, uint8_t value )
 {
-   RCC->CR |= ( value << static_cast<uint8_t>( reg ) );
+   this->rcc->CR |= ( value << static_cast<uint8_t>( reg ) );
 }
 
 /**
@@ -101,49 +101,49 @@ void set_control_register( RCCRegister reg, uint8_t value )
  * \param pll_p p prescaler
  * \param pll_q q prescaler
  */
-void configure_main_pll(
+void ResetControlClock::configure_main_pll(
    PLLSource clock_source, uint32_t oscillator_speed, uint8_t pll_m, uint16_t pll_n, PLLOutputPrescaler pll_p, uint8_t pll_q )
 {
    /* clear the register */
-   RCC->PLLCFGR = 0;
+   this->rcc->PLLCFGR = 0;
 
    /* set the phase locked loop clock source */
-   RCC->PLLCFGR |= ( static_cast<uint8_t>( clock_source ) << static_cast<uint8_t>( PLLRegister::pll_source ) );
+   this->rcc->PLLCFGR |= ( static_cast<uint8_t>( clock_source ) << static_cast<uint8_t>( PLLRegister::pll_source ) );
 
    /* set the main division factor for the system clock: PLL_P */
-   RCC->PLLCFGR |= ( static_cast<uint8_t>( pll_p ) << static_cast<uint8_t>( PLLRegister::pll_p ) );
+   this->rcc->PLLCFGR |= ( static_cast<uint8_t>( pll_p ) << static_cast<uint8_t>( PLLRegister::pll_p ) );
 
    /* set the main multiplication factor for the system clock: PLL_N */
-   RCC->PLLCFGR |= ( pll_n << static_cast<uint8_t>( PLLRegister::pll_n ) );
+   this->rcc->PLLCFGR |= ( pll_n << static_cast<uint8_t>( PLLRegister::pll_n ) );
 
    /* set the division factor for the entry to the VCO: PLL_M */
-   RCC->PLLCFGR |= ( pll_m << static_cast<uint8_t>( PLLRegister::pll_m ) );
+   this->rcc->PLLCFGR |= ( pll_m << static_cast<uint8_t>( PLLRegister::pll_m ) );
 
    /* set the output for the 48 MHz clock source: PLL_Q */
-   RCC->PLLCFGR |= ( pll_q << static_cast<uint8_t>( PLLRegister::pll_q ) );
+   this->rcc->PLLCFGR |= ( pll_q << static_cast<uint8_t>( PLLRegister::pll_q ) );
 
    /* set the system clock speed */
    uint8_t pll_p_scaler = ( static_cast<uint8_t>( pll_p ) + 1 ) * 2;
-   clock_configuration.system_clock = ( oscillator_speed * pll_n ) / ( pll_m * pll_p_scaler );
-   save_clock_configuration();
+   this->clock_configuration.system_clock = ( oscillator_speed * pll_n ) / ( pll_m * pll_p_scaler );
+   this->save_clock_configuration();
 }
 
 /**
  * \brief Set the system clock
  * 
- * \param source 
+ * \param source the clock source for the system
  */
-void set_system_clock_source( SystemClockSource source )
+void ResetControlClock::set_system_clock_source( SystemClockSource source )
 {
    /* clear the current clock source registers */
    uint32_t clock_source_mask = 0b11;
 
-   RCC->CFGR &= ~( clock_source_mask );
-   RCC->CFGR |=
+   this->rcc->CFGR &= ~( clock_source_mask );
+   this->rcc->CFGR |=
       ( static_cast<uint8_t>( source ) << static_cast<uint8_t>( ConfigurationRegister::system_clock_source ) );
 
    /* wait until the clock source status register matches the selected clock */
-   while ( ( RCC->CFGR & clock_source_mask ) != static_cast<uint32_t>( source ) )
+   while ( ( this->rcc->CFGR & clock_source_mask ) != static_cast<uint32_t>( source ) )
    { }
 }
 
@@ -152,13 +152,13 @@ void set_system_clock_source( SystemClockSource source )
  * 
  * \param prescaler 
  */
-void configure_ahb_clock( AHBPrescaler prescaler )
+void ResetControlClock::configure_ahb_clock( AHBPrescaler prescaler )
 {
-   RCC->CFGR |= ( static_cast<uint8_t>( prescaler ) << static_cast<uint8_t>( ConfigurationRegister::ahb_prescaler ) );
+   this->rcc->CFGR |= ( static_cast<uint8_t>( prescaler ) << static_cast<uint8_t>( ConfigurationRegister::ahb_prescaler ) );
 
    /* store the clock configuration for the AHB clock */
-   clock_configuration.ahb_scaler = ahb_scaler_map[prescaler];
-   save_clock_configuration();
+   this->clock_configuration.ahb_scaler = ahb_scaler_map[prescaler];
+   this->save_clock_configuration();
 }
 
 /**
@@ -166,13 +166,13 @@ void configure_ahb_clock( AHBPrescaler prescaler )
  * 
  * \param prescaler 
  */
-void configure_apb2_clock( APBPrescaler prescaler )
+void ResetControlClock::configure_apb2_clock( APBPrescaler prescaler )
 {
-   RCC->CFGR |= ( static_cast<uint8_t>( prescaler ) << static_cast<uint8_t>( ConfigurationRegister::apb2_prescaler ) );
+   this->rcc->CFGR |= ( static_cast<uint8_t>( prescaler ) << static_cast<uint8_t>( ConfigurationRegister::apb2_prescaler ) );
 
    /* store the clock configuration for the APB1 clock */
-   clock_configuration.apb2_scaler = apb_scaler_map[prescaler];
-   save_clock_configuration();
+   this->clock_configuration.apb2_scaler = apb_scaler_map[prescaler];
+   this->save_clock_configuration();
 }
 
 /**
@@ -180,13 +180,13 @@ void configure_apb2_clock( APBPrescaler prescaler )
  * 
  * \param prescaler 
  */
-void configure_apb1_clock( APBPrescaler prescaler )
+void ResetControlClock::configure_apb1_clock( APBPrescaler prescaler )
 {
-   RCC->CFGR |= ( static_cast<uint8_t>( prescaler ) << static_cast<uint8_t>( ConfigurationRegister::apb1_prescaler ) );
+   this->rcc->CFGR |= ( static_cast<uint8_t>( prescaler ) << static_cast<uint8_t>( ConfigurationRegister::apb1_prescaler ) );
 
    /* store the clock configuration for the APB1 clock */
-   clock_configuration.apb1_scaler = apb_scaler_map[prescaler];
-   save_clock_configuration();
+   this->clock_configuration.apb1_scaler = apb_scaler_map[prescaler];
+   this->save_clock_configuration();
 }
 
 /**
@@ -195,15 +195,15 @@ void configure_apb1_clock( APBPrescaler prescaler )
  * \param clock the clock to enable/disable
  * \param enable state
  */
-void set_ahb1_clock( AHB1Clocks clock, bool enable )
+void ResetControlClock::set_ahb1_clock( AHB1Clocks clock, bool enable )
 {
    if ( enable )
    {
-      RCC->AHB1ENR |= ( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
+      this->rcc->AHB1ENR |= ( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
    }
    else
    {
-      RCC->AHB1ENR &= ~( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
+      this->rcc->AHB1ENR &= ~( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
    }
 }
 
@@ -213,15 +213,15 @@ void set_ahb1_clock( AHB1Clocks clock, bool enable )
  * \param clock the clock to enable/disable
  * \param enable state
  */
-void set_ahb2_clock( AHB2Clocks clock, bool enable )
+void ResetControlClock::set_ahb2_clock( AHB2Clocks clock, bool enable )
 {
    if ( enable )
    {
-      RCC->AHB2ENR |= ( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
+      this->rcc->AHB2ENR |= ( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
    }
    else
    {
-      RCC->AHB2ENR &= ~( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
+      this->rcc->AHB2ENR &= ~( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
    }
 }
 
@@ -231,15 +231,15 @@ void set_ahb2_clock( AHB2Clocks clock, bool enable )
  * \param clock the clock to enable/disable
  * \param enable state
  */
-void set_ahb3_clock( AHB3Clocks clock, bool enable )
+void ResetControlClock::set_ahb3_clock( AHB3Clocks clock, bool enable )
 {
    if ( enable )
    {
-      RCC->AHB3ENR |= ( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
+      this->rcc->AHB3ENR |= ( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
    }
    else
    {
-      RCC->AHB3ENR &= ~( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
+      this->rcc->AHB3ENR &= ~( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
    }
 }
 
@@ -249,15 +249,15 @@ void set_ahb3_clock( AHB3Clocks clock, bool enable )
  * \param clock the clock to enable/disable
  * \param enable state
  */
-void set_apb1_clock( APB1Clocks clock, bool enable )
+void ResetControlClock::set_apb1_clock( APB1Clocks clock, bool enable )
 {
    if ( enable )
    {
-      RCC->APB1ENR |= ( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
+      this->rcc->APB1ENR |= ( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
    }
    else
    {
-      RCC->APB1ENR &= ~( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
+      this->rcc->APB1ENR &= ~( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
    }
 }
 
@@ -267,15 +267,15 @@ void set_apb1_clock( APB1Clocks clock, bool enable )
  * \param clock the clock to enable/disable
  * \param enable state
  */
-void set_apb2_clock( APB2Clocks clock, bool enable )
+void ResetControlClock::set_apb2_clock( APB2Clocks clock, bool enable )
 {
    if ( enable )
    {
-      RCC->APB2ENR |= ( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
+      this->rcc->APB2ENR |= ( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
    }
    else
    {
-      RCC->APB2ENR &= ~( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
+      this->rcc->APB2ENR &= ~( static_cast<uint8_t>( enable ) << static_cast<uint8_t>( clock ) );
    }
 }
 
@@ -285,24 +285,24 @@ void set_apb2_clock( APB2Clocks clock, bool enable )
  * \param clock the clock bus
  * \retval uint32_t speed in Hz
  */
-uint32_t get_clock_speed( Clocks clock ) 
+uint32_t ResetControlClock::get_clock_speed( Clocks clock ) 
 {
-   uint32_t clock_speed = clock_configuration.system_clock;
+   uint32_t clock_speed = this->clock_configuration.system_clock;
    switch ( clock )
    {
       /* intentional fallthrough */
       case Clocks::AHB1:
       case Clocks::AHB2:
       case Clocks::AHB3:
-         clock_speed = clock_configuration.ahb;
+         clock_speed = this->clock_configuration.ahb;
          break;
       
       case Clocks::APB1:
-         clock_speed = clock_configuration.apb1;
+         clock_speed = this->clock_configuration.apb1;
          break;
       
       case Clocks::APB2:
-         clock_speed = clock_configuration.apb2;
+         clock_speed = this->clock_configuration.apb2;
          break;
       
       default:
@@ -314,12 +314,12 @@ uint32_t get_clock_speed( Clocks clock )
 /**
  * \brief save the current clock speed
  */
-static void save_clock_configuration( void )
+void ResetControlClock::save_clock_configuration( void )
 {
-   clock_configuration.ahb = clock_configuration.system_clock / clock_configuration.ahb_scaler;
-   clock_configuration.apb1 = clock_configuration.system_clock / clock_configuration.apb1_scaler;
-   clock_configuration.apb2 = clock_configuration.system_clock / clock_configuration.apb2_scaler;
+   this->clock_configuration.ahb = this->clock_configuration.system_clock / this->clock_configuration.ahb_scaler;
+   this->clock_configuration.apb1 = this->clock_configuration.system_clock / this->clock_configuration.apb1_scaler;
+   this->clock_configuration.apb2 = this->clock_configuration.system_clock / this->clock_configuration.apb2_scaler;
 }
 
-};  // namespace ResetControlClock
+
 };  // namespace HAL

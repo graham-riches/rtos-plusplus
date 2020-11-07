@@ -20,8 +20,8 @@ constexpr uint32_t HSE_FREQUENCY = 8000000;
 constexpr uint8_t RCC_PLL_M_FACTOR = 8;
 constexpr uint16_t RCC_PLL_N_FACTOR = 336;
 constexpr uint8_t RCC_PLL_Q_FACTOR = 7;
-constexpr HAL::ResetControlClock::PLLOutputPrescaler RCC_PLL_P_FACTOR = HAL::ResetControlClock::PLLOutputPrescaler::prescaler_2;
-constexpr HAL::ResetControlClock::PLLSource RCC_PLL_SOURCE = HAL::ResetControlClock::PLLSource::high_speed_external;
+constexpr HAL::PLLOutputPrescaler RCC_PLL_P_FACTOR = HAL::PLLOutputPrescaler::prescaler_2;
+constexpr HAL::PLLSource RCC_PLL_SOURCE = HAL::PLLSource::high_speed_external;
 
 /************************************ Types ********************************************/
 
@@ -66,35 +66,35 @@ void initialize_peripherals( void )
 void system_boot( void )
 {
    /* enable the high speed external clock source */
-   HAL::ResetControlClock::set_control_register( HAL::ResetControlClock::RCCRegister::hse_on, 0x01 );
+   HAL::reset_control_clock.set_control_register( HAL::RCCRegister::hse_on, 0x01 );
 
    /* wait for the high speed clock to stabilize */
    volatile bool hse_ready = false;
    do
    {
-      hse_ready = static_cast<bool>( HAL::ResetControlClock::get_control_register( HAL::ResetControlClock::RCCRegister::hse_ready ) );
+      hse_ready = static_cast<bool>( HAL::reset_control_clock.get_control_register( HAL::RCCRegister::hse_ready ) );
    } while ( hse_ready == false );
 
    /* Select regulator voltage output Scale 1 mode */
-   HAL::ResetControlClock::set_apb1_clock( HAL::ResetControlClock::APB1Clocks::power_management, true );
+   HAL::reset_control_clock.set_apb1_clock( HAL::APB1Clocks::power_management, true );
    HAL::PowerManagement::set_control_register( HAL::PowerManagement::ControlRegister::voltage_output_selection, 0x03 );
 
    /* setup the clock prescalers */
-   HAL::ResetControlClock::configure_ahb_clock( HAL::ResetControlClock::AHBPrescaler::prescaler_none );
-   HAL::ResetControlClock::configure_apb1_clock( HAL::ResetControlClock::APBPrescaler::prescaler_4 );
-   HAL::ResetControlClock::configure_apb2_clock( HAL::ResetControlClock::APBPrescaler::prescaler_2 );
+   HAL::reset_control_clock.configure_ahb_clock( HAL::AHBPrescaler::prescaler_none );
+   HAL::reset_control_clock.configure_apb1_clock( HAL::APBPrescaler::prescaler_4 );
+   HAL::reset_control_clock.configure_apb2_clock( HAL::APBPrescaler::prescaler_2 );
 
    /* configure the main phase locked loop */
-   HAL::ResetControlClock::configure_main_pll( RCC_PLL_SOURCE, HSE_FREQUENCY, RCC_PLL_M_FACTOR, RCC_PLL_N_FACTOR, RCC_PLL_P_FACTOR, RCC_PLL_Q_FACTOR );
+   HAL::reset_control_clock.configure_main_pll( RCC_PLL_SOURCE, HSE_FREQUENCY, RCC_PLL_M_FACTOR, RCC_PLL_N_FACTOR, RCC_PLL_P_FACTOR, RCC_PLL_Q_FACTOR );
 
    /* enable the phase locked loop */
-   HAL::ResetControlClock::set_control_register( HAL::ResetControlClock::RCCRegister::main_pll_on, 0x01 );
+   HAL::reset_control_clock.set_control_register( HAL::RCCRegister::main_pll_on, 0x01 );
 
    /* wait for the phase locked loop to stabilize */
    volatile bool pll_ready = false;
    do
    {
-      pll_ready = static_cast<bool>( HAL::ResetControlClock::get_control_register( HAL::ResetControlClock::RCCRegister::main_pll_ready ) );
+      pll_ready = static_cast<bool>( HAL::reset_control_clock.get_control_register( HAL::RCCRegister::main_pll_ready ) );
    } while ( pll_ready == false );
 
    /* Configure Flash prefetch, Instruction cache, Data cache and wait state */
@@ -104,9 +104,9 @@ void system_boot( void )
    HAL::Flash::set_access_control_register( HAL::Flash::AccessControlRegister::latency, 0x05 );
 
    /* set the system clock source */
-   HAL::ResetControlClock::set_system_clock_source( HAL::ResetControlClock::SystemClockSource::phase_locked_loop );
+   HAL::reset_control_clock.set_system_clock_source( HAL::SystemClockSource::phase_locked_loop );
 
    /* set the systick interrupt frequency to every ms */
-   uint32_t sys_clock = HAL::ResetControlClock::get_clock_speed( HAL::ResetControlClock::Clocks::AHB1 );
+   uint32_t sys_clock = HAL::reset_control_clock.get_clock_speed( HAL::Clocks::AHB1 );
    HAL::Interrupt::set_systick_frequency( sys_clock / 1000 );
 }

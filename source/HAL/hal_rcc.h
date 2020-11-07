@@ -10,14 +10,11 @@
 #define __HAL_RCC_H__
 
 /********************************** Includes *******************************************/
-#include "stm32f4xx.h"
 #include "hal_bitwise_operators.h"
+#include "stm32f4xx.h"
 #include <stdint.h>
 
-
 namespace HAL
-{
-namespace ResetControlClock
 {
 /*********************************** Consts ********************************************/
 
@@ -27,11 +24,11 @@ namespace ResetControlClock
  */
 enum class Clocks : unsigned
 {
-   AHB1 = 0, //!< clock speed for AHB1 bus
-   AHB2,     //!< clock speed for AHB2 bus
-   AHB3,     //!< clock speed for AHB3 bus
-   APB1,     //!< clock speed for APB1 bus
-   APB2,     //!< clock speed for APB2 bus
+   AHB1 = 0,  //!< clock speed for AHB1 bus
+   AHB2,      //!< clock speed for AHB2 bus
+   AHB3,      //!< clock speed for AHB3 bus
+   APB1,      //!< clock speed for APB1 bus
+   APB2,      //!< clock speed for APB2 bus
 };
 
 /**
@@ -48,24 +45,23 @@ typedef struct
    uint8_t apb2_scaler;
 } ClockSpeed;
 
-
 /**
  * \brief main control registers bit offsets for the reset and control clock
  */
 enum class RCCRegister : unsigned
 {
-   hsi_on =  0,         //!< internal high speed oscillator enable
-   hsi_ready = 1,       //!< internal high speed oscillator is ready
-   hsi_trim = 3,        //!< start address for the internal high speed oscillator trim adjustment
-   hsi_cal = 8,         //!< start address for the internal high speed oscillator calibration
-   hse_on = 16,         //!< external high speed oscillator enable
-   hse_ready = 17,      //!< external high speed oscillator is ready
-   hse_bypass = 18,     //!< bypass the external oscillator
-   clock_security = 19, //!< enable the clock security system 
-   main_pll_on = 24,    //!< enable the main phase locked loop
-   main_pll_ready = 25, //!< main phase locked loop is ready
-   i2s_pll_on = 26,     //!< enable the i2s phase locked loop
-   i2s_pll_ready = 27,  //!< i2s phase locked loop is available
+   hsi_on = 0,           //!< internal high speed oscillator enable
+   hsi_ready = 1,        //!< internal high speed oscillator is ready
+   hsi_trim = 3,         //!< start address for the internal high speed oscillator trim adjustment
+   hsi_cal = 8,          //!< start address for the internal high speed oscillator calibration
+   hse_on = 16,          //!< external high speed oscillator enable
+   hse_ready = 17,       //!< external high speed oscillator is ready
+   hse_bypass = 18,      //!< bypass the external oscillator
+   clock_security = 19,  //!< enable the clock security system
+   main_pll_on = 24,     //!< enable the main phase locked loop
+   main_pll_ready = 25,  //!< main phase locked loop is ready
+   i2s_pll_on = 26,      //!< enable the i2s phase locked loop
+   i2s_pll_ready = 27,   //!< i2s phase locked loop is available
 };
 
 /**
@@ -73,11 +69,11 @@ enum class RCCRegister : unsigned
  */
 enum class PLLRegister : unsigned
 {
-   pll_m = 0,       //!< bit locations of the PLL_M factor register
-   pll_n = 6,       //!< bit locations of the PLL_N factor register
-   pll_p = 16,      //!< bit locations of the PLL_P factor register
-   pll_source = 22, //!< bit locations of the PLL input source selector register
-   pll_q = 24       //!< bit locations of the PLL_Q factor register
+   pll_m = 0,        //!< bit locations of the PLL_M factor register
+   pll_n = 6,        //!< bit locations of the PLL_N factor register
+   pll_p = 16,       //!< bit locations of the PLL_P factor register
+   pll_source = 22,  //!< bit locations of the PLL input source selector register
+   pll_q = 24        //!< bit locations of the PLL_Q factor register
 };
 
 /**
@@ -102,20 +98,21 @@ enum class PLLOutputPrescaler : unsigned
 
 /**
  * \brief enumeration of register bit offsets for the RCC configuration register
+ * \todo this may require a renaming depending on what other peripherals get added to the HAL
  */
 enum class ConfigurationRegister : unsigned
 {
-   system_clock_source = 0,         //!< select the main system clock source
-   sysem_clock_status = 2,          //!< status of the main system clock (which is configured)
-   ahb_prescaler = 4,               //!< prescaler for the high performance bus
-   apb1_prescaler = 10,             //!< prescaler for the lower speed peripheral bus clock
-   apb2_prescaler = 13,             //!< prescaler for the higher speed peripheral bus clock
-   rtc_prescaler = 16,              //!< prescaler for the real-time clock
-   output_one_clock_source = 21,    //!< output clock signal source select
-   i2s_clock_source = 23,           //!< i2s clock source select
-   output_one_clock_prescaler = 24, //!< output clock one signal prescaler
-   output_two_clock_prescaler = 27, //!< output clock two signal prescaler
-   output_two_clock_source = 30     //!< output clock two source select
+   system_clock_source = 0,          //!< select the main system clock source
+   sysem_clock_status = 2,           //!< status of the main system clock (which is configured)
+   ahb_prescaler = 4,                //!< prescaler for the high performance bus
+   apb1_prescaler = 10,              //!< prescaler for the lower speed peripheral bus clock
+   apb2_prescaler = 13,              //!< prescaler for the higher speed peripheral bus clock
+   rtc_prescaler = 16,               //!< prescaler for the real-time clock
+   output_one_clock_source = 21,     //!< output clock signal source select
+   i2s_clock_source = 23,            //!< i2s clock source select
+   output_one_clock_prescaler = 24,  //!< output clock one signal prescaler
+   output_two_clock_prescaler = 27,  //!< output clock two signal prescaler
+   output_two_clock_source = 30      //!< output clock two source select
 };
 
 /**
@@ -187,7 +184,7 @@ enum class AHB1Clocks : unsigned
 /**
  * \brief enumeration of bit offsets for ahb2 clocks
  */
-enum class AHB2Clocks : unsigned 
+enum class AHB2Clocks : unsigned
 {
    digital_camera_interface = 0,
    cryptography = 4,
@@ -199,7 +196,7 @@ enum class AHB2Clocks : unsigned
 /**
  * \brief enumeration of bit offsets for ahb2 clocks
  */
-enum class AHB3Clocks : unsigned 
+enum class AHB3Clocks : unsigned
 {
    static_memory_controller = 0,
 };
@@ -207,7 +204,7 @@ enum class AHB3Clocks : unsigned
 /**
  * \brief enumeration of bit offsets for apb1 clocks
  */
-enum class APB1Clocks : unsigned 
+enum class APB1Clocks : unsigned
 {
    timer_2 = 0,
    timer_3 = 1,
@@ -254,25 +251,45 @@ enum class APB2Clocks : unsigned
    timer_11 = 18
 };
 
+/**
+ * \brief RCC class to manage the rcc peripheral
+ * 
+ */
+class ResetControlClock
+{
+   private:   
+   /* private data */
+   RCC_TypeDef *rcc;
+   ClockSpeed clock_configuration;
+
+   /* private methods */
+   void save_clock_configuration( void );
+
+   public:
+   /* public methods */
+   ResetControlClock( RCC_TypeDef *rcc_peripheral_address );
+   uint8_t get_control_register( RCCRegister reg );
+   void set_control_register( RCCRegister reg, uint8_t value );
+   void configure_main_pll( PLLSource clock_source, uint32_t oscillator_speed, uint8_t pll_m, uint16_t pll_n, PLLOutputPrescaler pll_p, uint8_t pll_q );
+   void set_system_clock_source( SystemClockSource source );
+   void configure_ahb_clock( AHBPrescaler prescaler );
+   void configure_apb2_clock( APBPrescaler prescaler );
+   void configure_apb1_clock( APBPrescaler prescaler );
+   void set_ahb1_clock( AHB1Clocks clock, bool enable );
+   void set_ahb2_clock( AHB2Clocks clock, bool enable );
+   void set_ahb3_clock( AHB3Clocks clock, bool enable );
+   void set_apb1_clock( APB1Clocks clock, bool enable );
+   void set_apb2_clock( APB2Clocks clock, bool enable );
+   uint32_t get_clock_speed( Clocks clock );
+};
+
 /*********************************** Macros ********************************************/
 
 /****************************** Function Declarations ************************************/
-uint8_t  get_control_register( RCCRegister reg );
-void     set_control_register( RCCRegister reg, uint8_t value );
-void     configure_main_pll( PLLSource clock_source, uint32_t oscillator_speed, uint8_t pll_m, uint16_t pll_n, PLLOutputPrescaler pll_p, uint8_t pll_q );
-void     set_system_clock_source( SystemClockSource source );
-void     configure_ahb_clock( AHBPrescaler prescaler );
-void     configure_apb2_clock( APBPrescaler prescaler );
-void     configure_apb1_clock( APBPrescaler prescaler );
-void     set_ahb1_clock( AHB1Clocks clock, bool enable );
-void     set_ahb2_clock( AHB2Clocks clock, bool enable );
-void     set_ahb3_clock( AHB3Clocks clock, bool enable );
-void     set_apb1_clock( APB1Clocks clock, bool enable );
-void     set_apb2_clock( APB2Clocks clock, bool enable );
-uint32_t get_clock_speed( Clocks clock );
 
+/****************************** Global Variables ************************************/
+extern ResetControlClock reset_control_clock;
 
-};  // namespace ResetControlClock
 };  // namespace HAL
 
 #endif /* __HAL_RCC_H__ */

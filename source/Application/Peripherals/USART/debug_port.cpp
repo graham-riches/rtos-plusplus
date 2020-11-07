@@ -37,8 +37,8 @@ void DebugPort::initialize( void )
    using namespace HAL;
 
    /* enable the GPIO clocks and the USART clocks */
-   ResetControlClock::set_apb1_clock( ResetControlClock::APB1Clocks::usart_2, true );
-   ResetControlClock::set_ahb1_clock( ResetControlClock::AHB1Clocks::gpio_a, true );
+   reset_control_clock.set_apb1_clock( APB1Clocks::usart_2, true );
+   reset_control_clock.set_ahb1_clock( AHB1Clocks::gpio_a, true );
 
    /* setup the GPIO pins with the appropriate AF modes and outputs: see data sheet for pin AF mapping */
    GPIO::set_alternate_mode( GPIOA, GPIO::Pins::pin_2, GPIO::AlternateMode::af7 );
@@ -52,7 +52,7 @@ void DebugPort::initialize( void )
    USART::write_control_register( USART2, USART::ControlRegister2::stop_bits, 0x00 );
    USART::write_control_register( USART2, USART::ControlRegister3::cts_enable, 0x00 );
    USART::write_control_register( USART2, USART::ControlRegister3::rts_enable, 0x00 );
-   USART::set_baudrate( USART2, ResetControlClock::Clocks::APB1, 115200 );
+   USART::set_baudrate( USART2, Clocks::APB1, 115200 );
 
    /* enable the usart and interrupts */
    USART::write_control_register( USART2, USART::ControlRegister1::receiver_enable, 0x01 );

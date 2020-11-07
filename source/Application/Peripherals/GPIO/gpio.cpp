@@ -45,7 +45,7 @@ void GPIO_initialize( void )
    using namespace HAL;
 
    /* enable the peripheral clock */
-   ResetControlClock::set_ahb1_clock( ResetControlClock::AHB1Clocks::gpio_d, true );
+   reset_control_clock.set_ahb1_clock( AHB1Clocks::gpio_d, true );
 
    /* configure the pins */
    green_led.initialize( GPIO_LED_BANK, GPIO::Pins::pin_12, GPIO::Speed::low, GPIO::PullMode::pull_down, GPIO::OutputMode::push_pull );
