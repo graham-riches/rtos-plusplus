@@ -27,7 +27,6 @@ set(APP_SOURCES
 		# Application Source Files
       source/Application/main.cpp      
       source/Application/Events/event.cpp  
-      source/Application/Peripherals/GPIO/gpio.cpp
       source/Application/Peripherals/USART/usart.cpp
       source/Application/Peripherals/USART/debug_port.cpp
 		source/Application/Peripherals/peripherals.cpp

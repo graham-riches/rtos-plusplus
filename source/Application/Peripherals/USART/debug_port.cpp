@@ -21,14 +21,33 @@ constexpr uint16_t debug_port_buffer_size = 256;
 
 /*********************************** Macros ********************************************/
 
+/******************************** Local Variables **************************************/
+/* create the GPIO pins */
+static HAL::AlternateModePin tx_pin( GPIOA, HAL::Pins::pin_2, HAL::PinMode::alternate, HAL::Speed::very_high, HAL::PullMode::pull_up, HAL::OutputMode::push_pull, HAL::AlternateMode::af7 );
+static HAL::AlternateModePin rx_pin( GPIOA, HAL::Pins::pin_3, HAL::PinMode::alternate, HAL::Speed::very_high, HAL::PullMode::pull_up, HAL::OutputMode::push_pull, HAL::AlternateMode::af7 );
+
+
 /******************************* Global Variables **************************************/
 DebugPort debug_port( USART2, debug_port_buffer_size, debug_port_buffer_size );
 
-/******************************** Local Variables **************************************/
 
 /****************************** Functions Prototype ************************************/
 
 /****************************** Functions Definition ***********************************/
+/**
+ * \brief Construct a new Debug Port:: Debug Port object
+ * 
+ * \param usart the uart peripheral address pointer
+ * \param tx_size size of the tx ring buffer
+ * \param rx_size size of the rx ring buffer
+ */
+DebugPort::DebugPort( USART_TypeDef *usart, size_t tx_size, size_t rx_size )
+: HAL::USARTInterrupt( usart, tx_size, rx_size )
+{
+
+}
+
+
 /**
  * \brief initialize the debug port with the correct HW settings
  */
@@ -39,12 +58,6 @@ void DebugPort::initialize( void )
    /* enable the GPIO clocks and the USART clocks */
    reset_control_clock.set_apb1_clock( APB1Clocks::usart_2, true );
    reset_control_clock.set_ahb1_clock( AHB1Clocks::gpio_a, true );
-
-   /* setup the GPIO pins with the appropriate AF modes and outputs: see data sheet for pin AF mapping */
-   GPIO::set_alternate_mode( GPIOA, GPIO::Pins::pin_2, GPIO::AlternateMode::af7 );
-   GPIO::set_alternate_mode( GPIOA, GPIO::Pins::pin_3, GPIO::AlternateMode::af7 );
-   GPIO::initialize_pin( GPIOA, GPIO::Pins::pin_2, GPIO::PinMode::alternate, GPIO::Speed::very_high, GPIO::PullMode::pull_up, GPIO::OutputMode::push_pull );
-   GPIO::initialize_pin( GPIOA, GPIO::Pins::pin_3, GPIO::PinMode::alternate, GPIO::Speed::very_high, GPIO::PullMode::pull_up, GPIO::OutputMode::push_pull );
 
    /* configure the usart with the application specific settings */
    this->write_control_register( USARTControlRegister1::parity_selection, 0x00 );

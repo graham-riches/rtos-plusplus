@@ -8,7 +8,6 @@
 
 /********************************** Includes *******************************************/
 #include "peripherals.h"
-#include "gpio.h"
 #include "hal_flash.h"
 #include "hal_interrupt.h"
 #include "hal_power.h"
@@ -29,6 +28,11 @@ constexpr HAL::PLLSource RCC_PLL_SOURCE = HAL::PLLSource::high_speed_external;
 /*********************************** Macros ********************************************/
 
 /******************************* Global Variables **************************************/
+HAL::OutputPin green_led( GPIOD, HAL::Pins::pin_12, HAL::PinMode::output, HAL::Speed::low, HAL::PullMode::pull_down, HAL::OutputMode::push_pull );
+HAL::OutputPin orange_led( GPIOD, HAL::Pins::pin_13, HAL::PinMode::output, HAL::Speed::low, HAL::PullMode::pull_down, HAL::OutputMode::push_pull );
+HAL::OutputPin red_led( GPIOD, HAL::Pins::pin_14, HAL::PinMode::output, HAL::Speed::low, HAL::PullMode::pull_down, HAL::OutputMode::push_pull );
+HAL::OutputPin blue_led( GPIOD, HAL::Pins::pin_15, HAL::PinMode::output, HAL::Speed::low, HAL::PullMode::pull_down, HAL::OutputMode::push_pull );
+
 
 /******************************** Local Variables **************************************/
 
@@ -47,11 +51,14 @@ void initialize_peripherals( void )
    /* boot-up the system - RCC, Flash etc. */
    system_boot( );
 
-   /* Initialize all configured peripherals */
-   GPIO_initialize( );
-
    /* enable the debug usart */
    USART_initialize( );
+
+   /* turn on the LEDs for status indication */
+   green_led.set( true );
+   orange_led.set( true );
+   red_led.set( true );
+   blue_led.set( true );
 }
 
 /**

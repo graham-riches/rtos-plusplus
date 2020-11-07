@@ -27,6 +27,16 @@ namespace HAL
 
 /****************************** Function Definitions ***********************************/
 /**
+ * \brief Construct a new USARTBase::USARTBase object
+ * 
+ * \param usart the usart peripheral address
+ */
+USARTBase::USARTBase( USART_TypeDef *usart )
+{
+   this->peripheral = usart;
+}
+
+/**
  * \brief read a value from the status register
  * 
  * \param reg the register 

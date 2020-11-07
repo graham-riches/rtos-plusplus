@@ -16,8 +16,6 @@
 
 namespace HAL
 {
-namespace GPIO
-{
 /*********************************** Consts ********************************************/
 
 /************************************ Types ********************************************/
@@ -120,33 +118,54 @@ enum class Pins : unsigned
    all = 0xFFFF
 };
 
+
+/**
+ * \brief base GPIO pin class
+ */
+class PinBase
+{
+   public:
+   GPIO_TypeDef *bank;
+   Pins pin;
+   PinMode mode;
+   Speed speed;
+   PullMode pull_mode;
+   OutputMode output_mode;
+   PinBase( GPIO_TypeDef *bank, Pins pin, PinMode mode, Speed speed, PullMode pull_mode, OutputMode output_mode );
+
+};
+
 /**
  * \brief class type for a GPIO output pin
  */
-class OutputPin
+class OutputPin : protected PinBase
 {
-   private:
-   GPIO_TypeDef *bank;
-   Pins pin;
-   Speed speed;
-   PullMode pull_mode;
-
    public:
-   OutputPin() {} //!< default constructor
-   OutputPin( GPIO_TypeDef *bank, Pins pin, Speed speed, PullMode pull_mode, OutputMode output_mode );
-   void initialize( GPIO_TypeDef *bank, Pins pin, Speed speed, PullMode pull_mode, OutputMode output_mode );
+   OutputPin( GPIO_TypeDef *bank, Pins pin, PinMode mode, Speed speed, PullMode pull_mode, OutputMode output_mode );
 
    void set( bool high );
    void toggle( void );
 };
 
+
+/**
+ * \brief class type for an alternate mode pin
+ */
+class AlternateModePin : protected PinBase
+{
+   private:
+   AlternateMode af_mode;
+
+   public:
+   AlternateModePin( GPIO_TypeDef *bank, Pins pin, PinMode mode, Speed speed, PullMode pull_mode, OutputMode output_mode, AlternateMode af_mode );
+};
+
+
+
 /*********************************** Macros ********************************************/
 
 /****************************** Function Declarations ************************************/
-void initialize_pin( GPIO_TypeDef *bank, Pins pin, PinMode mode, Speed speed, PullMode pull_mode, OutputMode output_mode );
-void set_alternate_mode( GPIO_TypeDef *bank, Pins pins, AlternateMode alternate );
 
-};  // namespace GPIO
 };  // namespace HAL
 
 #endif /* __HAL_GPIO_H__ */

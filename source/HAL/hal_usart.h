@@ -11,11 +11,13 @@
 
 /********************************** Includes *******************************************/
 #include "hal_bitwise_operators.h"
+#include "hal_gpio.h"
 #include "hal_interrupt.h"
 #include "hal_rcc.h"
 #include "ring_buffer.h"
 #include "stm32f4xx.h"
 #include <stdint.h>
+
 
 namespace HAL
 {
@@ -106,10 +108,7 @@ class USARTBase
    USART_TypeDef *peripheral;
 
    public:
-   USARTBase( USART_TypeDef *usart )
-   {
-      this->peripheral = usart;
-   }
+   USARTBase( USART_TypeDef *usart );
 
    /* virtual methods for derived classes */
    virtual void initialize( ){ };
@@ -150,7 +149,6 @@ class USARTInterrupt : protected USARTBase, public HAL::InterruptPeripheral
 /******************************* Global Variables **************************************/
 
 /****************************** Functions Prototype ************************************/
-
 
 };  // namespace HAL
 

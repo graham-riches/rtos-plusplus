@@ -12,6 +12,7 @@
 /********************************** Includes *******************************************/
 #include "common.h"
 #include "hal_usart.h"
+#include "hal_gpio.h"
 #include "stm32f4xx.h"
 #include <cstdarg>
 #include <memory>
@@ -27,9 +28,7 @@ class DebugPort : public HAL::USARTInterrupt
 {
    public:
    DebugPort( );
-   DebugPort( USART_TypeDef *usart, size_t tx_size, size_t rx_size )
-      : HAL::USARTInterrupt( usart, tx_size, rx_size )
-   { };
+   DebugPort( USART_TypeDef *usart, size_t tx_size, size_t rx_size );      
    void initialize( void );
    void debug( const char *message );
    void info( const char *message );
