@@ -23,11 +23,11 @@ set(APP_SOURCES
       source/HAL/hal_power.cpp
       source/HAL/hal_usart.cpp
       source/HAL/hal_interrupt.cpp
+      source/HAL/hal_spi.cpp
 		
 		# Application Source Files
-      source/Application/main.cpp      
-      source/Application/Events/event.cpp  
-      source/Application/Peripherals/USART/usart.cpp
+      source/Application/main.cpp
+      source/Application/Events/event.cpp
       source/Application/Peripherals/USART/debug_port.cpp
 		source/Application/Peripherals/peripherals.cpp
 		
