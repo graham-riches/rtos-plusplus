@@ -80,8 +80,49 @@ void InterruptManager::default_isr_handler( void )
 */
 extern "C"
 {
+   void USART1_IRQHandler( void )
+   {
+      HAL::interrupt_manager.default_isr_handler( );
+   }
+
    void USART2_IRQHandler( void )
    {
       HAL::interrupt_manager.default_isr_handler( );
    }
+
+   void USART3_IRQHandler( void )
+   {
+      HAL::interrupt_manager.default_isr_handler( );
+   }
+
+   void UART4_IRQHandler( void )
+   {
+      HAL::interrupt_manager.default_isr_handler( );
+   }
+
+   void UART5_IRQHandler( void )
+   {
+      HAL::interrupt_manager.default_isr_handler( ); 
+   }
+   
+   void USART6_IRQHandler( void )
+   {
+      HAL::interrupt_manager.default_isr_handler( );
+   }
+
+   void SPI1_IRQHandler( void )
+   {
+      HAL::interrupt_manager.default_isr_handler( );
+   }
+
+   void SPI2_IRQHandler( void )
+   {
+      HAL::interrupt_manager.default_isr_handler( );
+   }
+
+   void SPI3_IRQHandler( void )
+   {
+      HAL::interrupt_manager.default_isr_handler( );
+   }
+
 }
