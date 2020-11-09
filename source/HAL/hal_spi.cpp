@@ -36,6 +36,9 @@ SPIBase::SPIBase( SPI_TypeDef *spi_peripheral_address, OutputPin chip_select )
 {
    this->peripheral = spi_peripheral_address;
    this->chip_select = chip_select;
+
+   /* pull the chip select high by default */
+   this->chip_select.set( true );
 }
 
 /**
@@ -58,13 +61,13 @@ bool SPIBase::read_status_register( SPIStatusRegister reg )
 void SPIBase::write_control_register( SPIControlRegister1 reg, uint8_t value )
 {
    /* clear a single bit unless the register is the baudrate (3 bits ) */
-   uint8_t register_mask = ( reg != SPIControlRegister1::baudrate ) ? 0x001 : 0x111;
+   uint8_t register_mask = ( reg != SPIControlRegister1::baudrate ) ? 0b1 : 0b111;
 
    /* clear the register */
-   this->peripheral->CR1 &= ~static_cast<uint16_t>( ( static_cast<uint8_t>( 0x01 ) << static_cast<uint8_t>( reg ) ) );
+   this->peripheral->CR1 &= ~static_cast<uint16_t>( ( register_mask << static_cast<uint8_t>( reg ) ) );
 
    /* write the value */
-   this->peripheral->CR1 |= static_cast<uint16_t>( ( ( value & 0x01 ) << static_cast<uint8_t>( reg ) ) );
+   this->peripheral->CR1 |= static_cast<uint16_t>( ( ( value & register_mask ) << static_cast<uint8_t>( reg ) ) );
 }
 
 /**
@@ -108,12 +111,22 @@ void SPIPolling::read_write( uint8_t *tx_buffer, uint8_t *rx_buffer, uint16_t si
    /* pull the chip select low */
    this->chip_select.set( false );
 
-
    /* send/receive all of the data */
    while ( size > 0 )
    {
+      /* wait for the transmit buffer to clear */
+      while ( this->read_status_register( SPIStatusRegister::transmit_data_empty) == false )
+      {
+
+      }
       /* put data outgoing into the data register if sending, or junk if receiving */
       this->peripheral->DR = ( tx_buffer != nullptr ) ? *tx_buffer++ : static_cast<uint8_t>( 0x00 );   
+
+      /* wait for the receive buffer to clear */
+      while ( this->read_status_register( SPIStatusRegister::receive_data_available ) == false )
+      {
+
+      }
 
       /* receive data */
       if ( rx_buffer != nullptr )
@@ -123,6 +136,7 @@ void SPIPolling::read_write( uint8_t *tx_buffer, uint8_t *rx_buffer, uint16_t si
       else
       {
          junk_data = static_cast<uint8_t>( this->peripheral->DR );
+         PARAMETER_NOT_USED( junk_data );
       }
       
       size--;

@@ -71,6 +71,11 @@ void initialize_peripherals( void )
    red_led.set( true );
    blue_led.set( false );
 
+   /* test the accelerometer and SPI */
+   uint16_t who_am_i = accelerometer.test();
+   who_am_i = ( who_am_i >> 8 );
+
+   debug_port.debug( "test point" );
 }
 
 /**

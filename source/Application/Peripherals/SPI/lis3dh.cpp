@@ -44,7 +44,6 @@ LIS3DH::LIS3DH( SPI_TypeDef *spi_peripheral_address, HAL::OutputPin chip_select 
    
 }
 
-
 /**
  * \brief setup a LIS3DH accelerometer
  */
@@ -59,7 +58,20 @@ void LIS3DH::initialize( void )
    this->write_control_register( SPIControlRegister1::master_select, 0x01 );
    this->write_control_register( SPIControlRegister1::clock_polarity, 0x01 );
    this->write_control_register( SPIControlRegister1::clock_phase, 0x01 );
+   this->write_control_register( SPIControlRegister2::slave_select_output_enable, 0x01 );
    this->set_baudrate( SPIBaudratePrescaler::prescaler_16 ); //!< 84MHz / 16 = 5.25 MHz
 
    this->write_control_register( SPIControlRegister1::spi_enable, 0x01 );
+}
+
+/**
+ * \brief test function for the accelerometer
+ * \retval return the result of the who am I register
+ */
+uint16_t LIS3DH::test( void )
+{
+   uint16_t command = 0x0F | 0x80;
+   uint16_t response = 0;
+   this->read_write( (uint8_t *)&command, (uint8_t *)&response, sizeof( uint16_t ) );
+   return response;
 }

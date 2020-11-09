@@ -30,6 +30,7 @@ class LIS3DH : public HAL::SPIPolling
    public:
    LIS3DH( SPI_TypeDef *spi_peripheral_address, HAL::OutputPin chip_select );
    void initialize( void );
+   uint16_t test( void );
 };
 
 

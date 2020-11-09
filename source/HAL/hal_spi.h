@@ -114,13 +114,14 @@ class SPIBase
 class SPIPolling : protected SPIBase
 {
    private:
-   void read_write( uint8_t *tx_buffer, uint8_t *rx_buffer, uint16_t size );
+   
 
    public:
    SPIPolling( SPI_TypeDef *spi_peripheral_address, OutputPin chip_select )
    : SPIBase( spi_peripheral_address, chip_select )
    { }
 
+   void read_write( uint8_t *tx_buffer, uint8_t *rx_buffer, uint16_t size );
    void read( uint8_t *rx_buffer, uint16_t size );
    void write( uint8_t *tx_buffer, uint16_t size );
 };
