@@ -58,7 +58,7 @@ PinBase::PinBase( GPIO_TypeDef *bank, Pins pin, PinMode mode, Speed speed, PullM
    this->output_mode = output_mode;
 
    /* enable the peripheral clock. Note: this must be done before writing to the registers */   
-   reset_control_clock.set_ahb1_clock( gpio_port_map[bank], true );
+   reset_control_clock.set_ahb_clock( gpio_port_map[bank], true );
 
    /* find the appropriate bits and set them */
    for ( uint8_t i = 0; i < total_pins; i++ )
@@ -158,12 +158,12 @@ AlternateModePin::AlternateModePin( GPIO_TypeDef *bank, Pins pin, PinMode mode, 
       if ( static_cast<bool>( test_pin & static_cast<uint32_t>( this->pin ) ) )
       {
          /* select the appropriate register (high/low) from the AFR array */
-         uint8_t afr_array_index = ( test_pin <= 8 ) ? 0 : 1;
+         uint8_t afr_array_index = ( i < 8 ) ? 0 : 1;
 
          /* clear the register and set it to the appropriate value */
          uint32_t mask = 0x0F;
-         this->bank->AFR[afr_array_index] &= ~( ( mask ) << ( static_cast<uint8_t>( this->af_mode ) * 4 ) );
-         this->bank->AFR[afr_array_index] |= ( static_cast<uint8_t>( this->af_mode ) << ( i * 4 ) );
+         this->bank->AFR[afr_array_index] &= ~( ( mask ) << ( (i%8) * 4 ) );
+         this->bank->AFR[afr_array_index] |= ( static_cast<uint8_t>( this->af_mode ) << ( (i%8) * 4 ) );
       }
    }
 }

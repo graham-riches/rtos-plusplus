@@ -23,12 +23,12 @@ constexpr uint16_t debug_port_buffer_size = 256;
 
 /******************************** Local Variables **************************************/
 /* create the GPIO pins */
-static HAL::AlternateModePin tx_pin( GPIOA, HAL::Pins::pin_2, HAL::PinMode::alternate, HAL::Speed::very_high, HAL::PullMode::pull_up, HAL::OutputMode::push_pull, HAL::AlternateMode::af7 );
-static HAL::AlternateModePin rx_pin( GPIOA, HAL::Pins::pin_3, HAL::PinMode::alternate, HAL::Speed::very_high, HAL::PullMode::pull_up, HAL::OutputMode::push_pull, HAL::AlternateMode::af7 );
+static HAL::AlternateModePin tx_pin( GPIOB, HAL::Pins::pin_10, HAL::PinMode::alternate, HAL::Speed::very_high, HAL::PullMode::pull_up, HAL::OutputMode::push_pull, HAL::AlternateMode::af7 );
+static HAL::AlternateModePin rx_pin( GPIOB, HAL::Pins::pin_11, HAL::PinMode::alternate, HAL::Speed::very_high, HAL::PullMode::pull_up, HAL::OutputMode::push_pull, HAL::AlternateMode::af7 );
 
 
 /******************************* Global Variables **************************************/
-DebugPort debug_port( USART2, debug_port_buffer_size, debug_port_buffer_size );
+DebugPort debug_port( USART3, debug_port_buffer_size, debug_port_buffer_size );
 
 
 /****************************** Functions Prototype ************************************/
@@ -56,8 +56,7 @@ void DebugPort::initialize( void )
    using namespace HAL;
 
    /* enable the GPIO clocks and the USART clocks */
-   reset_control_clock.set_apb1_clock( APB1Clocks::usart_2, true );
-   reset_control_clock.set_ahb1_clock( AHB1Clocks::gpio_a, true );
+   reset_control_clock.set_apb_clock( APB1Clocks::usart_3, true );
 
    /* configure the usart with the application specific settings */
    this->write_control_register( USARTControlRegister1::parity_selection, 0x00 );
@@ -73,7 +72,7 @@ void DebugPort::initialize( void )
    this->write_control_register( USARTControlRegister1::receive_interrupt_enable, 0x01 );
 
    /* register the interrupt in the hal interrupts table */
-   interrupt_manager.register_callback( InterruptName::usart_2, this, 0, 2 );
+   interrupt_manager.register_callback( InterruptName::usart_3, this, 0, 2 );
 
    /* enable the UART */
    this->write_control_register( USARTControlRegister1::usart_enable, 0x01 );

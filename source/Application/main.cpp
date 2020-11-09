@@ -69,8 +69,7 @@ static void thread_one_task( void )
    {
       green_led.toggle( );
       blue_led.toggle( );
-      OS::delay_ms( 250 );
-      debug_port.send("hello from thread one\n");
+      OS::delay_ms( 250 );      
    }      
 }
 
@@ -85,7 +84,6 @@ static void thread_two_task( void )
    {
       red_led.toggle( );
       orange_led.toggle( );
-      OS::delay_ms( 250 );      
-      debug_port.send("hello from thread two\n");         
+      OS::delay_ms( 250 );             
    }      
 }

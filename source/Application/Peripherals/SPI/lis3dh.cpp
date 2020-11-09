@@ -19,10 +19,10 @@
 
 /******************************* Global Variables **************************************/
 /* create the pins */
-HAL::OutputPin accelerometer_chip_select( GPIOE, HAL::Pins::pin_3, HAL::PinMode::output, HAL::Speed::low, HAL::PullMode::pull_up, HAL::OutputMode::push_pull );
-//HAL::AlternateModePin accelerometer_sck( GPIOA, HAL::Pins::pin_2, HAL::PinMode::alternate, HAL::Speed::very_high, HAL::PullMode::pull_up, HAL::OutputMode::push_pull, HAL::AlternateMode::af5 );
-//HAL::AlternateModePin accelerometer_miso( GPIOA, HAL::Pins::pin_6, HAL::PinMode::alternate, HAL::Speed::very_high, HAL::PullMode::pull_up, HAL::OutputMode::push_pull, HAL::AlternateMode::af5 );
-//HAL::AlternateModePin accelerometer_mosi( GPIOA, HAL::Pins::pin_7, HAL::PinMode::alternate, HAL::Speed::very_high, HAL::PullMode::pull_up, HAL::OutputMode::push_pull, HAL::AlternateMode::af5 );
+static HAL::OutputPin accelerometer_chip_select( GPIOE, HAL::Pins::pin_3, HAL::PinMode::output, HAL::Speed::low, HAL::PullMode::pull_up, HAL::OutputMode::push_pull );
+static HAL::AlternateModePin accelerometer_sck( GPIOA, HAL::Pins::pin_5, HAL::PinMode::alternate, HAL::Speed::very_high, HAL::PullMode::pull_up, HAL::OutputMode::push_pull, HAL::AlternateMode::af5 );
+static HAL::AlternateModePin accelerometer_miso( GPIOA, HAL::Pins::pin_6, HAL::PinMode::alternate, HAL::Speed::very_high, HAL::PullMode::pull_up, HAL::OutputMode::push_pull, HAL::AlternateMode::af5 );
+static HAL::AlternateModePin accelerometer_mosi( GPIOA, HAL::Pins::pin_7, HAL::PinMode::alternate, HAL::Speed::very_high, HAL::PullMode::pull_up, HAL::OutputMode::push_pull, HAL::AlternateMode::af5 );
 
 
 LIS3DH accelerometer( SPI1, accelerometer_chip_select );
@@ -41,7 +41,7 @@ LIS3DH accelerometer( SPI1, accelerometer_chip_select );
 LIS3DH::LIS3DH( SPI_TypeDef *spi_peripheral_address, HAL::OutputPin chip_select )
 : HAL::SPIPolling( spi_peripheral_address, chip_select )
 {
-
+   
 }
 
 
@@ -53,7 +53,7 @@ void LIS3DH::initialize( void )
    using namespace HAL;
 
    /* enable the peripheral clock */
-   reset_control_clock.set_apb2_clock( APB2Clocks::spi_1, true );
+   reset_control_clock.set_apb_clock( APB2Clocks::spi_1, true );
 
    /* setup the SPI control register settings */
    this->write_control_register( SPIControlRegister1::master_select, 0x01 );

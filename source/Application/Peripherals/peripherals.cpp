@@ -53,7 +53,7 @@ void initialize_peripherals( void )
    system_boot( );
 
    /* initialize the accelerometer */
-   //accelerometer.initialize();
+   accelerometer.initialize();
    
    /* initialize the debug UART and print a welcome banner */
    debug_port.initialize();
@@ -70,7 +70,6 @@ void initialize_peripherals( void )
    orange_led.set( false );
    red_led.set( true );
    blue_led.set( false );
-
 
 }
 
@@ -97,7 +96,7 @@ void system_boot( void )
    } while ( hse_ready == false );
 
    /* Select regulator voltage output Scale 1 mode */
-   HAL::reset_control_clock.set_apb1_clock( HAL::APB1Clocks::power_management, true );
+   HAL::reset_control_clock.set_apb_clock( HAL::APB1Clocks::power_management, true );
    HAL::power_management.set_control_register( HAL::PowerManagementControlRegister::voltage_output_selection, 0x03 );
 
    /* setup the clock prescalers */

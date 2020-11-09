@@ -208,7 +208,7 @@ void ResetControlClock::configure_apb1_clock( APBPrescaler prescaler )
  * \param clock the clock to enable/disable
  * \param enable state
  */
-void ResetControlClock::set_ahb1_clock( AHB1Clocks clock, bool enable )
+void ResetControlClock::set_ahb_clock( AHB1Clocks clock, bool enable )
 {
    if ( enable )
    {
@@ -226,7 +226,7 @@ void ResetControlClock::set_ahb1_clock( AHB1Clocks clock, bool enable )
  * \param clock the clock to enable/disable
  * \param enable state
  */
-void ResetControlClock::set_ahb2_clock( AHB2Clocks clock, bool enable )
+void ResetControlClock::set_ahb_clock( AHB2Clocks clock, bool enable )
 {
    if ( enable )
    {
@@ -244,7 +244,7 @@ void ResetControlClock::set_ahb2_clock( AHB2Clocks clock, bool enable )
  * \param clock the clock to enable/disable
  * \param enable state
  */
-void ResetControlClock::set_ahb3_clock( AHB3Clocks clock, bool enable )
+void ResetControlClock::set_ahb_clock( AHB3Clocks clock, bool enable )
 {
    if ( enable )
    {
@@ -262,7 +262,7 @@ void ResetControlClock::set_ahb3_clock( AHB3Clocks clock, bool enable )
  * \param clock the clock to enable/disable
  * \param enable state
  */
-void ResetControlClock::set_apb1_clock( APB1Clocks clock, bool enable )
+void ResetControlClock::set_apb_clock( APB1Clocks clock, bool enable )
 {
    if ( enable )
    {
@@ -280,7 +280,7 @@ void ResetControlClock::set_apb1_clock( APB1Clocks clock, bool enable )
  * \param clock the clock to enable/disable
  * \param enable state
  */
-void ResetControlClock::set_apb2_clock( APB2Clocks clock, bool enable )
+void ResetControlClock::set_apb_clock( APB2Clocks clock, bool enable )
 {
    if ( enable )
    {

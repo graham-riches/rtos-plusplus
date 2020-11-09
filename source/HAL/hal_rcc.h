@@ -275,11 +275,11 @@ class ResetControlClock
    void configure_ahb_clock( AHBPrescaler prescaler );
    void configure_apb2_clock( APBPrescaler prescaler );
    void configure_apb1_clock( APBPrescaler prescaler );
-   void set_ahb1_clock( AHB1Clocks clock, bool enable );
-   void set_ahb2_clock( AHB2Clocks clock, bool enable );
-   void set_ahb3_clock( AHB3Clocks clock, bool enable );
-   void set_apb1_clock( APB1Clocks clock, bool enable );
-   void set_apb2_clock( APB2Clocks clock, bool enable );
+   void set_ahb_clock( AHB1Clocks clock, bool enable );
+   void set_ahb_clock( AHB2Clocks clock, bool enable );
+   void set_ahb_clock( AHB3Clocks clock, bool enable );
+   void set_apb_clock( APB1Clocks clock, bool enable );
+   void set_apb_clock( APB2Clocks clock, bool enable );
    uint32_t get_clock_speed( Clocks clock );
 };
 
