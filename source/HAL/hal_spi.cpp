@@ -24,15 +24,18 @@ namespace HAL
 
 /****************************** Functions Prototype ************************************/
 
-/****************************** Functions Definition ***********************************/
+/****************************** SPIBase Definitions ***********************************/
 /**
  * \brief Construct a new SPIBase::SPIBase object
  * 
  * \param spi_peripheral_address the address of the memory mapped peripheral
+ * \param chip_select a GPIO output pin used as the chip select
+ * \note the output pin object should be created before the SPI object
  */
-SPIBase::SPIBase( SPI_TypeDef *spi_peripheral_address )
+SPIBase::SPIBase( SPI_TypeDef *spi_peripheral_address, OutputPin chip_select )
 {
    this->peripheral = spi_peripheral_address;
+   this->chip_select = chip_select;
 }
 
 /**
@@ -90,6 +93,69 @@ void SPIBase::set_baudrate( SPIBaudratePrescaler prescaler )
 }
 
 
+/****************************** SPIPolling Definitions ***********************************/
+/**
+ * \brief private function to read/write spi data in a polling/blocking loop
+ * 
+ * \param tx_buffer pointer to the tx_buffer
+ * \param rx_buffer pointer to the rx_buffer
+ * \param size size of the message
+ */
+void SPIPolling::read_write( uint8_t *tx_buffer, uint8_t *rx_buffer, uint16_t size )
+{
+   uint8_t junk_data = 0x00; //!< junk variable for throwaway rx data while sending
+
+   /* pull the chip select low */
+   this->chip_select.set( false );
+
+
+   /* send/receive all of the data */
+   while ( size > 0 )
+   {
+      /* put data outgoing into the data register if sending, or junk if receiving */
+      this->peripheral->DR = ( tx_buffer != nullptr ) ? *tx_buffer++ : static_cast<uint8_t>( 0x00 );   
+
+      /* receive data */
+      if ( rx_buffer != nullptr )
+      {
+         *rx_buffer++ = static_cast<uint8_t>( this->peripheral->DR );
+      }
+      else
+      {
+         junk_data = static_cast<uint8_t>( this->peripheral->DR );
+      }
+      
+      size--;
+   }
+
+   /* release the chip select */
+   this->chip_select.set( true );
+}
+
+/**
+ * \brief function to receive data on a SPI polling peripheral
+ * 
+ * \param rx_buffer buffer to store the data in
+ * \param size how much data to read
+ */
+void SPIPolling::read( uint8_t *rx_buffer, uint16_t size )
+{
+   this->read_write( nullptr, rx_buffer, size );
+}
+
+/**
+ * \brief write data on a polling SPI peripheral
+ * 
+ * \param tx_buffer buffer to send
+ * \param size size of the buffer
+ */
+void SPIPolling::write( uint8_t *tx_buffer, uint16_t size )
+{
+   this->read_write( tx_buffer, nullptr, size );
+}
+
+
+/****************************** SPIInterrupt Definitions ***********************************/
 /**
  * \brief interrupt service routing for interrupt drive SPI peripherals
  * 

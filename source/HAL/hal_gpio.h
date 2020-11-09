@@ -131,6 +131,7 @@ class PinBase
    Speed speed;
    PullMode pull_mode;
    OutputMode output_mode;
+   PinBase(){};
    PinBase( GPIO_TypeDef *bank, Pins pin, PinMode mode, Speed speed, PullMode pull_mode, OutputMode output_mode );
 
 };
@@ -141,6 +142,7 @@ class PinBase
 class OutputPin : protected PinBase
 {
    public:
+   OutputPin(){};
    OutputPin( GPIO_TypeDef *bank, Pins pin, PinMode mode, Speed speed, PullMode pull_mode, OutputMode output_mode );
 
    void set( bool high );
@@ -157,6 +159,7 @@ class AlternateModePin : protected PinBase
    AlternateMode af_mode;
 
    public:
+   AlternateModePin(){};
    AlternateModePin( GPIO_TypeDef *bank, Pins pin, PinMode mode, Speed speed, PullMode pull_mode, OutputMode output_mode, AlternateMode af_mode );
 };
 

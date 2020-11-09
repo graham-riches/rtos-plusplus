@@ -12,6 +12,7 @@
 /********************************** Includes *******************************************/
 #include "stm32f4xx.h"
 #include "hal_interrupt.h"
+#include "hal_gpio.h"
 #include "ring_buffer.h"
 
 
@@ -93,15 +94,37 @@ class SPIBase
 {
    protected:
    SPI_TypeDef *peripheral;
+   OutputPin chip_select;
 
    public:
-   SPIBase( SPI_TypeDef *spi_peripheral_address );
+   SPIBase( SPI_TypeDef *spi_peripheral_address, OutputPin chip_select );
+
+   /* interface setup function */
+   virtual void initialize( ){ };
 
    bool read_status_register( SPIStatusRegister reg );
    void write_control_register( SPIControlRegister1 reg, uint8_t value );
    void write_control_register( SPIControlRegister2 reg, uint8_t value );
    void set_baudrate( SPIBaudratePrescaler prescaler );
 };
+
+/**
+ * \brief class to manage polling based SPI peripherals
+ */
+class SPIPolling : protected SPIBase
+{
+   private:
+   void read_write( uint8_t *tx_buffer, uint8_t *rx_buffer, uint16_t size );
+
+   public:
+   SPIPolling( SPI_TypeDef *spi_peripheral_address, OutputPin chip_select )
+   : SPIBase( spi_peripheral_address, chip_select )
+   { }
+
+   void read( uint8_t *rx_buffer, uint16_t size );
+   void write( uint8_t *tx_buffer, uint16_t size );
+};
+
 
 /**
  * \brief class to manage interrupt driven SPI peripherals
@@ -113,14 +136,15 @@ class SPIInterrupt : protected SPIBase, public HAL::InterruptPeripheral
    RingBuffer<uint8_t> rx_buffer;
 
    public:
-   SPIInterrupt( SPI_TypeDef *spi_peripheral_address, size_t tx_size, size_t rx_size )
-   : SPIBase( spi_peripheral_address )
+   SPIInterrupt( SPI_TypeDef *spi_peripheral_address, OutputPin chip_select, size_t tx_size, size_t rx_size )
+   : SPIBase( spi_peripheral_address, chip_select )
    , tx_buffer(tx_size)
    , rx_buffer(rx_size)
    {}
 
    void irq_handler( uint8_t type );
-   void send( uint8_t *data, uint16_t size );
+   /* TODO: implement this properly once polling driven SPI is working */
+   //void send( uint8_t *data, uint16_t size );
 };
 
 

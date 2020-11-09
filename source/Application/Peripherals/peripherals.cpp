@@ -13,6 +13,7 @@
 #include "hal_power.h"
 #include "hal_rcc.h"
 #include "debug_port.h"
+#include "lis3dh.h"
 #include "scheduler.h"
 
 /*********************************** Consts ********************************************/
@@ -51,6 +52,9 @@ void initialize_peripherals( void )
    /* boot-up the system - RCC, Flash etc. */
    system_boot( );
 
+   /* initialize the accelerometer */
+   //accelerometer.initialize();
+   
    /* initialize the debug UART and print a welcome banner */
    debug_port.initialize();
 
@@ -61,12 +65,13 @@ void initialize_peripherals( void )
    debug_port.send( "   Date: November 1, 2020 \n");
    debug_port.send( "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
 
-
    /* turn on the LEDs for status indication */
    green_led.set( true );
    orange_led.set( false );
    red_led.set( true );
    blue_led.set( false );
+
+
 }
 
 /**
