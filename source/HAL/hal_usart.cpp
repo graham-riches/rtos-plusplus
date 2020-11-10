@@ -9,6 +9,7 @@
 /********************************** Includes *******************************************/
 #include "hal_usart.h"
 #include <string.h>
+#include <cassert>
 
 namespace HAL
 {
@@ -33,6 +34,7 @@ namespace HAL
  */
 USARTBase::USARTBase( USART_TypeDef *usart )
 {
+   assert( usart != nullptr );
    this->peripheral = usart;
 }
 
@@ -42,9 +44,9 @@ USARTBase::USARTBase( USART_TypeDef *usart )
  * \param reg the register 
  * \retval register value
  */
-bool USARTBase::read_status_register( USARTStatusRegister reg )
+uint8_t USARTBase::read_status_register( USARTStatusRegister reg )
 {
-   return static_cast<bool>( this->peripheral->SR & ( 0x01u << static_cast<uint8_t>( reg ) ) );
+   return static_cast<uint8_t>( this->peripheral->SR & ( 0x01u << static_cast<uint8_t>( reg ) ) );
 }
 
 /**
@@ -93,6 +95,45 @@ void USARTBase::write_control_register( USARTControlRegister3 reg, uint8_t value
 }
 
 /**
+ * \brief read a control register from CR1
+ * 
+ * \param reg register to read
+ * \retval uint8_t value of the register
+ */
+uint8_t USARTBase::read_control_register( USARTControlRegister1 reg )
+{
+   uint8_t register_mask = 0b1;
+   uint8_t register_value = static_cast<uint8_t>( this->peripheral->CR1 & ( register_mask << static_cast<uint8_t>( reg ) ) );
+   return register_value;
+}
+
+/**
+ * \brief read a value from CR2
+ * 
+ * \param reg register to read
+ * \retval uint8_t value of the register
+ */
+uint8_t USARTBase::read_control_register( USARTControlRegister2 reg )
+{
+   uint8_t register_mask = 0b1;
+   uint8_t register_value = static_cast<uint8_t>( this->peripheral->CR2 & ( register_mask << static_cast<uint8_t>( reg ) ) );
+   return register_value;
+}
+
+/**
+ * \brief read a value from CR3
+ * 
+ * \param reg register to read
+ * \retval uint8_t value of the register
+ */
+uint8_t USARTBase::read_control_register( USARTControlRegister3 reg )
+{
+   uint8_t register_mask = 0b1;
+   uint8_t register_value = static_cast<uint8_t>( this->peripheral->CR3 & ( register_mask << static_cast<uint8_t>( reg ) ) );
+   return register_value;
+}
+
+/**
  * \brief Set the baudrate for a usart peripheral
  * 
  * \param clock enum value of which peripheral clock the usart is associated with
@@ -130,12 +171,9 @@ void USARTInterrupt::irq_handler( uint8_t type )
 {
    PARAMETER_NOT_USED( type );
 
-   uint32_t status = this->peripheral->SR;
-   uint32_t control_reg1 = this->peripheral->CR1;
-
    /* handle any rx interrupts */
-   bool rx_data_available = static_cast<bool>( status & ( 0x01 << static_cast<uint32_t>( USARTStatusRegister::receive_data_available ) ) );
-   bool rx_interrupt_enabled = static_cast<bool>( control_reg1 & ( 0x01 << static_cast<uint32_t>( USARTControlRegister1::receive_interrupt_enable ) ) );
+   bool rx_data_available = this->read_status_register( USARTStatusRegister::receive_data_available );
+   bool rx_interrupt_enabled = this->read_control_register( USARTControlRegister1::receive_interrupt_enable );
 
    if ( ( rx_data_available ) && ( rx_interrupt_enabled ) )
    {
@@ -144,8 +182,8 @@ void USARTInterrupt::irq_handler( uint8_t type )
    }
 
    /* handle any tx interrupts */
-   bool tx_data_empty = static_cast<bool>( status & ( 0x01 << static_cast<uint32_t>( USARTStatusRegister::transmit_data_empty ) ) );
-   bool tx_interrupt_enabled = static_cast<bool>( control_reg1 & ( 0x01 << static_cast<uint32_t>( USARTControlRegister1::transmit_interrupt_enable ) ) );
+   bool tx_data_empty = this->read_status_register( USARTStatusRegister::transmit_data_empty );
+   bool tx_interrupt_enabled = this->read_control_register( USARTControlRegister1::transmit_interrupt_enable );
 
    if ( ( tx_data_empty ) && ( tx_interrupt_enabled ) )
    {

@@ -114,10 +114,13 @@ class USARTBase
    virtual void initialize( ){ };
 
    /* common methods for all derived classes */
-   bool read_status_register( USARTStatusRegister reg );
+   uint8_t read_status_register( USARTStatusRegister reg );
    void write_control_register( USARTControlRegister1 reg, uint8_t value );
    void write_control_register( USARTControlRegister2 reg, uint8_t value );
    void write_control_register( USARTControlRegister3 reg, uint8_t value );
+   uint8_t read_control_register( USARTControlRegister1 reg );
+   uint8_t read_control_register( USARTControlRegister2 reg );
+   uint8_t read_control_register( USARTControlRegister3 reg );
    void set_baudrate( HAL::Clocks clock, uint32_t baudrate );
 };
 

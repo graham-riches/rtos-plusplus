@@ -102,9 +102,11 @@ class SPIBase
    /* interface setup function */
    virtual void initialize( ){ };
 
-   bool read_status_register( SPIStatusRegister reg );
+   uint8_t read_status_register( SPIStatusRegister reg );
    void write_control_register( SPIControlRegister1 reg, uint8_t value );
    void write_control_register( SPIControlRegister2 reg, uint8_t value );
+   uint8_t read_control_register( SPIControlRegister1 reg );
+   uint8_t read_control_register( SPIControlRegister2 reg );
    void set_baudrate( SPIBaudratePrescaler prescaler );
 };
 

@@ -8,6 +8,7 @@
 
 /********************************** Includes *******************************************/
 #include "hal_spi.h"
+#include <cassert>
 
 namespace HAL
 {
@@ -34,6 +35,7 @@ namespace HAL
  */
 SPIBase::SPIBase( SPI_TypeDef *spi_peripheral_address, OutputPin chip_select )
 {
+   assert( spi_peripheral_address != nullptr );
    this->peripheral = spi_peripheral_address;
    this->chip_select = chip_select;
 
@@ -47,9 +49,9 @@ SPIBase::SPIBase( SPI_TypeDef *spi_peripheral_address, OutputPin chip_select )
  * \param reg the register to read
  * \retval state of the register
  */
-bool SPIBase::read_status_register( SPIStatusRegister reg )
+uint8_t SPIBase::read_status_register( SPIStatusRegister reg )
 {
-   return static_cast<bool>( this->peripheral->SR & ( 0x01u << static_cast<uint8_t>( reg ) ) );
+   return static_cast<uint8_t>( this->peripheral->SR & ( 0x01u << static_cast<uint8_t>( reg ) ) );
 }
 
 /**
@@ -86,6 +88,32 @@ void SPIBase::write_control_register( SPIControlRegister2 reg, uint8_t value )
 }
 
 /**
+ * \brief read the state of a control register in CR1
+ * 
+ * \param reg the register to read
+ * \retval uint8_t register value
+ */
+uint8_t SPIBase::read_control_register( SPIControlRegister1 reg )
+{
+   uint8_t register_mask = ( reg != SPIControlRegister1::baudrate ) ? 0b1 : 0b111;
+   uint8_t register_value = static_cast<uint8_t>( this->peripheral->CR1 & ( register_mask << static_cast<uint8_t>( reg ) ) );
+   return register_value;
+}
+
+/**
+ * \brief read the state of a register in CR2
+ * 
+ * \param reg the register to read
+ * \retval uint8_t register value
+ */
+uint8_t SPIBase::read_control_register( SPIControlRegister2 reg )
+{
+   uint8_t register_mask = 0b1;
+   uint8_t register_value = static_cast<uint8_t>( this->peripheral->CR2 & ( register_mask << static_cast<uint8_t>( reg ) ) );
+   return register_value;
+}
+
+/**
  * \brief set the SPI baudrate (in CR1)
  * 
  * \param prescaler prescaler value
@@ -94,7 +122,6 @@ void SPIBase::set_baudrate( SPIBaudratePrescaler prescaler )
 {
    this->write_control_register( SPIControlRegister1::baudrate, static_cast<uint8_t>( prescaler ) );
 }
-
 
 /****************************** SPIPolling Definitions ***********************************/
 /**
@@ -106,8 +133,6 @@ void SPIBase::set_baudrate( SPIBaudratePrescaler prescaler )
  */
 void SPIPolling::read_write( uint8_t *tx_buffer, uint8_t *rx_buffer, uint16_t size )
 {
-   uint8_t junk_data = 0x00; //!< junk variable for throwaway rx data while sending
-
    /* pull the chip select low */
    this->chip_select.set( false );
 
@@ -115,30 +140,24 @@ void SPIPolling::read_write( uint8_t *tx_buffer, uint8_t *rx_buffer, uint16_t si
    while ( size > 0 )
    {
       /* wait for the transmit buffer to clear */
-      while ( this->read_status_register( SPIStatusRegister::transmit_data_empty) == false )
-      {
-
-      }
+      while ( this->read_status_register( SPIStatusRegister::transmit_data_empty ) == false )
+      { }
+      
       /* put data outgoing into the data register if sending, or junk if receiving */
-      this->peripheral->DR = ( tx_buffer != nullptr ) ? *tx_buffer++ : static_cast<uint8_t>( 0x00 );   
+      this->peripheral->DR = ( tx_buffer != nullptr ) ? *tx_buffer++ : static_cast<uint8_t>( 0x00 );
 
       /* wait for the receive buffer to clear */
       while ( this->read_status_register( SPIStatusRegister::receive_data_available ) == false )
-      {
+      { }
 
-      }
+      uint8_t rx_data = static_cast<uint8_t>( this->peripheral->DR );
 
       /* receive data */
       if ( rx_buffer != nullptr )
       {
-         *rx_buffer++ = static_cast<uint8_t>( this->peripheral->DR );
+         *rx_buffer++ = rx_data;
       }
-      else
-      {
-         junk_data = static_cast<uint8_t>( this->peripheral->DR );
-         PARAMETER_NOT_USED( junk_data );
-      }
-      
+
       size--;
    }
 
@@ -168,7 +187,6 @@ void SPIPolling::write( uint8_t *tx_buffer, uint16_t size )
    this->read_write( tx_buffer, nullptr, size );
 }
 
-
 /****************************** SPIInterrupt Definitions ***********************************/
 /**
  * \brief interrupt service routing for interrupt drive SPI peripherals
@@ -178,12 +196,10 @@ void SPIPolling::write( uint8_t *tx_buffer, uint16_t size )
 void SPIInterrupt::irq_handler( uint8_t type )
 {
    PARAMETER_NOT_USED( type );
-   
-   uint32_t control_reg1 = this->peripheral->CR1;
 
    /* handle any rx interrupts */
    bool rx_data_available = this->read_status_register( SPIStatusRegister::receive_data_available );
-   bool rx_interrupt_enabled = static_cast<bool>( control_reg1 & ( 0x01 << static_cast<uint32_t>( SPIControlRegister2::receive_interrupt_enable ) ) );
+   bool rx_interrupt_enabled = this->read_control_register( SPIControlRegister2::receive_interrupt_enable );
 
    if ( ( rx_data_available ) && ( rx_interrupt_enabled ) )
    {
@@ -193,7 +209,7 @@ void SPIInterrupt::irq_handler( uint8_t type )
 
    /* handle any tx interrupts */
    bool tx_data_empty = this->read_status_register( SPIStatusRegister::transmit_data_empty );
-   bool tx_interrupt_enabled = static_cast<bool>( control_reg1 & ( 0x01 << static_cast<uint32_t>( SPIControlRegister2::transmit_interrupt_enable ) ) );
+   bool tx_interrupt_enabled = this->read_control_register( SPIControlRegister2::transmit_interrupt_enable );
 
    if ( ( tx_data_empty ) && ( tx_interrupt_enabled ) )
    {
@@ -207,6 +223,5 @@ void SPIInterrupt::irq_handler( uint8_t type )
       }
    }
 }
-
 
 };  // namespace HAL
