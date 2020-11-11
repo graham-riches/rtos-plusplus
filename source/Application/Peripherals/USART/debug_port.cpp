@@ -43,10 +43,10 @@ DebugPort debug_port( USART3, debug_port_buffer_size, debug_port_buffer_size );
  */
 DebugPort::DebugPort( USART_TypeDef *usart, size_t tx_size, size_t rx_size )
 : HAL::USARTInterrupt( usart, tx_size, rx_size )
+, print_buffer( std::make_unique<char[]>( tx_size ) )
 {
-
+   this->print_buffer_size = tx_size;
 }
-
 
 /**
  * \brief initialize the debug port with the correct HW settings
@@ -79,49 +79,73 @@ void DebugPort::initialize( void )
 }
 
 /**
+ * \brief send a formatted log message out
+ * 
+ * \param message the formatted message
+ * \param tag logging tag
+ * \param args variadic args pack
+ */
+void DebugPort::log_message( const char *message, const char *tag, va_list args )
+{
+   this->send( tag );
+   this->send( ": " );
+   vsnprintf( this->print_buffer.get(), this->print_buffer_size, message, args );
+   this->send( this->print_buffer.get( ) );
+   this->send( "\r\n" );
+}
+
+/**
  * \brief log a debug message
  * 
  * \param message the message to send
+ * \param ... variadic args
  */
-void DebugPort::debug( const char *message )
+void DebugPort::debug( const char *message, ... )
 {
-   this->send( "DEBUG: " );
-   this->send( message );
-   this->send( "\r\n" );
+   va_list args;
+   va_start( args, message );
+   this->log_message( message, "DEBUG", args );
+   va_end( args );        
 }
 
 /**
  * \brief log an info message
  * 
  * \param message the message to send
+ * \param ... variadic print arguments
  */
-void DebugPort::info( const char *message )
+void DebugPort::info( const char *message, ... )
 {
-   this->send( "INFO: " );
-   this->send( message );
-   this->send( "\r\n" );
+   va_list args;
+   va_start( args, message );
+   this->log_message( message, "INFO", args );
+   va_end( args );  
 }
 
 /**
  * \brief log a warning
  * 
  * \param message the warning message
+ * \param ... variadic print arguments
  */
-void DebugPort::warning( const char *message )
+void DebugPort::warning( const char *message, ... )
 {
-   this->send( "WARNING: " );
-   this->send( message );
-   this->send( "\r\n" );
+   va_list args;
+   va_start( args, message );
+   this->log_message( message, "WARNING", args );
+   va_end( args );  
 }
 
 /**
  * \brief log an error
  * 
  * \param message the error to log
+ * \param ... variadic print arguments
  */
-void DebugPort::error( const char *message )
+void DebugPort::error( const char *message, ... )
 {
-   this->send( "ERROR: " );
-   this->send( message );
-   this->send( "\r\n" );
+   va_list args;
+   va_start( args, message );
+   this->log_message( message, "ERROR", args );
+   va_end( args );  
 }

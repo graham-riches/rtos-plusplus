@@ -38,6 +38,7 @@ HAL::OutputPin blue_led( GPIOD, HAL::Pins::pin_15, HAL::PinMode::output, HAL::Sp
 /******************************** Local Variables **************************************/
 
 /****************************** Functions Prototype ************************************/
+void system_initialize_fpu( void );
 void system_boot( void );
 
 /****************************** Functions Definition ***********************************/
@@ -49,6 +50,9 @@ void system_boot( void );
 */
 void initialize_peripherals( void )
 {
+   /* enable the FPU if required */
+   system_initialize_fpu();
+
    /* boot-up the system - RCC, Flash etc. */
    system_boot( );
 
@@ -75,7 +79,8 @@ void initialize_peripherals( void )
    uint16_t who_am_i = accelerometer.test();
    who_am_i = ( who_am_i >> 8 );
 
-   debug_port.debug( "test point" );
+   debug_port.debug( "Accelerometer test value: %d", who_am_i );
+
 }
 
 /**
@@ -134,4 +139,15 @@ void system_boot( void )
    /* set the systick interrupt frequency to every ms */
    uint32_t sys_clock = HAL::reset_control_clock.get_clock_speed( HAL::Clocks::AHB1 );
    OS::set_systick_frequency( sys_clock / 1000 );
+}
+
+/**
+ * \brief enable the floating point unit if required
+ * 
+ */
+void system_initialize_fpu( void )
+{
+   #if (__FPU_PRESENT == 1) && (__FPU_USED == 1)
+      SCB->CPACR |= ((3UL << 10*2)|(3UL << 11*2));  /* set CP10 and CP11 Full Access */
+   #endif
 }

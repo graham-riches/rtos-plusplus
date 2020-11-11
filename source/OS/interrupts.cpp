@@ -60,7 +60,7 @@ void fault_handler( StackContext_t *context );
 
 /****************************** Functions Definitions - Includes Cortex M4 Interrupts ************************************/
 /**
-  * @brief This function handles Non maskable interrupt.
+  * @brief This function handles Non maskable interrupt
   */
 void NMI_Handler( void ) { }
 

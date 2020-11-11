@@ -14,6 +14,8 @@
 #include "timer.h"
 #include "debug_port.h"
 #include <string.h>
+#include <stdio.h>
+#include "stm32f4xx.h"
 
 /*********************************** Consts ********************************************/
 #define THREAD_STACK_SIZE 128
@@ -48,7 +50,7 @@ int main( void )
    OS::register_thread( &thread_one );
    OS::register_thread( &thread_two );
    
-   /* configure the project specific HAL drivers and bootup the chip */
+   /* configure the project specific HAL drivers and bootup the chip, clocks etc. */
    initialize_peripherals();
 
    /* enter the OS kernel */
