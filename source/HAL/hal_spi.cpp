@@ -196,32 +196,31 @@ void SPIPolling::write( uint8_t *tx_buffer, uint16_t size )
 void SPIInterrupt::irq_handler( uint8_t type )
 {
    PARAMETER_NOT_USED( type );
+   /* enable the chip select */
+   this->chip_select.set( false );
 
-   /* handle any rx interrupts */
-   bool rx_data_available = this->read_status_register( SPIStatusRegister::receive_data_available );
-   bool rx_interrupt_enabled = this->read_control_register( SPIControlRegister2::receive_interrupt_enable );
-
-   if ( ( rx_data_available ) && ( rx_interrupt_enabled ) )
+   while ( !this->tx_buffer.is_empty() )
    {
-      uint8_t data = static_cast<uint8_t>( this->peripheral->DR & 0xFF );
-      this->rx_buffer.put( data );
+      /* wait for the transmit buffer to clear */
+      while ( this->read_status_register( SPIStatusRegister::transmit_data_empty ) == false )
+      { }
+      
+      /* put data outgoing into the data register */      
+      this->peripheral->DR = this->tx_buffer.get();
+
+      /* wait for the receive buffer to clear */
+      while ( this->read_status_register( SPIStatusRegister::receive_data_available ) == false )
+      { }
+
+      /* receive data into the rx buffer */
+      this->rx_buffer.put( static_cast<uint8_t>( this->peripheral->DR ) );      
    }
 
-   /* handle any tx interrupts */
-   bool tx_data_empty = this->read_status_register( SPIStatusRegister::transmit_data_empty );
-   bool tx_interrupt_enabled = this->read_control_register( SPIControlRegister2::transmit_interrupt_enable );
+   /* disable the interrupt */
+   this->write_control_register( SPIControlRegister2::transmit_interrupt_enable, 0x00 );
 
-   if ( ( tx_data_empty ) && ( tx_interrupt_enabled ) )
-   {
-      uint8_t data = this->tx_buffer.get( );
-      this->peripheral->DR = data;
-
-      /* if there is no more data to send, disable the interrupt */
-      if ( this->tx_buffer.is_empty( ) )
-      {
-         this->write_control_register( SPIControlRegister2::transmit_interrupt_enable, 0x00 );
-      }
-   }
+   /* disable the chip select */
+   this->chip_select.set( true );
 }
 
 /**

@@ -30,7 +30,7 @@ class LIS3DH : public HAL::SPIInterrupt
    public:
    LIS3DH( SPI_TypeDef *spi_peripheral_address, HAL::OutputPin chip_select, size_t tx_size, size_t rx_size );
    void initialize( void );
-   uint16_t test( void );
+   uint8_t test( void );
 };
 
 

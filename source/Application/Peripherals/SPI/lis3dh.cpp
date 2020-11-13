@@ -79,10 +79,17 @@ void LIS3DH::initialize( void )
  * \brief test function for the accelerometer
  * \retval return the result of the who am I register
  */
-uint16_t LIS3DH::test( void )
+uint8_t LIS3DH::test( void )
 {
    uint16_t command = 0x0F | 0x80;   
    this->send( reinterpret_cast<uint8_t *>( &command ), sizeof(command) );
-   /* TODO: return non-zero */
-   return 0x00;
+   
+   /* wait for buffer to fill */
+   uint8_t data;
+   while ( !this->rx_buffer.is_empty() )
+   {
+      data = this->rx_buffer.get();
+   }
+
+   return data;
 }
