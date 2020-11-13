@@ -224,4 +224,25 @@ void SPIInterrupt::irq_handler( uint8_t type )
    }
 }
 
+/**
+ * \brief send data on an interrupt driven SPI
+ * 
+ */
+void SPIInterrupt::send( uint8_t *data, uint16_t size )
+{
+   /* put the data on the buffer */
+   while ( size-- )
+   {
+      this->tx_buffer.put( *data++ );
+      if ( this->tx_buffer.is_full( ) )
+      {
+         break;
+      }
+   }
+
+   /* enable the tx interrupt */
+   this->write_control_register( SPIControlRegister2::transmit_interrupt_enable, 0x01 );
+}
+
+
 };  // namespace HAL

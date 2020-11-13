@@ -115,9 +115,6 @@ class SPIBase
  */
 class SPIPolling : protected SPIBase
 {
-   private:
-   
-
    public:
    SPIPolling( SPI_TypeDef *spi_peripheral_address, OutputPin chip_select )
    : SPIBase( spi_peripheral_address, chip_select )
@@ -146,8 +143,7 @@ class SPIInterrupt : protected SPIBase, public HAL::InterruptPeripheral
    {}
 
    void irq_handler( uint8_t type );
-   /* TODO: implement this properly once polling driven SPI is working */
-   //void send( uint8_t *data, uint16_t size );
+   void send( uint8_t *data, uint16_t size );
 };
 
 
