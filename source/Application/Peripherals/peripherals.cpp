@@ -76,7 +76,7 @@ void initialize_peripherals( void )
    blue_led.set( false );
 
    /* test the accelerometer and SPI */
-   uint8_t who_am_i = accelerometer.test();   
+   uint8_t who_am_i = accelerometer.self_test();   
 
    debug_port.debug( "Accelerometer test value: %d", who_am_i );
 
