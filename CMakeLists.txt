@@ -24,6 +24,8 @@ set(APP_SOURCES
       source/HAL/hal_usart.cpp
       source/HAL/hal_interrupt.cpp
       source/HAL/hal_spi.cpp
+      source/HAL/hal_exti.cpp
+      
 		
 		# Application Source Files
       source/Application/main.cpp

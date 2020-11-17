@@ -64,7 +64,22 @@ enum class LIS3DHRegisters : unsigned
    activate_duration = 0x3f
 };
 
-
+/**
+ * \brief enumeration for setting the accelerometer sample rate in CTRL_REG1
+ */
+enum class DataRate : unsigned
+{
+   powered_off = 0,
+   sample_1Hz,
+   sample_10Hz,
+   sample_25Hz,
+   sample_50Hz,
+   sample_100Hz,
+   sample_200Hz,
+   sample_400Hz,
+   sample_1600Hz,
+   sample_5376Hz,
+};
 
 
 /**
@@ -73,12 +88,16 @@ enum class LIS3DHRegisters : unsigned
 class LIS3DH : public HAL::SPIInterrupt
 {
    private:
-   uint8_t read_register_8( LIS3DHRegisters register );
+   uint8_t read_register_8( LIS3DHRegisters reg );
+   void write_register( LIS3DHRegisters reg, uint8_t value );
 
    public:
    LIS3DH( SPI_TypeDef *spi_peripheral_address, HAL::OutputPin chip_select, size_t tx_size, size_t rx_size );
    void initialize( void );
    uint8_t self_test( void );
+   void set_data_rate( DataRate rate );
+   void enable_data_ready_interrupt( bool enable );
+   
 };
 
 

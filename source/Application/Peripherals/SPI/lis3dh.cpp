@@ -11,7 +11,7 @@
 #include "board.h"
 #include "hal_interrupt.h"
 #include "hal_rcc.h"
-
+#include "hal_exti.h"
 
 /*********************************** Consts ********************************************/
 constexpr uint8_t buffer_size = 128;
@@ -60,7 +60,7 @@ LIS3DH::LIS3DH( SPI_TypeDef *spi_peripheral_address, HAL::OutputPin chip_select,
  */
 uint8_t LIS3DH::read_register_8( LIS3DHRegisters reg )
 {
-   uint16_t read_command =  static_cast<uint8_t>( reg ) | device_read;
+   uint16_t read_command = static_cast<uint8_t>( reg ) | device_read;
    this->send( reinterpret_cast<uint8_t *>( &read_command ), sizeof( read_command ) );
 
    /* block until the register result returns */
@@ -71,6 +71,20 @@ uint8_t LIS3DH::read_register_8( LIS3DHRegisters reg )
    }
 
    return data;
+}
+
+/**
+ * \brief write a value to a register
+ * 
+ * \param reg the register to write to
+ * \param value to write
+ */
+void LIS3DH::write_register( LIS3DHRegisters reg, uint8_t value )
+{
+   uint16_t write_command = ( static_cast<uint8_t>( reg ) | device_write ) << 8;
+   write_command |= value;
+
+   this->send( reinterpret_cast<uint8_t *>( &write_command ), sizeof( write_command ) );
 }
 
 /**
@@ -98,6 +112,14 @@ void LIS3DH::initialize( void )
 
    /* enable the peripheral */
    this->write_control_register( SPIControlRegister1::spi_enable, 0x01 );
+
+   /* register the external interrupts */
+   register_external_interrupt( EXTIPort::gpio_port_e, Pins::pin_0 );
+   register_external_interrupt( EXTIPort::gpio_port_e, Pins::pin_1 );
+
+   /* setup the accelerometer */
+   this->set_data_rate( DataRate::sample_100Hz );
+   this->enable_data_ready_interrupt( true );
 }
 
 /**
@@ -108,4 +130,25 @@ uint8_t LIS3DH::self_test( void )
 {
    uint8_t self_test = this->read_register_8( LIS3DHRegisters::who_am_i );
    return self_test;
+}
+
+/**
+ * \brief set the output data rate of the sensor
+ * 
+ * \param rate the sensor sample rate
+ */
+void LIS3DH::set_data_rate( DataRate rate )
+{
+   uint8_t data_rate = static_cast<uint8_t>( rate ) << 4;
+   this->write_register(LIS3DHRegisters::control_register_1, data_rate );
+}
+
+/**
+ * \brief enable the data ready interrupt 
+ * 
+ */
+void LIS3DH::enable_data_ready_interrupt( bool enable )
+{
+   uint8_t data_ready_interrupt = static_cast<uint8_t>( enable ) << 4;
+   this->write_register( LIS3DHRegisters::control_register_3, data_ready_interrupt );
 }
