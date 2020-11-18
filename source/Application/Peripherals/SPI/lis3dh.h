@@ -90,6 +90,9 @@ class LIS3DH : public HAL::SPIInterrupt
    private:
    uint8_t read_register_8( LIS3DHRegisters reg );
    void write_register( LIS3DHRegisters reg, uint8_t value );
+   void spi_irq_handler( void );
+   void exti_0_irq_handler( void );
+   void exti_1_irq_handler( void );
 
    public:
    LIS3DH( SPI_TypeDef *spi_peripheral_address, HAL::OutputPin chip_select, size_t tx_size, size_t rx_size );
@@ -97,6 +100,7 @@ class LIS3DH : public HAL::SPIInterrupt
    uint8_t self_test( void );
    void set_data_rate( DataRate rate );
    void enable_data_ready_interrupt( bool enable );
+   void irq_handler( uint8_t type );
    
 };
 

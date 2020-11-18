@@ -40,6 +40,17 @@ enum class EXTIPort : unsigned
    gpio_port_i,
 };
 
+/**
+ * \brief enumeration of exti trigger types
+ */
+enum class EXTITrigger : unsigned
+{
+   none = 0,
+   rising,
+   falling,
+   both,
+};
+
 /*********************************** Macros ********************************************/
 
 
@@ -47,7 +58,7 @@ enum class EXTIPort : unsigned
 
 
 /****************************** Functions Prototype ************************************/
-void register_external_interrupt( EXTIPort port, Pins pin );
+void register_external_interrupt( EXTIPort port, Pins pin, EXTITrigger trigger );
 
 };
 

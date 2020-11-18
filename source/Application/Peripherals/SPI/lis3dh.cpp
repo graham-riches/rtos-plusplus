@@ -19,6 +19,16 @@ constexpr uint8_t device_read = 0x80;
 constexpr uint8_t device_write = 0x00;
 
 /************************************ Types ********************************************/
+/**
+ * \brief configuration of interrupts for the accelerometer
+ */
+enum class InterruptType : unsigned
+{
+   spi_interrupt = 0,
+   external_interrupt_1,
+   external_interrupt_2,
+};
+
 
 /*********************************** Macros ********************************************/
 
@@ -104,8 +114,8 @@ void LIS3DH::initialize( void )
    this->write_control_register( SPIControlRegister2::slave_select_output_enable, 0x01 );
    this->set_baudrate( SPIBaudratePrescaler::prescaler_16 );  //!< 84MHz / 16 = 5.25 MHz
 
-   /* register the interrupt */
-   interrupt_manager.register_callback( InterruptName::spi_1, this, 0, 1 );
+   /* register the SPI interrupt */
+   interrupt_manager.register_callback( InterruptName::spi_1, this, static_cast<uint8_t>( InterruptType::spi_interrupt ), 1 );
 
    /* enable the interrupt */
    this->write_control_register( SPIControlRegister2::receive_interrupt_enable, 0x01 );
@@ -114,8 +124,10 @@ void LIS3DH::initialize( void )
    this->write_control_register( SPIControlRegister1::spi_enable, 0x01 );
 
    /* register the external interrupts */
-   register_external_interrupt( EXTIPort::gpio_port_e, Pins::pin_0 );
-   register_external_interrupt( EXTIPort::gpio_port_e, Pins::pin_1 );
+   register_external_interrupt( EXTIPort::gpio_port_e, Pins::pin_0, EXTITrigger::rising );
+   register_external_interrupt( EXTIPort::gpio_port_e, Pins::pin_1, EXTITrigger::rising );
+   interrupt_manager.register_callback( InterruptName::exti_0, this, static_cast<uint8_t>( InterruptType::external_interrupt_1 ), 2 );
+   interrupt_manager.register_callback( InterruptName::exti_1, this, static_cast<uint8_t>( InterruptType::external_interrupt_2 ), 2 );
 
    /* setup the accelerometer */
    this->set_data_rate( DataRate::sample_100Hz );
@@ -151,4 +163,83 @@ void LIS3DH::enable_data_ready_interrupt( bool enable )
 {
    uint8_t data_ready_interrupt = static_cast<uint8_t>( enable ) << 4;
    this->write_register( LIS3DHRegisters::control_register_3, data_ready_interrupt );
+}
+
+/**
+ * \brief main interrupt handler
+ * 
+ * \param type the type of interrupt to handle
+ */
+void LIS3DH::irq_handler( uint8_t type )
+{
+   InterruptType interrupt = static_cast<InterruptType>( type );
+   
+   switch ( interrupt )
+   {
+      case InterruptType::spi_interrupt:
+         this->spi_irq_handler();
+         break;
+
+      case InterruptType::external_interrupt_1:
+         this->exti_0_irq_handler();
+         break;
+
+      case InterruptType::external_interrupt_2:
+         this->exti_1_irq_handler();
+         break;
+
+      default:
+         break;
+   }
+}
+
+/**
+ * \brief interrupt handler for SPI interrupts
+ * 
+ */
+void LIS3DH::spi_irq_handler( void )
+{
+   /* enable the chip select */
+   this->chip_select.set( false );
+
+   while ( !this->tx_buffer.is_empty() )
+   {
+      /* wait for the transmit buffer to clear */
+      while ( this->read_status_register( HAL::SPIStatusRegister::transmit_data_empty ) == false )
+      { }
+      
+      /* put data outgoing into the data register */      
+      this->peripheral->DR = this->tx_buffer.get();
+
+      /* wait for the receive buffer to clear */
+      while ( this->read_status_register( HAL::SPIStatusRegister::receive_data_available ) == false )
+      { }
+
+      /* receive data into the rx buffer */
+      this->rx_buffer.put( static_cast<uint8_t>( this->peripheral->DR ) );      
+   }
+
+   /* disable the interrupt */
+   this->write_control_register( HAL::SPIControlRegister2::transmit_interrupt_enable, 0x00 );
+
+   /* disable the chip select */
+   this->chip_select.set( true );
+}
+
+/**
+ * \brief interrupt handler for exti 0 interrupts
+ * 
+ */
+void LIS3DH::exti_0_irq_handler( void )
+{
+   uint8_t temp = 0;
+}
+
+/**
+ * \brief interrupt handler for exti 1 interrupts
+ * 
+ */
+void LIS3DH::exti_1_irq_handler( void )
+{
+   uint8_t temp = 0;
 }

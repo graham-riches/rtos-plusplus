@@ -37,13 +37,14 @@ namespace HAL
  * 
  * \param port which port to register the interrupt on
  * \param pin the pin
+ * \param trigger the trigger for the external interrupt (rising edge, etc)
  * \details SYSCFG has an array of 4 32-bit values which contain the configuration of the 16 EXTI lines.
  *          Each EXTI port configuration is 4-bits at the lower 16-bits of each register in the array.
  *          The GPIO pins are inconveniently bit flags, which makes counting the actual value annoying BUT
  *          there is a solution :)
  *          
  */
-void register_external_interrupt( EXTIPort port, Pins pin )
+void register_external_interrupt( EXTIPort port, Pins pin, EXTITrigger trigger )
 {
    /* make sure the syscfg clock is on */
    reset_control_clock.set_apb_clock( APB2Clocks::sys_config, true );
@@ -65,6 +66,37 @@ void register_external_interrupt( EXTIPort port, Pins pin )
    /* now write the bits */
    SYSCFG->EXTICR[exti_index] |= (static_cast<uint8_t>( port ) << ( 4 * exti_offset ) );
 
+   /* clear the interrupt mask */
+   uint32_t pin_mask = ( 0x01 << ( pin_number - 1 ) );
+   EXTI->IMR |= pin_mask;
+
+   /* set the trigger mode */
+
+   switch ( trigger )
+   {
+      case EXTITrigger::none:
+         EXTI->FTSR &= ~pin_mask;
+         EXTI->RTSR &= ~pin_mask;
+         break;
+
+      case EXTITrigger::rising:
+         EXTI->FTSR &= ~pin_mask;
+         EXTI->RTSR |= pin_mask;
+         break;
+
+      case EXTITrigger::falling:
+         EXTI->FTSR |= pin_mask;
+         EXTI->RTSR &= ~pin_mask;
+         break;
+
+      case EXTITrigger::both:
+         EXTI->FTSR |= pin_mask;
+         EXTI->RTSR |= pin_mask;
+         break;
+
+      default:
+         break;
+   }
 };
 
 }

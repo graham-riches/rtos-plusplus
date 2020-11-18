@@ -125,4 +125,14 @@ extern "C"
       HAL::interrupt_manager.default_isr_handler( );
    }
 
+   void EXTI0_IRQHandler( void )
+   {
+      HAL::interrupt_manager.default_isr_handler( );
+   }
+
+   void EXTI1_IRQHandler( void )
+   {
+      HAL::interrupt_manager.default_isr_handler( );
+   }
+
 }
