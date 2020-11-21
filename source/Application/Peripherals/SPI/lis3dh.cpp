@@ -195,7 +195,8 @@ void LIS3DH::irq_handler( uint8_t type )
 
 /**
  * \brief interrupt handler for SPI interrupts
- * 
+ * \note because there are multiple interrupts attached to the LIS3HD object,
+ *       this here is a copy of the SPI interrupt
  */
 void LIS3DH::spi_irq_handler( void )
 {

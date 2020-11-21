@@ -72,6 +72,8 @@ void InterruptManager::default_isr_handler( void )
 
 };  // namespace HAL
 
+
+
 /****************************** Vector Table Function Pointer Definitions ***********************************/
 extern "C"
 {
