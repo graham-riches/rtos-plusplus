@@ -7,16 +7,22 @@
 */
 
 /********************************** Includes *******************************************/
-#include "lis3dh.h"
+#include "lis3dsh.h"
 #include "board.h"
 #include "hal_interrupt.h"
 #include "hal_rcc.h"
 #include "hal_exti.h"
+#include <map>
 
 /*********************************** Consts ********************************************/
 constexpr uint8_t buffer_size = 128;
+constexpr uint8_t data_fifo_depth = 16;
+constexpr uint8_t register_write_size = 2;
 constexpr uint8_t device_read = 0x80;
 constexpr uint8_t device_write = 0x00;
+constexpr uint8_t interrupt_1_data_ready = 0b11001000;
+constexpr uint8_t enable_multibyte_read = 0b00010000;
+constexpr uint8_t read_register_data_size = 7;
 
 /************************************ Types ********************************************/
 /**
@@ -43,7 +49,17 @@ static HAL::AlternateModePin accelerometer_miso(
 static HAL::AlternateModePin accelerometer_mosi(
    GPIOA, HAL::Pins::pin_7, HAL::PinMode::alternate, HAL::Speed::very_high, HAL::PullMode::pull_up, HAL::OutputMode::push_pull, HAL::AlternateMode::af5 );
 
-LIS3DH accelerometer( SPI1, accelerometer_chip_select, buffer_size, buffer_size );
+LIS3DSH accelerometer( SPI1, accelerometer_chip_select, buffer_size, buffer_size, data_fifo_depth );
+
+
+static std::map<LIS3DSHResolution, uint16_t> acceleration_conversion_map = 
+{
+   { LIS3DSHResolution::resolution_2g, 0x4000 },
+   { LIS3DSHResolution::resolution_4g, 0x2000 },
+   { LIS3DSHResolution::resolution_6g, 0x1554 },
+   { LIS3DSHResolution::resolution_8g, 0x1000 },
+   { LIS3DSHResolution::resolution_16g, 0x0800 }
+};
 
 /******************************** Local Variables **************************************/
 
@@ -51,16 +67,23 @@ LIS3DH accelerometer( SPI1, accelerometer_chip_select, buffer_size, buffer_size 
 
 /****************************** Functions Definition ***********************************/
 /**
- * \brief Construct a new LIS3DH::LIS3DH object
+ * \brief Construct a new LIS3DSH::LIS3DSH object
  * 
  * \param spi_peripheral_address the memory mapped peripheral address
  * \param chip_select the chip select pin
  * \param tx_size size of the tx buffer
  * \param rx_size size of the rx_buffer
+ * \param data_fifo_depth how many measurements to buffer
  */
-LIS3DH::LIS3DH( SPI_TypeDef *spi_peripheral_address, HAL::OutputPin chip_select, size_t tx_size, size_t rx_size )
+LIS3DSH::LIS3DSH( SPI_TypeDef *spi_peripheral_address, HAL::OutputPin chip_select, size_t tx_size, size_t rx_size, size_t data_fifo_depth )
    : HAL::SPIInterrupt( spi_peripheral_address, chip_select, tx_size, rx_size )
-{ }
+   , x_data( data_fifo_depth )
+   , y_data( data_fifo_depth )
+   , z_data( data_fifo_depth )
+{ 
+   /* default initialize the conversion factor to +/- 2g */
+   this->conversion_factor = acceleration_conversion_map[LIS3DSHResolution::resolution_2g];
+}
 
 /**
  * \brief read the value of a register
@@ -68,7 +91,7 @@ LIS3DH::LIS3DH( SPI_TypeDef *spi_peripheral_address, HAL::OutputPin chip_select,
  * \param reg the register to read
  * \retval uint8_t value of the register
  */
-uint8_t LIS3DH::read_register_8( LIS3DHRegisters reg )
+uint8_t LIS3DSH::read_register( LIS3DSHRegisters reg )
 {
    uint16_t read_command = static_cast<uint8_t>( reg ) | device_read;
    this->send( reinterpret_cast<uint8_t *>( &read_command ), sizeof( read_command ) );
@@ -89,18 +112,19 @@ uint8_t LIS3DH::read_register_8( LIS3DHRegisters reg )
  * \param reg the register to write to
  * \param value to write
  */
-void LIS3DH::write_register( LIS3DHRegisters reg, uint8_t value )
+void LIS3DSH::write_register( LIS3DSHRegisters reg, uint8_t value )
 {
-   uint16_t write_command = ( static_cast<uint8_t>( reg ) | device_write ) << 8;
-   write_command |= value;
+   uint8_t write_command[register_write_size];
+   write_command[0] = ( static_cast<uint8_t>( reg ) | device_write );   
+   write_command[1] = value;
 
-   this->send( reinterpret_cast<uint8_t *>( &write_command ), sizeof( write_command ) );
+   this->send( write_command, sizeof( write_command ) );
 }
 
 /**
- * \brief setup a LIS3DH accelerometer
+ * \brief setup a LIS3DSH accelerometer
  */
-void LIS3DH::initialize( void )
+void LIS3DSH::initialize( void )
 {
    using namespace HAL;
 
@@ -129,40 +153,43 @@ void LIS3DH::initialize( void )
    interrupt_manager.register_callback( InterruptName::exti_0, this, static_cast<uint8_t>( InterruptType::external_interrupt_1 ), 2 );
    interrupt_manager.register_callback( InterruptName::exti_1, this, static_cast<uint8_t>( InterruptType::external_interrupt_2 ), 2 );
 
-   /* setup the accelerometer */
-   this->set_data_rate( DataRate::sample_100Hz );
-   this->enable_data_ready_interrupt( true );
+   /* setup the accelerometer speed and setup the data ready interrupt */
+   this->set_data_rate( LIS3DSHDataRate::sample_100Hz );
+   this->set_resolution( LIS3DSHResolution::resolution_2g );
+   this->write_register( LIS3DSHRegisters::control_register_3, interrupt_1_data_ready );
+   this->write_register( LIS3DSHRegisters::control_register_6, enable_multibyte_read );
 }
+
+/**
+ * \brief set the sample rate of the accelerometer
+ * 
+ * \param rate the rate
+ */
+void LIS3DSH::set_data_rate( LIS3DSHDataRate rate )
+{
+   this->write_register( LIS3DSHRegisters::control_register_4, static_cast<uint8_t>( rate ) );
+}
+
+/**
+ * \brief set the accelerometer resolution
+ * 
+ * \param resolution the resolution in units of g's
+ */
+void LIS3DSH::set_resolution( LIS3DSHResolution resolution )
+{
+   this->write_register( LIS3DSHRegisters::control_register_5, static_cast<uint8_t>( resolution ) );
+   this->conversion_factor = acceleration_conversion_map[resolution];
+}
+
 
 /**
  * \brief test function for the accelerometer
  * \retval return the result of the who am I register
  */
-uint8_t LIS3DH::self_test( void )
+uint8_t LIS3DSH::self_test( void )
 {
-   uint8_t self_test = this->read_register_8( LIS3DHRegisters::who_am_i );
+   uint8_t self_test = this->read_register( LIS3DSHRegisters::who_am_i );
    return self_test;
-}
-
-/**
- * \brief set the output data rate of the sensor
- * 
- * \param rate the sensor sample rate
- */
-void LIS3DH::set_data_rate( DataRate rate )
-{
-   uint8_t data_rate = static_cast<uint8_t>( rate ) << 4;
-   this->write_register(LIS3DHRegisters::control_register_1, data_rate );
-}
-
-/**
- * \brief enable the data ready interrupt 
- * 
- */
-void LIS3DH::enable_data_ready_interrupt( bool enable )
-{
-   uint8_t data_ready_interrupt = static_cast<uint8_t>( enable ) << 4;
-   this->write_register( LIS3DHRegisters::control_register_3, data_ready_interrupt );
 }
 
 /**
@@ -170,7 +197,7 @@ void LIS3DH::enable_data_ready_interrupt( bool enable )
  * 
  * \param type the type of interrupt to handle
  */
-void LIS3DH::irq_handler( uint8_t type )
+void LIS3DSH::irq_handler( uint8_t type )
 {
    InterruptType interrupt = static_cast<InterruptType>( type );
    
@@ -198,7 +225,7 @@ void LIS3DH::irq_handler( uint8_t type )
  * \note because there are multiple interrupts attached to the LIS3HD object,
  *       this here is a copy of the SPI interrupt
  */
-void LIS3DH::spi_irq_handler( void )
+void LIS3DSH::spi_irq_handler( void )
 {
    /* enable the chip select */
    this->chip_select.set( false );
@@ -228,19 +255,41 @@ void LIS3DH::spi_irq_handler( void )
 }
 
 /**
- * \brief interrupt handler for exti 0 interrupts
+ * \brief interrupt handler for exti 0 interrupt
+ *        This is configured to be used as accelerometer data ready
  * 
  */
-void LIS3DH::exti_0_irq_handler( void )
+void LIS3DSH::exti_0_irq_handler( void )
 {
-   uint8_t temp = 0;
+   this->rx_buffer.flush();
+
+   /* read XYZ data - Note: the registers are chained so it can be done in a single burst */
+   uint8_t read_data[read_register_data_size] = { 0 };
+   read_data[0] = static_cast<uint8_t>( LIS3DSHRegisters::output_x ) | device_read;
+   this->send( read_data, sizeof(read_data) );
+
+   /* flush the first byte, which is read back when the address + read byte is first sent */
+   this->rx_buffer.get();
+
+   /* update the data values */
+   auto convert_data = [this] ( uint8_t low, uint8_t high ) -> float { return static_cast<float>( static_cast<int16_t>( low | ( high << 8 ) ) ) / this->conversion_factor;  };
+   float accel_x = convert_data( this->rx_buffer.get(), this->rx_buffer.get() );
+   float accel_y = convert_data( this->rx_buffer.get(), this->rx_buffer.get() );
+   float accel_z = convert_data( this->rx_buffer.get(), this->rx_buffer.get() );
+
+   this->x_data.put( accel_x );
+   this->y_data.put( accel_y );
+   this->z_data.put( accel_z );
+
+   /* clear the interrupt pending bit */   
+   HAL::clear_external_interrupt_pending( HAL::EXTILine::line_0 );
 }
 
 /**
  * \brief interrupt handler for exti 1 interrupts
  * 
  */
-void LIS3DH::exti_1_irq_handler( void )
+void LIS3DSH::exti_1_irq_handler( void )
 {
-   uint8_t temp = 0;
+   HAL::clear_external_interrupt_pending( HAL::EXTILine::line_1 );
 }

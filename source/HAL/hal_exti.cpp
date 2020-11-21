@@ -99,4 +99,15 @@ void register_external_interrupt( EXTIPort port, Pins pin, EXTITrigger trigger )
    }
 };
 
+
+/**
+ * \brief clear the interrupt pending bit for an EXTI line
+ * 
+ * \param line the line to clear the interrupt on
+ */
+void clear_external_interrupt_pending( EXTILine line )
+{
+   EXTI->PR &= ~( 0x01 << static_cast<uint8_t>( line ) );
+}
+
 }

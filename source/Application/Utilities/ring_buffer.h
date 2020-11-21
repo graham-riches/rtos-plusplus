@@ -103,6 +103,17 @@ class RingBuffer
       { 
          return this->full;
       }
+
+      /**
+       * \brief flush data out of the ring buffer       
+       */
+      void flush( void )
+      {
+         while ( !this->is_empty() )
+         {
+            this->get();
+         }
+      }
 };
 
 /*********************************** Macros ********************************************/

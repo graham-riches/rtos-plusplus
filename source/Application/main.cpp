@@ -7,7 +7,6 @@
 /********************************** Includes *******************************************/
 #include "board.h"
 #include "common.h"
-#include "event.h"
 #include "peripherals.h"
 #include "threading.h"
 #include "scheduler.h"

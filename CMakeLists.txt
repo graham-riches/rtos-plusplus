@@ -29,10 +29,9 @@ set(APP_SOURCES
 		
 		# Application Source Files
       source/Application/main.cpp
-      source/Application/Events/event.cpp
       source/Application/Peripherals/USART/debug_port.cpp
       source/Application/Peripherals/peripherals.cpp
-      source/Application/Peripherals/SPI/lis3dh.cpp
+      source/Application/Peripherals/SPI/lis3dsh.cpp
 		
       
       # OS files
@@ -68,7 +67,6 @@ target_include_directories(${BINARY} PRIVATE
       source/Application/Accelerometer      
 		source/Application/Audio
 		source/Application/Debug
-		source/Application/Events
 		source/Application/Utilities
       
       source/OS/

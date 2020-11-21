@@ -13,7 +13,7 @@
 #include "hal_power.h"
 #include "hal_rcc.h"
 #include "debug_port.h"
-#include "lis3dh.h"
+#include "lis3dsh.h"
 #include "scheduler.h"
 
 /*********************************** Consts ********************************************/

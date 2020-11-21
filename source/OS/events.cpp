@@ -1,6 +1,6 @@
-/*! \file event.c
+/*! \file events.c
 *
-*  \brief events module for synchronizing activities across the system.
+*  \brief OS event flags API.
 *
 *
 *  \author Graham Riches
@@ -8,9 +8,10 @@
 
 
 /********************************** Includes *******************************************/
-#include "event.h"
-#include "board.h"
+#include "events.h"
 
+namespace OS
+{
 /*********************************** Consts ********************************************/
 
 
@@ -22,6 +23,7 @@
 
 /******************************* Global Variables **************************************/
 
+
 /******************************** Local Variables **************************************/
 
 
@@ -29,3 +31,5 @@
 
 
 /****************************** Functions Definition ***********************************/
+
+};

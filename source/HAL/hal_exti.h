@@ -23,6 +23,30 @@ namespace HAL
 
 /************************************ Types ********************************************/
 /**
+ * \brief enumeration of EXTI lines
+ */
+enum class EXTILine : unsigned
+{
+   line_0 = 0,
+   line_1,
+   line_2,
+   line_3,
+   line_4,
+   line_5,
+   line_6,
+   line_7,
+   line_8,
+   line_9,
+   line_10,
+   line_11,
+   line_12,
+   line_13,
+   line_14,
+   line_15,
+};
+
+
+/**
  * \brief enumeration for selecting exti source
  * \note all pin numbers with the same number (i.e. PA0, PB0) share a single
  *       interrupt line to the processor
@@ -59,6 +83,7 @@ enum class EXTITrigger : unsigned
 
 /****************************** Functions Prototype ************************************/
 void register_external_interrupt( EXTIPort port, Pins pin, EXTITrigger trigger );
+void clear_external_interrupt_pending( EXTILine line );
 
 };
 

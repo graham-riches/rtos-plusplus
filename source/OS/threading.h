@@ -30,6 +30,14 @@ constexpr uint8_t max_system_threads = 2; //!< max number of threads to support
  */
 typedef void (*THREAD_task_t)( void );
 
+/**
+ * \brief enumeration of thread possible thread statuses
+ */
+enum class ThreadStatus : unsigned 
+{
+   active = 0,
+   suspended,
+};
 
 /**
  * \brief class for system threads
@@ -39,6 +47,7 @@ class Thread
    private:
       uint32_t id;
       THREAD_task_t task;
+      ThreadStatus status;
    
    public:
       uint32_t *stack;
@@ -59,8 +68,6 @@ struct TaskControlBlock
    Thread *thread;      
 };
 #pragma pack(1)
-
-
 
 
 /*********************************** Macros ********************************************/

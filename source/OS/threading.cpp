@@ -88,6 +88,7 @@ Thread::Thread( THREAD_task_t task, uint32_t id, uint32_t *stack, uint32_t stack
       return;
    }
 
+   this->status = ThreadStatus::active;
    this->stack = stack;
    this->stack_size = stack_size;
    this->id = id;
