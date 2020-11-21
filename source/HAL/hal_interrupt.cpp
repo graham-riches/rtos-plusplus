@@ -73,66 +73,14 @@ void InterruptManager::default_isr_handler( void )
 };  // namespace HAL
 
 /****************************** Vector Table Function Pointer Definitions ***********************************/
-/*
-   This section contains all the function pointer definitions that are defined in the vector table in the 
-   startup assembly file. These functions just redirect the output to the appropriate registered handler. This
-   is unfortunately required in order for the NVIC to maintain priority levels, etc.
-*/
 extern "C"
 {
-   void USART1_IRQHandler( void )
+   /**
+    * \brief this single function remaps all vector table interrups to the C++ interrupt handler
+    *        which calls the appropriate IRQ which is generally registered to a specific object.
+    */
+   void IRQHandler( void )
    {
       HAL::interrupt_manager.default_isr_handler( );
    }
-
-   void USART2_IRQHandler( void )
-   {
-      HAL::interrupt_manager.default_isr_handler( );
-   }
-
-   void USART3_IRQHandler( void )
-   {
-      HAL::interrupt_manager.default_isr_handler( );
-   }
-
-   void UART4_IRQHandler( void )
-   {
-      HAL::interrupt_manager.default_isr_handler( );
-   }
-
-   void UART5_IRQHandler( void )
-   {
-      HAL::interrupt_manager.default_isr_handler( ); 
-   }
-   
-   void USART6_IRQHandler( void )
-   {
-      HAL::interrupt_manager.default_isr_handler( );
-   }
-
-   void SPI1_IRQHandler( void )
-   {
-      HAL::interrupt_manager.default_isr_handler( );
-   }
-
-   void SPI2_IRQHandler( void )
-   {
-      HAL::interrupt_manager.default_isr_handler( );
-   }
-
-   void SPI3_IRQHandler( void )
-   {
-      HAL::interrupt_manager.default_isr_handler( );
-   }
-
-   void EXTI0_IRQHandler( void )
-   {
-      HAL::interrupt_manager.default_isr_handler( );
-   }
-
-   void EXTI1_IRQHandler( void )
-   {
-      HAL::interrupt_manager.default_isr_handler( );
-   }
-
 }
