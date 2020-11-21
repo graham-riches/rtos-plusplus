@@ -6,7 +6,6 @@
 *  \author Graham Riches
 */
 
-
 /********************************** Includes *******************************************/
 #include "threading.h"
 #include "board.h"
@@ -15,11 +14,11 @@ namespace OS
 {
 
 /*********************************** Consts ********************************************/
-#define CONTEXT_STACK_SIZE (16ul)       //!< number of default saved stack registers
-#define PSR_THUMB_MODE     (0x01000000) //!< set PSR register to THUMB
+#define CONTEXT_STACK_SIZE ( 16ul )  //!< number of default saved stack registers
+#define PSR_THUMB_MODE     ( 0x01000000 )  //!< set PSR register to THUMB
 
 /************************************ Types ********************************************/
-#pragma pack(1)
+#pragma pack( 1 )
 typedef struct
 {
    uint32_t r4;
@@ -28,7 +27,7 @@ typedef struct
    uint32_t r7;
    uint32_t r8;
    uint32_t r9;
-   uint32_t r10;   
+   uint32_t r10;
    uint32_t r11;
    uint32_t r0;
    uint32_t r1;
@@ -39,37 +38,17 @@ typedef struct
    uint32_t pc;
    uint32_t psr;
 } ThreadContext_t;
-#pragma pack(0)
-
-
-/**
- * \brief class for managing application threads
- */
-class ThreadManager
-{
-   private:      
-      uint8_t thread_count;
-      TaskControlBlock task_control_blocks[max_system_threads];
-
-   public:      
-      TaskControlBlock *activeTask;
-
-      ThreadManager( );
-      void register_thread( Thread *thread );
-};
+#pragma pack( 0 )
 
 /*********************************** Macros ********************************************/
 
-
 /******************************* Global Variables **************************************/
-static ThreadManager system_thread_manager;
+ThreadManager system_thread_manager;
 TaskControlBlock *system_active_task = system_thread_manager.activeTask;
 
 /******************************** Local Variables **************************************/
 
-
 /****************************** Functions Prototype ************************************/
-
 
 /****************************** Functions Definition ***********************************/
 /**
@@ -82,7 +61,7 @@ TaskControlBlock *system_active_task = system_thread_manager.activeTask;
  */
 Thread::Thread( THREAD_task_t task, uint32_t id, uint32_t *stack, uint32_t stack_size )
 {
-   if ( (stack == nullptr) || (stack_size < CONTEXT_STACK_SIZE) )
+   if ( ( stack == nullptr ) || ( stack_size < CONTEXT_STACK_SIZE ) )
    {
       //!< TODO: need to create an error here
       return;
@@ -95,7 +74,7 @@ Thread::Thread( THREAD_task_t task, uint32_t id, uint32_t *stack, uint32_t stack
    this->task = task;
 
    /* initialize the threads stack with some setup values */
-   ThreadContext_t *taskContext = reinterpret_cast<ThreadContext_t *>( &this->stack[this->stack_size - CONTEXT_STACK_SIZE ] );
+   ThreadContext_t *taskContext = reinterpret_cast<ThreadContext_t *>( &this->stack[this->stack_size - CONTEXT_STACK_SIZE] );
 
    /* set the task to run in thumb mode */
    taskContext->psr = PSR_THUMB_MODE;
@@ -119,7 +98,6 @@ Thread::Thread( THREAD_task_t task, uint32_t id, uint32_t *stack, uint32_t stack
    taskContext->r12 = 12;
 }
 
-
 /**
  * \brief Construct a new Thread Manager:: Thread Manager object
  * 
@@ -131,6 +109,15 @@ ThreadManager::ThreadManager( void )
    this->activeTask = &this->task_control_blocks[0];
 }
 
+/**
+ * \brief get the number of registered threads in the system
+ * 
+ * \retval uint8_t number of threads
+ */
+uint8_t ThreadManager::get_thread_count( void )
+{
+   return this->thread_count;
+}
 
 /**
  * \brief register a thread with a thread manager
@@ -143,9 +130,9 @@ void ThreadManager::register_thread( Thread *thread )
    {
       /* add the the thread object*/
       this->task_control_blocks[this->thread_count].thread = thread;
-      
+
       /* set the stack pointer to the pre-initialized values */
-      this->task_control_blocks[this->thread_count].active_stack_pointer = thread->stack + thread->stack_size - CONTEXT_STACK_SIZE ;
+      this->task_control_blocks[this->thread_count].active_stack_pointer = thread->stack + thread->stack_size - CONTEXT_STACK_SIZE;
 
       /* set the next pointer */
       this->task_control_blocks[this->thread_count].next = nullptr;
@@ -153,28 +140,21 @@ void ThreadManager::register_thread( Thread *thread )
    }
    else
    {
-      /* move the previous threads next pointer to the current thread */
-      this->task_control_blocks[this->thread_count - 1].next = &this->task_control_blocks[this->thread_count];
+      if ( this->thread_count < system_max_threads )
+      {
+         /* move the previous threads next pointer to the current thread */
+         this->task_control_blocks[this->thread_count - 1].next = &this->task_control_blocks[this->thread_count];
 
-      /* add the thread object and set the initial stack pointer */
-      this->task_control_blocks[this->thread_count].thread = thread;
-      this->task_control_blocks[this->thread_count].active_stack_pointer = thread->stack + thread->stack_size - CONTEXT_STACK_SIZE;
+         /* add the thread object and set the initial stack pointer */
+         this->task_control_blocks[this->thread_count].thread = thread;
+         this->task_control_blocks[this->thread_count].active_stack_pointer = thread->stack + thread->stack_size - CONTEXT_STACK_SIZE;
 
-      /* set the current threads next pointer to the start of the list */
-      this->task_control_blocks[this->thread_count].next = &this->task_control_blocks[0];
+         /* set the current threads next pointer to the start of the list */
+         this->task_control_blocks[this->thread_count].next = &this->task_control_blocks[0];
 
-      this->thread_count++;
+         this->thread_count++;
+      }      
    }
 }
 
-/**
- * \brief register a new thread into the OS
- * 
- * \param thread pointer to the thread class
- */
-void register_thread( Thread *thread )
-{
-   system_thread_manager.register_thread( thread );
-}
-
-};
+};  // namespace OS

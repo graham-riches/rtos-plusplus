@@ -107,7 +107,7 @@ void register_external_interrupt( EXTIPort port, Pins pin, EXTITrigger trigger )
  */
 void clear_external_interrupt_pending( EXTILine line )
 {
-   EXTI->PR &= ~( 0x01 << static_cast<uint8_t>( line ) );
+   EXTI->PR |=  0x01 << static_cast<uint8_t>( line );
 }
 
 }

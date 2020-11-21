@@ -22,7 +22,7 @@ namespace OS
 
 
 /******************************* Global Variables **************************************/
-uint32_t system_ticks;
+volatile uint32_t system_ticks;
 
 /******************************** Local Variables **************************************/
 

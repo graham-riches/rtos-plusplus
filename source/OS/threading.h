@@ -20,7 +20,7 @@ namespace OS
 {
 
 /*********************************** Consts ********************************************/
-constexpr uint8_t max_system_threads = 2; //!< max number of threads to support
+constexpr uint8_t system_max_threads = 2; //!< max number of threads in the OS
 
 
 /************************************ Types ********************************************/
@@ -31,7 +31,7 @@ constexpr uint8_t max_system_threads = 2; //!< max number of threads to support
 typedef void (*THREAD_task_t)( void );
 
 /**
- * \brief enumeration of thread possible thread statuses
+ * \brief enumeration of possible thread statuses
  */
 enum class ThreadStatus : unsigned 
 {
@@ -53,8 +53,8 @@ class Thread
       uint32_t *stack;
       uint32_t stack_size;
 
-      Thread( THREAD_task_t task, uint32_t id, uint32_t *stack, uint32_t stack_size );      
-      
+      Thread( THREAD_task_t task, uint32_t id, uint32_t *stack, uint32_t stack_size );
+      void set_status( ThreadStatus status ) { this->status = status; }
 };
 
 /**
@@ -70,13 +70,31 @@ struct TaskControlBlock
 #pragma pack(1)
 
 
+/**
+ * \brief class for managing application threads
+ */
+class ThreadManager
+{
+   private:      
+      uint8_t thread_count;
+      TaskControlBlock task_control_blocks[system_max_threads];
+
+   public:      
+      TaskControlBlock *activeTask;
+
+      ThreadManager( );
+      void register_thread( Thread *thread );
+      uint8_t get_thread_count( void );
+};
+
 /*********************************** Macros ********************************************/
 
 /******************************* Global Variables **************************************/
-extern TaskControlBlock *system_active_task;
+extern TaskControlBlock *system_active_task;  //!< NOTE: this is only for the scheduler to handle in the systick interrupt
+extern ThreadManager system_thread_manager;   //!< NOTE: other code components should interact with the thread manager
 
 /****************************** Functions Prototype ************************************/
-void register_thread( Thread *thread );
+
 
 };  // namespace OS
 

@@ -26,7 +26,7 @@ namespace OS
 /*********************************** Macros ********************************************/
 
 /******************************* Global Variables **************************************/
-extern uint32_t system_ticks;
+extern volatile uint32_t system_ticks;
 
 /****************************** Functions Prototype ************************************/
 void delay_ms( uint32_t milliseconds );

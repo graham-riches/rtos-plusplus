@@ -46,8 +46,8 @@ static OS::Thread thread_two( thread_two_task, 2, thread_two_stack, THREAD_STACK
 int main( void )
 {   
    /* register the threads */
-   OS::register_thread( &thread_one );
-   OS::register_thread( &thread_two );
+   OS::system_thread_manager.register_thread( &thread_one );
+   OS::system_thread_manager.register_thread( &thread_two );
    
    /* configure the project specific HAL drivers and bootup the chip, clocks etc. */
    initialize_peripherals();

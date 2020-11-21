@@ -33,7 +33,10 @@ namespace OS
  */
 __attribute__((naked)) void enter_kernel( void )
 {   
-   /* load the initial task pointer ino R0 */
+   /* disable interrupts */
+   __asm("CPSID    I");
+
+   /* load the initial task pointer into R0 */
    __asm("LDR     R0, =system_active_task");
 
    /* load R2 with the contents of R0 */
@@ -73,6 +76,7 @@ __attribute__((naked)) void enter_kernel( void )
 void set_systick_frequency( uint32_t ticks )
 {
    SysTick_Config( ticks );
+   NVIC_SetPriority( SysTick_IRQn, 15 );
 }
 
 };  // namespace OS

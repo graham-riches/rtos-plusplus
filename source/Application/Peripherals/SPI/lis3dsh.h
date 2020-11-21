@@ -91,7 +91,6 @@ class LIS3DSH : public HAL::SPIInterrupt
    void write_register( LIS3DSHRegisters reg, uint8_t value );
    void spi_irq_handler( void );
    void exti_0_irq_handler( void );
-   void exti_1_irq_handler( void );
 
    public:
    LIS3DSH( SPI_TypeDef *spi_peripheral_address, HAL::OutputPin chip_select, size_t tx_size, size_t rx_size, size_t data_fifo_depth );

@@ -56,9 +56,6 @@ void initialize_peripherals( void )
    /* boot-up the system - RCC, Flash etc. */
    system_boot( );
 
-   /* initialize the accelerometer */
-   accelerometer.initialize();
-   
    /* initialize the debug UART and print a welcome banner */
    debug_port.initialize();
 
@@ -74,6 +71,9 @@ void initialize_peripherals( void )
    orange_led.set( false );
    red_led.set( true );
    blue_led.set( false );
+
+   /* initialize the accelerometer */
+   accelerometer.initialize();
 
    /* test the accelerometer and SPI */
    uint8_t who_am_i = accelerometer.self_test();   

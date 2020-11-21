@@ -32,7 +32,6 @@ enum class InterruptType : unsigned
 {
    spi_interrupt = 0,
    external_interrupt_1,
-   external_interrupt_2,
 };
 
 
@@ -139,7 +138,7 @@ void LIS3DSH::initialize( void )
    this->set_baudrate( SPIBaudratePrescaler::prescaler_16 );  //!< 84MHz / 16 = 5.25 MHz
 
    /* register the SPI interrupt */
-   interrupt_manager.register_callback( InterruptName::spi_1, this, static_cast<uint8_t>( InterruptType::spi_interrupt ), 1 );
+   interrupt_manager.register_callback( InterruptName::spi_1, this, static_cast<uint8_t>( InterruptType::spi_interrupt ), 5 );
 
    /* enable the interrupt */
    this->write_control_register( SPIControlRegister2::receive_interrupt_enable, 0x01 );
@@ -149,9 +148,7 @@ void LIS3DSH::initialize( void )
 
    /* register the external interrupts */
    register_external_interrupt( EXTIPort::gpio_port_e, Pins::pin_0, EXTITrigger::rising );
-   register_external_interrupt( EXTIPort::gpio_port_e, Pins::pin_1, EXTITrigger::rising );
-   interrupt_manager.register_callback( InterruptName::exti_0, this, static_cast<uint8_t>( InterruptType::external_interrupt_1 ), 2 );
-   interrupt_manager.register_callback( InterruptName::exti_1, this, static_cast<uint8_t>( InterruptType::external_interrupt_2 ), 2 );
+   interrupt_manager.register_callback( InterruptName::exti_0, this, static_cast<uint8_t>( InterruptType::external_interrupt_1 ), 10 );
 
    /* setup the accelerometer speed and setup the data ready interrupt */
    this->set_data_rate( LIS3DSHDataRate::sample_100Hz );
@@ -209,10 +206,6 @@ void LIS3DSH::irq_handler( uint8_t type )
 
       case InterruptType::external_interrupt_1:
          this->exti_0_irq_handler();
-         break;
-
-      case InterruptType::external_interrupt_2:
-         this->exti_1_irq_handler();
          break;
 
       default:
@@ -283,13 +276,4 @@ void LIS3DSH::exti_0_irq_handler( void )
 
    /* clear the interrupt pending bit */   
    HAL::clear_external_interrupt_pending( HAL::EXTILine::line_0 );
-}
-
-/**
- * \brief interrupt handler for exti 1 interrupts
- * 
- */
-void LIS3DSH::exti_1_irq_handler( void )
-{
-   HAL::clear_external_interrupt_pending( HAL::EXTILine::line_1 );
 }
