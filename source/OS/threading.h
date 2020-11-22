@@ -12,10 +12,6 @@
 /********************************** Includes *******************************************/
 #include "common.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 namespace OS
 {
 
@@ -54,7 +50,8 @@ class Thread
       uint32_t stack_size;
 
       Thread( THREAD_task_t task, uint32_t id, uint32_t *stack, uint32_t stack_size );
-      void set_status( ThreadStatus status ) { this->status = status; }
+      void set_status( ThreadStatus status );
+      ThreadStatus get_status( void );
 };
 
 /**
@@ -97,10 +94,5 @@ extern ThreadManager system_thread_manager;   //!< NOTE: other code components s
 
 
 };  // namespace OS
-
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* __THREADS_H__ */

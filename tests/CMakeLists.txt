@@ -23,36 +23,35 @@ add_subdirectory(googletest)
 # set the binary and add custom sources as needed
 set(BINARY bare-metal-os-tests)
 set(SOURCES
-		# add unit tests here
-		events_tests.cpp
-		main.cpp
-		# add each application file to test here
-		${PARENT_DIR}/source/OS/events.cpp	
-		)
+	# add unit tests here
+	events_tests.cpp
+	main.cpp
+
+	# add each application file to test here
+	${PARENT_DIR}/source/OS/events.cpp
+	${PARENT_DIR}/source/OS/threading.cpp
+	)
 
 add_executable(${BINARY} ${SOURCES})
 
 
 # include the project source files
 target_include_directories(${BINARY} PRIVATE
-      ${PARENT_DIR}/Drivers/CMSIS/Device/ST/STM32F4xx/Include
-		${PARENT_DIR}/Drivers/CMSIS/Include
-		${PARENT_DIR}/Drivers/CMSIS/DSP_Lib/Include
-		
-      ${PARENT_DIR}/source
-      ${PARENT_DIR}/source/HAL      
-		${PARENT_DIR}/source/Application
-      ${PARENT_DIR}/source/Application/Accelerometer      
-		${PARENT_DIR}/source/Application/Audio
-		${PARENT_DIR}/source/Application/Debug
-		${PARENT_DIR}/source/Application/Utilities
-      
-      ${PARENT_DIR}/source/OS/
-
-		${PARENT_DIR}/source/Application/Peripherals			
-      ${PARENT_DIR}/source/Application/Peripherals/USART
-      ${PARENT_DIR}/source/Application/Peripherals/SPI
-      )
+	${PARENT_DIR}/Drivers/CMSIS/Device/ST/STM32F4xx/Include
+	${PARENT_DIR}/Drivers/CMSIS/Include
+	${PARENT_DIR}/Drivers/CMSIS/DSP_Lib/Include
+	${PARENT_DIR}/source
+	${PARENT_DIR}/source/HAL      
+	${PARENT_DIR}/source/Application
+	${PARENT_DIR}/source/Application/Accelerometer      
+	${PARENT_DIR}/source/Application/Audio
+	${PARENT_DIR}/source/Application/Debug
+	${PARENT_DIR}/source/Application/Utilities
+	${PARENT_DIR}/source/OS/
+	${PARENT_DIR}/source/Application/Peripherals			
+	${PARENT_DIR}/source/Application/Peripherals/USART
+	${PARENT_DIR}/source/Application/Peripherals/SPI
+	)
 
 
 add_test(NAME ${BINARY} COMMAND ${BINARY})

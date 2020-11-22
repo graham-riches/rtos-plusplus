@@ -8,7 +8,6 @@
 
 /********************************** Includes *******************************************/
 #include "threading.h"
-#include "board.h"
 
 namespace OS
 {
@@ -63,7 +62,6 @@ Thread::Thread( THREAD_task_t task, uint32_t id, uint32_t *stack, uint32_t stack
 {
    if ( ( stack == nullptr ) || ( stack_size < CONTEXT_STACK_SIZE ) )
    {
-      //!< TODO: need to create an error here
       return;
    }
 
@@ -96,6 +94,26 @@ Thread::Thread( THREAD_task_t task, uint32_t id, uint32_t *stack, uint32_t stack
    taskContext->r10 = 10;
    taskContext->r11 = 11;
    taskContext->r12 = 12;
+}
+
+/**
+ * \brief update the thread status
+ * 
+ * \param status value
+ */
+void Thread::set_status( ThreadStatus status )
+{
+   this->status = status;
+}
+
+/**
+ * \brief get the current thread status
+ * 
+ * \retval ThreadStatus 
+ */
+ThreadStatus Thread::get_status( void )
+{
+   return this->status;
 }
 
 /**

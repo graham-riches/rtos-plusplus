@@ -26,9 +26,11 @@ namespace OS
 /****************************** Functions Definition ***********************************/
 /**
  * \brief Construct a new Event Flags:: Event Flags object
+ * \param thread_manager system thread manager reference
  */
-EventFlags::EventFlags( void )
+EventFlags::EventFlags( ThreadManager *thread_manager )
 {
+   this->thread_manager = thread_manager;
    this->flags = 0;
    for ( uint8_t i = 0; i < system_max_threads; i++ )
    {
@@ -48,6 +50,33 @@ void EventFlags::clear_pending_thread( EventFlagsControlBlock *control_block )
 
 }
 
+
+/**
+ * \brief check a set of event flags with a certain wait option
+ * 
+ * \param flags the flags to check
+ * \param get_options get options (get all, get any)
+ * \retval bool if a match is found
+ */
+bool EventFlags::check_flags( uint32_t flags, EventGetOptions get_options )
+{
+   bool check_result = false;
+   switch ( get_options )
+   {
+      case EventGetOptions::get_all:
+         check_result = ( ( this->flags & flags ) == flags );
+         break;
+      
+      case EventGetOptions::get_any:
+         check_result = ( this->flags & flags );
+         break;
+      
+      default:
+         break;
+   }
+   return check_result;
+}
+
 /**
  * \brief check any suspended threads against the current flags
  */
@@ -57,20 +86,9 @@ void EventFlags::check_suspended_threads( void )
    {
       EventFlagsControlBlock *current_block = &this->thread_control[i];
 
-      /* check the current flags against what the suspended thread is waiting for */
-      if ( current_block->get_option == EventGetOptions::get_all )
+      if ( this->check_flags( current_block->pending_flags, current_block->get_option ) )
       {
-         if ( ( this->flags & current_block->pending_flags ) == current_block->pending_flags )
-         {
-            this->clear_pending_thread( current_block );
-         }
-      }
-      else if ( current_block->get_option == EventGetOptions::get_any )
-      {
-         if ( this->flags & current_block->pending_flags )
-         {
-            this->clear_pending_thread( current_block );
-         }
+         this->clear_pending_thread( current_block );
       }
    }
 }
@@ -102,11 +120,15 @@ void EventFlags::clear( uint32_t flags )
  * \param flags flags to suspend on
  * \param get_options type of suspension (wait for any flag, or wait for all)
  * \param wait_options wait option
- * \todo currently only wait forever is supported!
  */
-void get( uint32_t flags, EventGetOptions get_options, EventWaitOptions wait_options )
+void EventFlags::get( uint32_t flags, EventGetOptions get_options, EventWaitOptions wait_options )
 {
-
+   /* check if the flag criteria is already met */
+   if ( !this->check_flags( flags, get_options) )
+   {
+      /* suspend the calling thread if the condition is not met */
+      this->thread_manager->activeTask->thread->set_status( ThreadStatus::suspended );
+   }
 }
 
 

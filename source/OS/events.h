@@ -61,13 +61,15 @@ class EventFlags
    uint32_t flags;
    uint8_t suspended_threads;
    EventFlagsControlBlock thread_control[system_max_threads];
+   ThreadManager *thread_manager;
 
    /* private methods */
    void clear_pending_thread( EventFlagsControlBlock *control_block );
    void check_suspended_threads( void );
+   bool check_flags( uint32_t flags, EventGetOptions get_options );
 
    public:
-   EventFlags( void );
+   EventFlags( ThreadManager *thread_manager );
    void set( uint32_t flags );
    void clear( uint32_t flags );
    void get( uint32_t flags, EventGetOptions get_options, EventWaitOptions wait_options );
