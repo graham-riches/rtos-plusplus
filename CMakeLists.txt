@@ -127,5 +127,3 @@ add_custom_command( TARGET ${BINARY}
          POST_BUILD
          COMMAND openocd -f ../stm32f407.cfg -c "program stm32_discovery.elf verify reset exit")
 		 
-# build and run the unit tests
-#add_subdirectory(tests)

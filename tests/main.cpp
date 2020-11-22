@@ -1,48 +1,36 @@
-/*! \file timer.cpp
+/*! \file main.cpp
 *
-*  \brief OS timer module for various timing functions.
+*  \brief main test runner for all unit tests
 *
 *
 *  \author Graham Riches
 */
 
-
 /********************************** Includes *******************************************/
-#include "timer.h"
+#include "gtest/gtest.h"
 
-namespace OS
-{
 /*********************************** Consts ********************************************/
-
 
 /************************************ Types ********************************************/
 
-
 /*********************************** Macros ********************************************/
 
-
 /******************************* Global Variables **************************************/
-volatile uint32_t system_ticks;
 
 /******************************** Local Variables **************************************/
 
-
 /****************************** Functions Prototype ************************************/
-
 
 /****************************** Functions Definition ***********************************/
 /**
- * \brief delay for a set period in milliseconds
+ * \brief main test runner function
  * 
- * \param delay time to delay for
+ * \param argc number of command line options
+ * \param argv pointer to each command line argument
+ * \retval int 
  */
-void delay_ms( uint32_t delay )
+int main( int argc, char *argv[] )
 {
-   uint32_t start_tick = system_ticks;
-   while ((system_ticks - start_tick) < delay )
-   {
-
-   }
+   ::testing::InitGoogleTest( &argc, argv );
+   return RUN_ALL_TESTS( );
 }
-
-};

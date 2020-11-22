@@ -59,6 +59,7 @@ dkms.conf
 
 # build files
 Build/**
+tests/build/**
 
 # Vscode files
 .settings/**

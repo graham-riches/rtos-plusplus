@@ -1,6 +1,6 @@
-/*! \file timer.cpp
+/*! \file events_tests.cpp
 *
-*  \brief OS timer module for various timing functions.
+*  \brief Unit tests for the event flags group.
 *
 *
 *  \author Graham Riches
@@ -8,10 +8,8 @@
 
 
 /********************************** Includes *******************************************/
-#include "timer.h"
+#include "gtest\gtest.h"
 
-namespace OS
-{
 /*********************************** Consts ********************************************/
 
 
@@ -22,7 +20,7 @@ namespace OS
 
 
 /******************************* Global Variables **************************************/
-volatile uint32_t system_ticks;
+
 
 /******************************** Local Variables **************************************/
 
@@ -31,18 +29,7 @@ volatile uint32_t system_ticks;
 
 
 /****************************** Functions Definition ***********************************/
-/**
- * \brief delay for a set period in milliseconds
- * 
- * \param delay time to delay for
- */
-void delay_ms( uint32_t delay )
+TEST( event_flags_tests, test_happy_times_yaya ) 
 {
-   uint32_t start_tick = system_ticks;
-   while ((system_ticks - start_tick) < delay )
-   {
-
-   }
+   ASSERT_TRUE( true );
 }
-
-};
