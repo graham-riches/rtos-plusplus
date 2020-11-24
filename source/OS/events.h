@@ -59,8 +59,8 @@ class EventFlags
    private:
    /* private data */
    uint32_t flags;
-   uint8_t suspended_threads;
    EventFlagsControlBlock thread_control[system_max_threads];
+   EventFlagsControlBlock *suspended_threads;
    ThreadManager *thread_manager;
 
    /* private methods */

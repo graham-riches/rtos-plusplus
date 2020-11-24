@@ -128,6 +128,14 @@ void EventFlags::get( uint32_t flags, EventGetOptions get_options, EventWaitOpti
    {
       /* suspend the calling thread if the condition is not met */
       this->thread_manager->activeTask->thread->set_status( ThreadStatus::suspended );
+
+
+      /* append the thread to the thread suspension list */
+      if ( this->suspended_threads->thread == nullptr )
+      {
+
+      }
+
    }
 }
 
