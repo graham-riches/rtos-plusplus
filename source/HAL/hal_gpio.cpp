@@ -24,7 +24,7 @@ constexpr uint8_t total_pins = 16;  //!< total pin count per GPIO bank
 #define CLEAR_PULLUP_REGISTER_MASK    0x03  //!< bitmask to clear the pullup/pulldown config register for a pin
 
 /****************************** Local Variables ***********************************/
-static std::map<GPIO_TypeDef*, AHB1Clocks> gpio_port_map{
+static const std::map<GPIO_TypeDef*, AHB1Clocks> gpio_port_map{
     {GPIOA, AHB1Clocks::gpio_a},
     {GPIOB, AHB1Clocks::gpio_b},
     {GPIOC, AHB1Clocks::gpio_c},
@@ -48,16 +48,16 @@ static std::map<GPIO_TypeDef*, AHB1Clocks> gpio_port_map{
  * \param pull_mode pull up/down configuration
  * \param output_mode output mode type
  */
-PinBase::PinBase(GPIO_TypeDef* bank, Pins pin, PinMode mode, Speed speed, PullMode pull_mode, OutputMode output_mode) {
-    this->bank = bank;
-    this->pin = pin;
-    this->mode = mode;
-    this->speed = speed;
-    this->pull_mode = pull_mode;
-    this->output_mode = output_mode;
+PinBase::PinBase(GPIO_TypeDef* bank, Pins pin, PinMode mode, Speed speed, PullMode pull_mode, OutputMode output_mode)
+    : bank(bank)
+    , pin(pin)
+    , mode(mode)
+    , speed(speed)
+    , pull_mode(pull_mode)
+    , output_mode(output_mode) {
 
     /* enable the peripheral clock. Note: this must be done before writing to the registers */
-    reset_control_clock.set_ahb_clock(gpio_port_map[bank], true);
+    reset_control_clock.set_ahb_clock(gpio_port_map.at(bank), true);
 
     /* find the appropriate bits and set them */
     for ( uint8_t i = 0; i < total_pins; i++ ) {

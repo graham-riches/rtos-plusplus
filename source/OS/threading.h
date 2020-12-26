@@ -1,6 +1,6 @@
-/*! \file threads.h
+/*! \file threading.h
 *
-*  \brief threads module functions and variables declarations.
+*  \brief creation of OS threading primatives
 *
 *
 *  \author Graham Riches
@@ -66,22 +66,22 @@ struct TaskControlBlock {
  * \brief class for managing application threads
  */
 class ThreadManager {
-  private:
-    uint8_t thread_count;
-    TaskControlBlock task_control_blocks[system_max_threads];
-
-  public:
-    TaskControlBlock* activeTask;
-
+  public:    
     ThreadManager();
     void register_thread(Thread* thread);
     uint8_t get_thread_count(void);
+    TaskControlBlock *get_active_task_ptr( void );
+
+
+  private:
+    TaskControlBlock* active_task;
+    uint8_t thread_count;
+    TaskControlBlock task_control_blocks[system_max_threads];
 };
 
 /*********************************** Macros ********************************************/
 
 /******************************* Global Variables **************************************/
-extern TaskControlBlock* system_active_task;  //!< NOTE: this is only for the scheduler to handle in the systick interrupt
 extern ThreadManager system_thread_manager;   //!< NOTE: other code components should interact with the thread manager
 
 /****************************** Functions Prototype ************************************/

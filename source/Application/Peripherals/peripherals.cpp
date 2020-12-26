@@ -137,7 +137,7 @@ void system_boot(void) {
 
 /**
  * \brief enable the floating point unit if required
- * 
+ * \todo this needs to be moved somewhere else
  */
 void system_initialize_fpu(void) {
 #if ( __FPU_PRESENT == 1 ) && (__FPU_USED == 1)

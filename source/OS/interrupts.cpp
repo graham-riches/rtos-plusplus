@@ -47,7 +47,6 @@ typedef struct {
 /****************************** Functions Declarations ************************************/
 extern "C"
 {
-
     void fault_handler(StackContext_t* context);
 }
 
@@ -112,27 +111,25 @@ void PendSV_Handler(void) { }
 /**
   * @brief This function handles System tick timer.
   */
-__attribute__((naked)) void SysTick_Handler(void) {
-    /* use the OS namespace to access the task control block pointer */
-    using namespace OS;
+void SysTick_Handler(void) {
+    __asm("MOV        R3, LR                   \n");
 
-    /* increment the tick counter */
-    system_ticks++;
+    OS::TaskControlBlock* task = OS::system_thread_manager.get_active_task_ptr();
+    OS::system_ticks++;    
 
     /* run the task context switching from the scheduler */
     __asm("CPSID      I                        \n" /* disable interrupts */
           "PUSH       {R4-R11}                 \n" /* push the remaining core registers */
-          "LDR        R0, =system_active_task  \n" /* load the active task pointer into r0*/
-          "LDR        R1, [R0]                 \n" /* load the stack pointer from the contents of task into R1 */
+          "LDR        R0, %[task]              \n" /* load the active task pointer into r0 */
           "MOV        R4, SP                   \n" /* move the CPU stack pointer to R4 */
-          "STR        R4, [R1]                 \n" /* store the stack pointer into task */
-          "LDR        R1, [R1, #4]             \n" /* get the next task pointer and load it into R1 - 4 byte offset from stack pointer to next task */
-          "STR        R1, [R0]                 \n" /* store the contents of R1 in R0 */
+          "STR        R4, [R0]                 \n" /* store the stack pointer into task */
+          "LDR        R1, [R0, #4]             \n" /* get the next task pointer and load it into R1 - 4 byte offset from stack pointer to next task */          
           "LDR        R4, [R1]                 \n" /* get the new stack pointer */
           "MOV        SP, R4                   \n" /* push it to the CPU stack pointer register */
           "POP        {R4-R11}                 \n" /* pop the stored registers */
           "CPSIE      I                        \n" /* re-enable interrupts */
           "BX         LR                       \n" /* branch to the link register */
+          :: [task] "m" (task)
     );
 }
 

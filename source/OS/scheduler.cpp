@@ -32,19 +32,22 @@ namespace OS
 /**
  * \brief launch the scheduler kernel
  */
-__attribute__((naked)) void enter_kernel(void) {
+void enter_kernel(void) {
+    TaskControlBlock* task = system_thread_manager.get_active_task_ptr();
+
     /* disable interrupts */
     __asm("CPSID    I");
 
     /* load the initial task pointer into R0 */
-    __asm("LDR     R0, =system_active_task");
+    __asm("LDR     R0, %[task]" :: [task] "m" (task));
 
     /* load R2 with the contents of R0 */
     __asm("LDR     R2, [R0]");
 
     /* copy the saved tasks stack pointer into the CPU */
-    __asm("LDR     R4, [R2]");
-    __asm("MOV     SP, R4");
+    //__asm("LDR     R4, [R2]");
+    //__asm("MOV     SP, R4");
+    __asm("MOV     SP, R2");
 
     /* Pop registers R0-R11 */
     __asm("POP     {R4-R11}");

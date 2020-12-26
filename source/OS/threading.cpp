@@ -42,7 +42,6 @@ typedef struct {
 
 /******************************* Global Variables **************************************/
 ThreadManager system_thread_manager;
-TaskControlBlock* system_active_task = system_thread_manager.activeTask;
 
 /******************************** Local Variables **************************************/
 
@@ -108,7 +107,7 @@ void Thread::set_status(ThreadStatus status) {
  * \retval ThreadStatus 
  */
 ThreadStatus Thread::get_status(void) {
-    return this->status;
+    return status;
 }
 
 /**
@@ -116,10 +115,9 @@ ThreadStatus Thread::get_status(void) {
  * 
  * \param max_threads max number of threads to allow
  */
-ThreadManager::ThreadManager(void) {
-    this->thread_count = 0;
-    this->activeTask = &this->task_control_blocks[0];
-}
+ThreadManager::ThreadManager(void)
+    : thread_count(0)
+    , active_task(&task_control_blocks[0]) { }
 
 /**
  * \brief get the number of registered threads in the system
@@ -127,7 +125,16 @@ ThreadManager::ThreadManager(void) {
  * \retval uint8_t number of threads
  */
 uint8_t ThreadManager::get_thread_count(void) {
-    return this->thread_count;
+    return thread_count;
+}
+
+/**
+ * \brief get a pointer to the active task control block
+ * 
+ * \retval TaskControlBlock* 
+ */
+TaskControlBlock* ThreadManager::get_active_task_ptr( void ) {
+    return active_task;
 }
 
 /**
@@ -136,29 +143,29 @@ uint8_t ThreadManager::get_thread_count(void) {
  * \param thread the thread to register
  */
 void ThreadManager::register_thread(Thread* thread) {
-    if ( this->thread_count == 0 ) {
+    if ( thread_count == 0 ) {
         /* add the the thread object*/
-        this->task_control_blocks[this->thread_count].thread = thread;
+        task_control_blocks[thread_count].thread = thread;
 
         /* set the stack pointer to the pre-initialized values */
-        this->task_control_blocks[this->thread_count].active_stack_pointer = thread->stack + thread->stack_size - CONTEXT_STACK_SIZE;
+        task_control_blocks[thread_count].active_stack_pointer = thread->stack + thread->stack_size - CONTEXT_STACK_SIZE;
 
         /* set the next pointer */
-        this->task_control_blocks[this->thread_count].next = nullptr;
-        this->thread_count++;
+        task_control_blocks[thread_count].next = nullptr;
+        thread_count++;
     } else {
-        if ( this->thread_count < system_max_threads ) {
+        if ( thread_count < system_max_threads ) {
             /* move the previous threads next pointer to the current thread */
-            this->task_control_blocks[this->thread_count - 1].next = &this->task_control_blocks[this->thread_count];
+            task_control_blocks[thread_count - 1].next = &task_control_blocks[thread_count];
 
             /* add the thread object and set the initial stack pointer */
-            this->task_control_blocks[this->thread_count].thread = thread;
-            this->task_control_blocks[this->thread_count].active_stack_pointer = thread->stack + thread->stack_size - CONTEXT_STACK_SIZE;
+            task_control_blocks[thread_count].thread = thread;
+            task_control_blocks[thread_count].active_stack_pointer = thread->stack + thread->stack_size - CONTEXT_STACK_SIZE;
 
             /* set the current threads next pointer to the start of the list */
-            this->task_control_blocks[this->thread_count].next = &this->task_control_blocks[0];
+            task_control_blocks[thread_count].next = &task_control_blocks[0];
 
-            this->thread_count++;
+            thread_count++;
         }
     }
 }
