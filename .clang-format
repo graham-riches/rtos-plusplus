@@ -1,7 +1,7 @@
 # Common settings
 BasedOnStyle:  WebKit
-TabWidth:        3
-IndentWidth:     3
+TabWidth:        4
+IndentWidth:     4
 UseTab:          Never
 ColumnLimit: 160
 
@@ -12,7 +12,7 @@ Language: Cpp
 
 DisableFormat:   false
 
-AccessModifierOffset: 0
+AccessModifierOffset: -2
 AlignAfterOpenBracket: true
 AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: false
@@ -37,16 +37,16 @@ BinPackParameters: false
 BreakBeforeBraces: Custom
 # Control of individual brace wrapping cases
 BraceWrapping: {
-    AfterClass: 'true'
-    AfterControlStatement: 'true'
-    AfterCaseLabel: 'true'
-    AfterEnum : 'true'
-    AfterFunction : 'true'
+    AfterClass: 'false'
+    AfterControlStatement: 'false'
+    AfterCaseLabel: 'false'
+    AfterEnum : 'false'
+    AfterFunction : 'false'
     AfterNamespace : 'true'
-    AfterStruct : 'true'
-    AfterUnion : 'true'
-    BeforeCatch : 'true'
-    BeforeElse : 'true'
+    AfterStruct : 'false'
+    AfterUnion : 'false'
+    BeforeCatch : 'false'
+    BeforeElse : 'false'
     IndentBraces : 'false'
     AfterExternBlock : 'true'
     SplitEmptyFunction : 'false'
@@ -64,8 +64,8 @@ BreakStringLiterals: true
 CommentPragmas:  '^ IWYU pragma:'
 CompactNamespaces: false
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
-ConstructorInitializerIndentWidth: 3
-ContinuationIndentWidth: 3
+ConstructorInitializerIndentWidth: 4
+ContinuationIndentWidth: 4
 Cpp11BracedListStyle: true
 SpaceBeforeCpp11BracedList: false
 DerivePointerAlignment: false
@@ -90,17 +90,17 @@ PenaltyBreakString: 1000
 
 PenaltyExcessCharacter: 1000000
 PenaltyReturnTypeOnItsOwnLine: 60
-PointerAlignment: Right
+PointerAlignment: Left
 SpaceAfterCStyleCast: false
 SpaceBeforeAssignmentOperators: true
 SpaceBeforeParens: ControlStatements
-SpaceInEmptyParentheses: true
+SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 2
 SpacesInAngles:  false
 SpacesInContainerLiterals: true
 SpacesInConditionalStatement: true
 SpacesInCStyleCastParentheses: false
-SpacesInParentheses: true
+SpacesInParentheses: false
 SpacesInSquareBrackets: false
 SpaceAfterTemplateKeyword: true
 SpaceBeforeInheritanceColon: true
