@@ -11,11 +11,12 @@
 
 /********************************** Includes *******************************************/
 #include "common.h"
-#include "hal_usart.h"
 #include "hal_gpio.h"
+#include "hal_usart.h"
 #include "stm32f4xx.h"
 #include <cstdarg>
 #include <memory>
+
 
 /*********************************** Consts ********************************************/
 
@@ -24,21 +25,20 @@
  * \brief class definition for a debug port
  * 
  */
-class DebugPort : public HAL::USARTInterrupt
-{
-   private:
-   std::unique_ptr<char[]> print_buffer;
-   size_t print_buffer_size;
-   void log_message( const char *message, const char *tag, va_list args );
+class DebugPort : public HAL::USARTInterrupt {
+  private:
+    std::unique_ptr<char[]> print_buffer;
+    size_t print_buffer_size;
+    void log_message(const char* message, const char* tag, va_list args);
 
-   public:
-   DebugPort( );
-   DebugPort( USART_TypeDef *usart, size_t tx_size, size_t rx_size );      
-   void initialize( void );
-   void debug( const char *message, ... );
-   void info( const char *message, ... );
-   void warning( const char *message, ... );
-   void error( const char *message, ... );
+  public:
+    DebugPort();
+    DebugPort(USART_TypeDef* usart, size_t tx_size, size_t rx_size);
+    void initialize(void);
+    void debug(const char* message, ...);
+    void info(const char* message, ...);
+    void warning(const char* message, ...);
+    void error(const char* message, ...);
 };
 
 /*********************************** Macros ********************************************/

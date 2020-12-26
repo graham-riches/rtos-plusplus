@@ -13,10 +13,8 @@
 #include <stdint.h>
 #include <type_traits>
 
-
 namespace HAL
 {
-
 
 /********************************** Templates *******************************************/
 /**
@@ -25,9 +23,8 @@ namespace HAL
  * \tparam Enum the enumeration to enable/disable
  */
 template <typename Enum>
-struct EnableBitwiseOperators
-{
-   static const bool enable = false;
+struct EnableBitwiseOperators {
+    static const bool enable = false;
 };
 
 /**
@@ -39,10 +36,9 @@ struct EnableBitwiseOperators
  * \retval std::enable_if_t<EnableBitwiseOperators<Enum>::enable, Enum> 
  */
 template <typename Enum>
-typename std::enable_if_t<EnableBitwiseOperators<Enum>::enable, Enum> operator |(Enum first, Enum second)
-{
-   using underlying_type = std::underlying_type_t<Enum>;
-   return static_cast<underlying_type>(first) | static_cast<underlying_type>(second);
+typename std::enable_if_t<EnableBitwiseOperators<Enum>::enable, Enum> operator|(Enum first, Enum second) {
+    using underlying_type = std::underlying_type_t<Enum>;
+    return static_cast<underlying_type>(first) | static_cast<underlying_type>(second);
 }
 
 /**
@@ -54,12 +50,11 @@ typename std::enable_if_t<EnableBitwiseOperators<Enum>::enable, Enum> operator |
  * \retval std::enable_if_t<EnableBitwiseOperators<Enum>::enable, Enum> 
  */
 template <typename Enum>
-typename std::enable_if_t<EnableBitwiseOperators<Enum>::enable, Enum> operator &(Enum first, Enum second)
-{
-   using underlying_type = std::underlying_type_t<Enum>;
-   return static_cast<underlying_type>(first) & static_cast<underlying_type>(second);
+typename std::enable_if_t<EnableBitwiseOperators<Enum>::enable, Enum> operator&(Enum first, Enum second) {
+    using underlying_type = std::underlying_type_t<Enum>;
+    return static_cast<underlying_type>(first) & static_cast<underlying_type>(second);
 }
 
-}; // namespace HAL
+};  // namespace HAL
 
 #endif /* __HAL_BITWISE_OPS_H__ */

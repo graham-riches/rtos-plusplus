@@ -10,13 +10,12 @@
 #include "hal_interrupt.h"
 #include "stm32f4xx.h"
 
-
 namespace HAL
 {
 
 /*********************************** Consts ********************************************/
-constexpr uint32_t active_vector_mask = 0xFF;                                                          //!< mask for currently active interrupt vector
-constexpr uint8_t external_interrupt_offset = static_cast<uint8_t>( InterruptName::window_watchdog );  //!< offset for external interrupts
+constexpr uint32_t active_vector_mask = 0xFF;                                                        //!< mask for currently active interrupt vector
+constexpr uint8_t external_interrupt_offset = static_cast<uint8_t>(InterruptName::window_watchdog);  //!< offset for external interrupts
 
 /************************************ Types ********************************************/
 
@@ -39,50 +38,44 @@ InterruptManager interrupt_manager;
  * \param type type of the interrupt (for peripherals with multiple interrupts)
  * \param priority NVIC priorits
  */
-void InterruptManager::register_callback( InterruptName interrupt, InterruptPeripheral *peripheral, uint8_t type, uint32_t priority )
-{
-   /* fill the handler structure */
-   InterruptHandler handler;
-   handler.peripheral = peripheral;
-   handler.irq_type = type;
+void InterruptManager::register_callback(InterruptName interrupt, InterruptPeripheral* peripheral, uint8_t type, uint32_t priority) {
+    /* fill the handler structure */
+    InterruptHandler handler;
+    handler.peripheral = peripheral;
+    handler.irq_type = type;
 
-   /* place it in the handler array */
-   this->isr_table[static_cast<uint8_t>( interrupt )] = handler;
+    /* place it in the handler array */
+    this->isr_table[static_cast<uint8_t>(interrupt)] = handler;
 
-   /* enable it in the NVIC */
-   IRQn external_interrupt_number = static_cast<IRQn>( static_cast<uint8_t>( interrupt ) - external_interrupt_offset );
-   NVIC_SetPriority( external_interrupt_number, priority );
-   NVIC_EnableIRQ( external_interrupt_number );
+    /* enable it in the NVIC */
+    IRQn external_interrupt_number = static_cast<IRQn>(static_cast<uint8_t>(interrupt) - external_interrupt_offset);
+    NVIC_SetPriority(external_interrupt_number, priority);
+    NVIC_EnableIRQ(external_interrupt_number);
 }
-
 
 /**
  * \brief default ISR handler to map specific function pointers from the startup file into 
  *        the registered interrupts table
  * 
  */
-void InterruptManager::default_isr_handler( void )
-{
-   /* get the interrupt number from the system control blocks currently active vector (first 8 bytes) */
-   uint8_t isr_number = static_cast<uint8_t>( SCB->ICSR & active_vector_mask );
+void InterruptManager::default_isr_handler(void) {
+    /* get the interrupt number from the system control blocks currently active vector (first 8 bytes) */
+    uint8_t isr_number = static_cast<uint8_t>(SCB->ICSR & active_vector_mask);
 
-   /* call the periperals isr_handler with the appropriate type */
-   this->isr_table[isr_number].peripheral->irq_handler( isr_table[isr_number].irq_type );
+    /* call the periperals isr_handler with the appropriate type */
+    this->isr_table[isr_number].peripheral->irq_handler(isr_table[isr_number].irq_type);
 }
 
 };  // namespace HAL
 
-
-
 /****************************** Vector Table Function Pointer Definitions ***********************************/
 extern "C"
 {
-   /**
+    /**
     * \brief this single function remaps all vector table interrups to the C++ interrupt handler
     *        which calls the appropriate IRQ which is generally registered to a specific object.
     */
-   void IRQHandler( void )
-   {
-      HAL::interrupt_manager.default_isr_handler( );
-   }
+    void IRQHandler(void) {
+        HAL::interrupt_manager.default_isr_handler();
+    }
 }

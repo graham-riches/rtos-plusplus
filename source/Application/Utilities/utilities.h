@@ -10,13 +10,14 @@
 #define __UTILITIES_H__
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 /********************************** Includes *******************************************/
 #include "common.h"
 
 /*********************************** Consts ********************************************/
-#define UTILITIES_MAX_STRSPLIT_LENGTH  512
+#define UTILITIES_MAX_STRSPLIT_LENGTH 512
 
 /************************************ Types ********************************************/
 
@@ -24,9 +25,8 @@ extern "C" {
 
 /******************************* Global Variables **************************************/
 
-
 /****************************** Functions Prototype ************************************/
-int32_t UTILITIES_strSplit ( char *inputString, char delimiter, int maxStrings, char *argv[] );
+int32_t UTILITIES_strSplit(char* inputString, char delimiter, int maxStrings, char* argv[]);
 
 #ifdef __cplusplus
 }
