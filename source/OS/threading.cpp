@@ -116,8 +116,8 @@ ThreadStatus Thread::get_status(void) {
  * \param max_threads max number of threads to allow
  */
 ThreadManager::ThreadManager(void)
-    : thread_count(0)
-    , active_task(&task_control_blocks[0]) { }
+    : active_task(&task_control_blocks[0])
+    , thread_count(0) { }
 
 /**
  * \brief get the number of registered threads in the system
@@ -129,11 +129,11 @@ uint8_t ThreadManager::get_thread_count(void) {
 }
 
 /**
- * \brief get a pointer to the active task control block
+ * \brief get a copy of the active task control block
  * 
- * \retval TaskControlBlock* 
+ * \retval TaskControlBlock
  */
-TaskControlBlock* ThreadManager::get_active_task_ptr( void ) {
+TaskControlBlock* ThreadManager::get_active_task_ptr( void ) {            
     return active_task;
 }
 

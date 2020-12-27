@@ -111,25 +111,30 @@ void PendSV_Handler(void) { }
 /**
   * @brief This function handles System tick timer.
   */
-void SysTick_Handler(void) {
-    __asm("MOV        R3, LR                   \n");
-
-    OS::TaskControlBlock* task = OS::system_thread_manager.get_active_task_ptr();
-    OS::system_ticks++;    
+void SysTick_Handler(void) {    
+    __asm("CPSID      I                       \n" /* disable interrupts */
+          "PUSH       {R4-R11}                \n" /* push the remaining core registers */
+          "MOV        R9, LR                  \n" /* stash the link register for later */          
+    );
+    
+    /* get the current task control block from the scheduler */
+    //OS::TaskControlBlock* task = OS::system_thread_manager.get_active_task_ptr();
+    OS::system_ticks++;
 
     /* run the task context switching from the scheduler */
-    __asm("CPSID      I                        \n" /* disable interrupts */
-          "PUSH       {R4-R11}                 \n" /* push the remaining core registers */
-          "LDR        R0, %[task]              \n" /* load the active task pointer into r0 */
+    __asm("LDR        R0, %[task]              \n" /* load the active task pointer into r0 */
+          "LDR        R1, [R0]                 \n" /* load the contents of the stack pointer into R1 */
           "MOV        R4, SP                   \n" /* move the CPU stack pointer to R4 */
           "STR        R4, [R0]                 \n" /* store the stack pointer into task */
           "LDR        R1, [R0, #4]             \n" /* get the next task pointer and load it into R1 - 4 byte offset from stack pointer to next task */          
-          "LDR        R4, [R1]                 \n" /* get the new stack pointer */
-          "MOV        SP, R4                   \n" /* push it to the CPU stack pointer register */
+          "STR        R1, [R0]                 \n" /* increment the task pointer */
+          "LDR        R4, [R1]                 \n" /* get the new stack pointer */           
+          "MOV        SP, R4                   \n" /* push it to the CPU stack pointer register */                    
+          "MOV        LR, R9                   \n" /* put the return address back into the link register */ 
           "POP        {R4-R11}                 \n" /* pop the stored registers */
           "CPSIE      I                        \n" /* re-enable interrupts */
           "BX         LR                       \n" /* branch to the link register */
-          :: [task] "m" (task)
+          :: [task] "m" (OS::system_thread_manager.active_task)
     );
 }
 

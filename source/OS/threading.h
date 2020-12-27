@@ -67,14 +67,15 @@ struct TaskControlBlock {
  */
 class ThreadManager {
   public:    
+    TaskControlBlock* active_task;
+
     ThreadManager();
     void register_thread(Thread* thread);
     uint8_t get_thread_count(void);
-    TaskControlBlock *get_active_task_ptr( void );
-
+    TaskControlBlock* get_active_task_ptr( void );
 
   private:
-    TaskControlBlock* active_task;
+    
     uint8_t thread_count;
     TaskControlBlock task_control_blocks[system_max_threads];
 };
