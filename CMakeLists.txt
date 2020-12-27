@@ -39,6 +39,7 @@ set(APP_SOURCES
       source/OS/threading.cpp
       source/OS/timer.cpp
       source/OS/interrupts.cpp
+      source/OS/kernel.cpp
 
 		# Start Up File
       startup/startup_stm32f407xx.s

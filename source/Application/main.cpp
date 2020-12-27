@@ -9,9 +9,8 @@
 #include "common.h"
 #include "debug_port.h"
 #include "peripherals.h"
-#include "scheduler.h"
 #include "stm32f4xx.h"
-#include "threading.h"
+#include "kernel.h"
 #include "timer.h"
 #include <stdio.h>
 #include <string.h>
@@ -61,6 +60,7 @@ int main(void) {
  * 
  */
 static void thread_one_task(void *arguments) {
+    PARAMETER_NOT_USED(arguments);
     while ( 1 ) {
         green_led.toggle();
         blue_led.toggle();
@@ -73,6 +73,7 @@ static void thread_one_task(void *arguments) {
  * 
  */
 static void thread_two_task(void *arguments) {
+    PARAMETER_NOT_USED(arguments);
     while ( 1 ) {
         red_led.toggle();
         orange_led.toggle();

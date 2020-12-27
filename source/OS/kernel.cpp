@@ -1,6 +1,6 @@
 /*! \file kernel.c
 *
-*  \brief some kernel functions.
+*  \brief contains the main kernel functions for running the operating system.
 *
 *
 *  \author Graham Riches
@@ -8,11 +8,16 @@
 
 /********************************** Includes *******************************************/
 #include "kernel.h"
-#include "scheduler.h"
 #include "stm32f4xx.h"
 
 namespace OS
 {
+/********************************** Global Variables *******************************************/
+Scheduler scheduler(SYSTEM_MAX_THREADS);
+TaskControlBlock* system_active_task = scheduler.get_active_tcb_ptr();
+
+
+/********************************** Function Definitions *******************************************/
 /**
  * \brief launch the kernel
  */

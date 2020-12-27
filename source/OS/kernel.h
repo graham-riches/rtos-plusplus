@@ -1,7 +1,10 @@
 /*! \file kernel.h
 *
-*  \brief kernel module functions and variables declarations.
-*
+*  \brief this file provides a single include point for the user application to access
+*         the OS. All OS variables should be created in this module to control the 
+*         initialization order.
+*  \note  components that need to be accessed by ISRs or C routines need to be declared
+*         with extern C linkage here
 *
 *  \author Graham Riches
 */
@@ -11,14 +14,29 @@
 
 /********************************** Includes *******************************************/
 #include "common.h"
+#include "scheduler.h"
+#include "threading.h"
+
+
+/****************************** Constants ************************************/    
+#define SYSTEM_MAX_THREADS (8ul) //!< maximum system thread count
 
 namespace OS
 {
+/****************************** Global Variables ************************************/
+extern Scheduler scheduler;
+
+/* C linkage global variables */
+extern "C" {
+    extern TaskControlBlock* system_active_task;
+}
+
 
 /****************************** Functions Declarations ************************************/
 void enter_kernel(void);
 void set_systick_frequency(uint32_t ticks);
 
 };  // namespace OS
+
 
 #endif /* __KERNEL_H__ */

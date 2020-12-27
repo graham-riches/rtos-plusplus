@@ -10,25 +10,8 @@
 #include "scheduler.h"
 #include "threading.h"
 
-
 namespace OS
 {
-
-/*********************************** Consts ********************************************/
-
-/************************************ Types ********************************************/
-
-/*********************************** Macros ********************************************/
-
-/******************************* Global Variables **************************************/
-Scheduler scheduler(SYSTEM_MAX_THREADS);
-TaskControlBlock* system_active_task = scheduler.get_active_tcb_ptr();
-
-
-/******************************** Local Variables **************************************/
-
-/****************************** Functions Prototype ************************************/
-
 /****************************** Functions Definition ***********************************/
 
 /**
@@ -36,7 +19,7 @@ TaskControlBlock* system_active_task = scheduler.get_active_tcb_ptr();
  * 
  * \param max_thread_count max number of threads to allow
  */
-Scheduler::Scheduler( uint8_t max_thread_count )
+Scheduler::Scheduler(uint8_t max_thread_count)
     : max_thread_count(max_thread_count)
     , thread_count(0)
     , task_control_blocks(std::make_unique<TaskControlBlock[]>(max_thread_count))
@@ -56,7 +39,7 @@ uint8_t Scheduler::get_thread_count(void) {
  * 
  * \retval TaskControlBlock
  */
-TaskControlBlock* Scheduler::get_active_tcb_ptr( void ) {            
+TaskControlBlock* Scheduler::get_active_tcb_ptr(void) {
     return active_task;
 }
 
@@ -70,14 +53,14 @@ bool Scheduler::register_thread(Thread* thread) {
     bool retval = false;
     if ( thread_count < max_thread_count ) {
         /* add the the thread object and it's stack pointer to the next empty task control block */
-        task_control_blocks[thread_count].thread = thread;        
+        task_control_blocks[thread_count].thread = thread;
         task_control_blocks[thread_count].active_stack_pointer = thread->get_stack_ptr();
-    
+
         /* setup the next pointers */
         task_control_blocks[thread_count].next = (thread_count == 0) ? nullptr : &task_control_blocks[0];
 
         /* move the last task blocks next pointer to the current block */
-        if ( thread_count > 0 ){
+        if ( thread_count > 0 ) {
             task_control_blocks[thread_count - 1].next = &task_control_blocks[thread_count];
         }
 
@@ -86,6 +69,5 @@ bool Scheduler::register_thread(Thread* thread) {
     }
     return retval;
 }
-
 
 };  // namespace OS
