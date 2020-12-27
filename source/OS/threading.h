@@ -11,19 +11,45 @@
 
 /********************************** Includes *******************************************/
 #include "common.h"
+#include <memory>
 
 namespace OS
 {
-
-/*********************************** Consts ********************************************/
-constexpr uint8_t system_max_threads = 2;  //!< max number of threads in the OS
+/********************************** Constants *******************************************/
+#define SYSTEM_MAX_THREADS (8ul) //!< maximum system thread count
 
 /************************************ Types ********************************************/
+#pragma pack(1)
 /**
- * \brief function pointer for thread task
- * 
+ * \brief contains the packed ordering of the processor register state during context switches.
+ *        This is super helpful for debugging as you can pre-fill a thread's context with a custom
+ *        default register state.
  */
-typedef void (*THREAD_task_t)(void);
+typedef struct {
+    uint32_t r4;
+    uint32_t r5;
+    uint32_t r6;
+    uint32_t r7;
+    uint32_t r8;
+    uint32_t r9;
+    uint32_t r10;
+    uint32_t r11;
+    uint32_t r0;
+    uint32_t r1;
+    uint32_t r2;
+    uint32_t r3;
+    uint32_t r12;
+    uint32_t lr;
+    uint32_t pc;
+    uint32_t psr;
+} ThreadContext_t;
+#pragma pack(0)
+
+
+/**
+ * \brief function pointer for a thread task
+ */
+typedef void (*task_ptr_t)(void *arguments);
 
 /**
  * \brief enumeration of possible thread statuses
@@ -37,60 +63,22 @@ enum class ThreadStatus : unsigned {
  * \brief class for system threads
  */
 class Thread {
-  private:
-    uint32_t id;
-    THREAD_task_t task;
-    ThreadStatus status;
-
   public:
-    uint32_t* stack;
-    uint32_t stack_size;
-
-    Thread(THREAD_task_t task, uint32_t id, uint32_t* stack, uint32_t stack_size);
+    Thread(task_ptr_t task_ptr, void *arguments, uint32_t id, uint32_t* stack_ptr, uint32_t stack_size);
     void set_status(ThreadStatus status);
     ThreadStatus get_status(void);
-};
-
-/**
- * \brief task control block for thread management 
- */
-#pragma pack(0)
-struct TaskControlBlock {
-    uint32_t* active_stack_pointer;
-    TaskControlBlock* next;
-    Thread* thread;
-};
-#pragma pack(1)
-
-/**
- * \brief class for managing application threads
- */
-class ThreadManager {
-  public:    
-    TaskControlBlock* active_task;
-
-    ThreadManager();
-    void register_thread(Thread* thread);
-    uint8_t get_thread_count(void);
-    TaskControlBlock* get_active_task_ptr( void );
-
+    uint32_t* get_stack_ptr(void);
+  
   private:
-    
-    uint8_t thread_count;
-    TaskControlBlock task_control_blocks[system_max_threads];
+    task_ptr_t task_ptr;
+    void* task_arguments_ptr;
+    uint32_t id;
+    uint32_t* const stack_top_ptr;
+    uint32_t* stack_ptr;
+    uint32_t stack_size;
+    ThreadStatus status;
 };
 
-/*********************************** Macros ********************************************/
-
-/******************************* Global Variables **************************************/
-extern ThreadManager system_thread_manager;   //!< NOTE: other code components should interact with the thread manager
-
-extern "C"
-{
-    extern TaskControlBlock* system_active_task;  //!< global task pointer to the current task control block
-}
-
-/****************************** Functions Prototype ************************************/
 
 };  // namespace OS
 

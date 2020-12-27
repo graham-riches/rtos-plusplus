@@ -25,8 +25,8 @@
 /*********************************** Macros ********************************************/
 
 /*********************************** Local Functions ********************************************/
-static void thread_one_task(void);
-static void thread_two_task(void);
+static void thread_one_task(void *arguments);
+static void thread_two_task(void *arguments);
 
 /*********************************** Local Variables ********************************************/
 /* create the thread stacks */
@@ -34,8 +34,8 @@ static uint32_t thread_one_stack[THREAD_STACK_SIZE] = {0};
 static uint32_t thread_two_stack[THREAD_STACK_SIZE] = {0};
 
 /* create the threads */
-static OS::Thread thread_one(thread_one_task, 1, thread_one_stack, THREAD_STACK_SIZE);
-static OS::Thread thread_two(thread_two_task, 2, thread_two_stack, THREAD_STACK_SIZE);
+static OS::Thread thread_one(thread_one_task, nullptr, 1, thread_one_stack, THREAD_STACK_SIZE);
+static OS::Thread thread_two(thread_two_task, nullptr, 2, thread_two_stack, THREAD_STACK_SIZE);
 
 /**
   * \brief  Main application function
@@ -43,8 +43,8 @@ static OS::Thread thread_two(thread_two_task, 2, thread_two_stack, THREAD_STACK_
   */
 int main(void) {
     /* register the threads */
-    OS::system_thread_manager.register_thread(&thread_one);
-    OS::system_thread_manager.register_thread(&thread_two);
+    OS::scheduler.register_thread(&thread_one);
+    OS::scheduler.register_thread(&thread_two);
 
     /* configure the project specific HAL drivers and bootup the chip, clocks etc. */
     initialize_peripherals();
@@ -60,7 +60,7 @@ int main(void) {
  * \brief dummy thread one task
  * 
  */
-static void thread_one_task(void) {
+static void thread_one_task(void *arguments) {
     while ( 1 ) {
         green_led.toggle();
         blue_led.toggle();
@@ -72,7 +72,7 @@ static void thread_one_task(void) {
  * \brief dummy thread two task
  * 
  */
-static void thread_two_task(void) {
+static void thread_two_task(void *arguments) {
     while ( 1 ) {
         red_led.toggle();
         orange_led.toggle();

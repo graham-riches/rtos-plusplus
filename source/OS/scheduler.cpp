@@ -8,7 +8,6 @@
 
 /********************************** Includes *******************************************/
 #include "scheduler.h"
-#include "stm32f4xx.h"
 #include "threading.h"
 
 
@@ -22,6 +21,9 @@ namespace OS
 /*********************************** Macros ********************************************/
 
 /******************************* Global Variables **************************************/
+Scheduler scheduler(SYSTEM_MAX_THREADS);
+TaskControlBlock* system_active_task = scheduler.get_active_tcb_ptr();
+
 
 /******************************** Local Variables **************************************/
 
@@ -30,53 +32,60 @@ namespace OS
 /****************************** Functions Definition ***********************************/
 
 /**
- * \brief launch the scheduler kernel
+ * \brief Construct a new Scheduler::Scheduler object
+ * 
+ * \param max_thread_count max number of threads to allow
  */
-__attribute__((naked)) void enter_kernel(void) {
-    using namespace OS;
-    
-    /* disable interrupts */
-    __asm("CPSID    I");
+Scheduler::Scheduler( uint8_t max_thread_count )
+    : max_thread_count(max_thread_count)
+    , thread_count(0)
+    , task_control_blocks(std::make_unique<TaskControlBlock[]>(max_thread_count))
+    , active_task(&task_control_blocks[0]) { }
 
-    /* load the initial task pointer into R0 */
-    __asm("LDR     R0, =system_active_task");
-
-    /* load R2 with the contents of R0 */
-    __asm("LDR     R2, [R0]");
-
-    /* copy the saved tasks stack pointer into the CPU */
-    __asm("LDR     R4, [R2]");
-    __asm("MOV     SP, R4");
-
-    /* Pop registers R0-R11 */
-    __asm("POP     {R4-R11}");
-    __asm("POP     {R0-R3}");
-
-    /*  Pop the cortex saved context registers */
-    __asm("POP     {R4}");
-    __asm("MOV     R12, R4");
-
-    /* Skip the saved LR (not valid at startup) */
-    __asm("ADD     SP,SP,#4");
-
-    /* load the task function pointer into LR */
-    __asm("POP     {R4}");
-    __asm("MOV     LR, R4");
-    __asm("ADD     SP,SP,#4");
-
-    /* re-enable interrupts and jump to the first task */
-    __asm("CPSIE   I ");
-    __asm("BX      LR");
+/**
+ * \brief get the number of registered threads in the system
+ * 
+ * \retval uint8_t number of threads
+ */
+uint8_t Scheduler::get_thread_count(void) {
+    return thread_count;
 }
 
 /**
- * \brief Set the systick timer frequency
+ * \brief get the active task control block
  * 
- * \param ticks of the main sysclock per interrupt
+ * \retval TaskControlBlock
  */
-void set_systick_frequency(uint32_t ticks) {
-    SysTick_Config(ticks);
-    NVIC_SetPriority(SysTick_IRQn, 15);
+TaskControlBlock* Scheduler::get_active_tcb_ptr( void ) {            
+    return active_task;
 }
+
+/**
+ * \brief register a thread with a thread manager
+ * 
+ * \param thread the thread to register
+ * \retval returns true if the thread registration was successful
+ */
+bool Scheduler::register_thread(Thread* thread) {
+    bool retval = false;
+    if ( thread_count < max_thread_count ) {
+        /* add the the thread object and it's stack pointer to the next empty task control block */
+        task_control_blocks[thread_count].thread = thread;        
+        task_control_blocks[thread_count].active_stack_pointer = thread->get_stack_ptr();
+    
+        /* setup the next pointers */
+        task_control_blocks[thread_count].next = (thread_count == 0) ? nullptr : &task_control_blocks[0];
+
+        /* move the last task blocks next pointer to the current block */
+        if ( thread_count > 0 ){
+            task_control_blocks[thread_count - 1].next = &task_control_blocks[thread_count];
+        }
+
+        thread_count++;
+        retval = true;
+    }
+    return retval;
+}
+
 
 };  // namespace OS

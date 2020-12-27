@@ -24,11 +24,14 @@ add_subdirectory(googletest)
 set(BINARY bare-metal-os-tests)
 set(SOURCES
 	# add unit tests here
-	events_tests.cpp
+    #events_tests.cpp
+    scheduler_tests.cpp
+    threading_tests.cpp
 	main.cpp
 
 	# add each application file to test here
-	${PARENT_DIR}/source/OS/events.cpp
+    #${PARENT_DIR}/source/OS/events.cpp
+    ${PARENT_DIR}/source/OS/scheduler.cpp
 	${PARENT_DIR}/source/OS/threading.cpp
 	)
 
@@ -56,4 +59,4 @@ target_include_directories(${BINARY} PRIVATE
 
 add_test(NAME ${BINARY} COMMAND ${BINARY})
 
-target_link_libraries(${BINARY} gtest)
+target_link_libraries(${BINARY} gtest gtest_main)
