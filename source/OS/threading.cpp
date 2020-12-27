@@ -42,6 +42,7 @@ typedef struct {
 
 /******************************* Global Variables **************************************/
 ThreadManager system_thread_manager;
+TaskControlBlock* system_active_task = system_thread_manager.active_task;
 
 /******************************** Local Variables **************************************/
 

@@ -85,6 +85,11 @@ class ThreadManager {
 /******************************* Global Variables **************************************/
 extern ThreadManager system_thread_manager;   //!< NOTE: other code components should interact with the thread manager
 
+extern "C"
+{
+    extern TaskControlBlock* system_active_task;  //!< global task pointer to the current task control block
+}
+
 /****************************** Functions Prototype ************************************/
 
 };  // namespace OS
