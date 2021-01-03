@@ -17,13 +17,49 @@ namespace OS
 /**
  * \brief Construct a new Scheduler::Scheduler object
  * 
+ * \param clock_source system clock source for running the scheduler
  * \param max_thread_count max number of threads to allow
+ * \param set_pending function pointer to the function to set a pending context switch interrupt
  */
-Scheduler::Scheduler(uint8_t max_thread_count)
-    : max_thread_count(max_thread_count)
+Scheduler::Scheduler(SystemClock& clock_source, uint8_t max_thread_count, SetPendingFP set_pending)
+    : clock(clock_source)
+    , last_ticks(0)
+    , max_thread_count(max_thread_count)
+    , set_pending(set_pending)
     , thread_count(0)
     , task_control_blocks(std::make_unique<TaskControlBlock[]>(max_thread_count))
     , active_task(&task_control_blocks[0]) { }
+
+
+/**
+ * \brief run the scheduling algorithm and signal any context switches to the PendSV handler if required.
+ */
+void Scheduler::run(void){
+    uint32_t current_ticks = clock.get_ticks();    
+    uint32_t ticks = current_ticks - last_ticks;
+
+    for (uint8_t thread = 0; thread < thread_count; thread++){
+        auto tcb = &task_control_blocks[thread];        
+        if (tcb->thread->get_status() == ThreadStatus::suspended) {
+            tcb->suspended_ticks_remaining -= ticks;
+            if (tcb->suspended_ticks_remaining <= 0){
+                tcb->thread->set_status(ThreadStatus::pending);
+                set_pending();
+            }            
+        }        
+    }
+    last_ticks = current_ticks;
+}
+
+/**
+ * \brief sleep the active thread for a set number of ticks
+ * 
+ * \param ticks how many ticks to sleep the active thread for
+ */
+void Scheduler::sleep_thread(uint32_t ticks){
+    active_task->suspended_ticks_remaining += ticks;
+    active_task->thread->set_status(OS::ThreadStatus::suspended);
+}
 
 /**
  * \brief get the number of registered threads in the system

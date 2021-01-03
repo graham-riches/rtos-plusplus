@@ -27,12 +27,14 @@ set(SOURCES
     #events_tests.cpp
     scheduler_tests.cpp
     threading_tests.cpp
+	system_clock_tests.cpp
 	main.cpp
 
 	# add each application file to test here
     #${PARENT_DIR}/source/OS/events.cpp
     ${PARENT_DIR}/source/OS/scheduler.cpp
-	${PARENT_DIR}/source/OS/threading.cpp
+    ${PARENT_DIR}/source/OS/threading.cpp
+    ${PARENT_DIR}/source/OS/system_clock.cpp
 	)
 
 add_executable(${BINARY} ${SOURCES})

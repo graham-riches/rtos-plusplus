@@ -9,6 +9,7 @@
 /********************************** Includes *******************************************/
 #include "gtest\gtest.h"
 #include "threading.h"
+#include "system_clock.h"
 #include "scheduler.h"
 #include <iostream>
 #include <memory>
@@ -18,25 +19,63 @@
 constexpr uint16_t thread_stack_size = 512;
 constexpr uint8_t thread_count = 3;
 
+/************************************ Local Variables ********************************************/
+static bool pending_irq;
+
+/************************************ Local Functions ********************************************/
+/**
+ * \brief test setting a fake pending IRQ in a c-style callback so that the API to the PendSV handler
+ *        is somewhat tested
+*/
+static void set_pending_irq(){
+    pending_irq = true;
+}
+
 /************************************ Test Fixtures ********************************************/
 /**
 * \brief test fixture class for testing the scheduler and thread registry components of the OS
 */
 class SchedulerTests : public ::testing::Test {
 protected:
-    static void thread_task(void *arguments){};
+    static void thread_task(void *arguments){};    
 
-    void SetUp(void) override {        
-        scheduler = std::make_unique<OS::Scheduler>(thread_count);    
+    void SetUp(void) override {
+        scheduler = std::make_unique<OS::Scheduler>(clock, thread_count, &set_pending_irq);        
+        pending_irq = false;
     }
 
 public:
     std::unique_ptr<OS::Scheduler> scheduler;
+    OS::SystemClock clock;
         
     std::unique_ptr<OS::Thread> create_thread(OS::task_ptr_t task_ptr, void *args, uint8_t thread_id, uint32_t *stack_ptr, uint32_t stack_size) {
         return std::make_unique<OS::Thread>(task_ptr, args, 1, stack_ptr, stack_size);
     }
 };
+
+
+/**
+ * \brief extentension of the main scheduler test class with some pre-registered threads for some more
+ *        complex tests to reduce some boilerplate.
+*/
+class SchedulerTestsWithPreRegisteredThreads : public SchedulerTests {
+protected:
+    void SetUp(void) override {
+        scheduler = std::make_unique<OS::Scheduler>(clock, thread_count, &set_pending_irq);                
+        thread_one = create_thread(reinterpret_cast<OS::task_ptr_t>(&thread_task), nullptr, 1, stack_one, thread_stack_size);
+        thread_two = create_thread(reinterpret_cast<OS::task_ptr_t>(&thread_task), nullptr, 1, stack_two, thread_stack_size);
+        scheduler->register_thread(thread_one.get());
+        scheduler->register_thread(thread_two.get());
+        pending_irq = false;
+    }
+
+public:
+    uint32_t stack_one[thread_stack_size] = {0};
+    uint32_t stack_two[thread_stack_size] = {0};
+    std::unique_ptr<OS::Thread> thread_one;
+    std::unique_ptr<OS::Thread> thread_two;   
+};
+
 
 /************************************ Tests ********************************************/
 TEST_F(SchedulerTests, test_initialization) {
@@ -90,4 +129,41 @@ TEST_F(SchedulerTests, test_overfilling_tcb_buffer_fails) {
     scheduler->register_thread(thread.get());
     scheduler->register_thread(thread.get());
     ASSERT_FALSE(scheduler->register_thread(thread.get()));
+}
+
+TEST_F(SchedulerTests, test_thread_sleep_adds_to_tcb_ticks) {
+    uint32_t stack[thread_stack_size] = {0};    
+    std::unique_ptr<OS::Thread> thread = create_thread(reinterpret_cast<OS::task_ptr_t>(&thread_task), nullptr, 1, stack, thread_stack_size);
+    scheduler->register_thread(thread.get());
+    scheduler->sleep_thread(100);
+    auto tcb = scheduler->get_active_tcb_ptr();
+    ASSERT_EQ(100, tcb->suspended_ticks_remaining);
+}
+
+TEST_F(SchedulerTestsWithPreRegisteredThreads, test_update_from_clock_triggers_context_switch) {    
+    thread_two->set_status(OS::ThreadStatus::suspended);
+    clock.update(1);
+    scheduler->run();
+    ASSERT_TRUE(pending_irq);
+    ASSERT_EQ(OS::ThreadStatus::pending, thread_two->get_status());
+}
+
+TEST_F(SchedulerTestsWithPreRegisteredThreads, test_thread_sleep_wake_up) {
+    scheduler->sleep_thread(100);
+    for (int i = 0; i < 100; i++){
+        clock.update(1); //!< note: this could be done in a single call, but this tests the last_ticks logic as well
+        scheduler->run();
+    }
+    ASSERT_TRUE(pending_irq);
+    ASSERT_EQ(OS::ThreadStatus::pending, thread_one->get_status());
+}
+
+TEST_F(SchedulerTestsWithPreRegisteredThreads, test_handle_clock_rollover_with_suspended_thread) {
+    clock.update(0xFFFFFFFF); //!< set the clock to rollover
+    scheduler->run();
+    scheduler->sleep_thread(1);
+    clock.update(1);
+    scheduler->run();
+    ASSERT_TRUE(pending_irq);
+    ASSERT_EQ(OS::ThreadStatus::pending, thread_one->get_status());
 }

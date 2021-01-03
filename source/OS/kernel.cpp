@@ -14,6 +14,7 @@ namespace OS
 {
 /********************************** Global Variables *******************************************/
 Scheduler scheduler(SYSTEM_MAX_THREADS);
+SystemClock core_clock;
 TaskControlBlock* system_active_task = scheduler.get_active_tcb_ptr();
 
 

@@ -16,6 +16,7 @@
 #include "common.h"
 #include "scheduler.h"
 #include "threading.h"
+#include "system_clock.h"
 
 
 /****************************** Constants ************************************/    
@@ -25,6 +26,7 @@ namespace OS
 {
 /****************************** Global Variables ************************************/
 extern Scheduler scheduler;
+extern SystemClock core_clock;
 
 /* C linkage global variables */
 extern "C" {
