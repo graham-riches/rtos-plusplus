@@ -31,10 +31,12 @@ namespace OS
 EventFlags::EventFlags(ThreadManager* thread_manager) {
     this->thread_manager = thread_manager;
     this->flags = 0;
+    /*
     for ( uint8_t i = 0; i < system_max_threads; i++ ) {
         this->thread_control[i].next = nullptr;
         this->thread_control[i].previous = nullptr;
     }
+    */
 }
 
 /**
@@ -73,13 +75,14 @@ bool EventFlags::check_flags(uint32_t flags, EventGetOptions get_options) {
  * \brief check any suspended threads against the current flags
  */
 void EventFlags::check_suspended_threads(void) {
-    for ( uint8_t i = 0; i < this->suspended_threads; i++ ) {
+    /*for ( uint8_t i = 0; i < this->suspended_threads; i++ ) {
         EventFlagsControlBlock* current_block = &this->thread_control[i];
 
         if ( this->check_flags(current_block->pending_flags, current_block->get_option) ) {
             this->clear_pending_thread(current_block);
         }
-    }
+     
+    }*/
 }
 
 /**
@@ -89,7 +92,7 @@ void EventFlags::check_suspended_threads(void) {
  */
 void EventFlags::set(uint32_t flags) {
     this->flags |= flags;
-    this->check_suspended_threads();
+    check_suspended_threads();
 }
 
 /**
@@ -112,11 +115,11 @@ void EventFlags::get(uint32_t flags, EventGetOptions get_options, EventWaitOptio
     /* check if the flag criteria is already met */
     if ( !this->check_flags(flags, get_options) ) {
         /* suspend the calling thread if the condition is not met */
-        this->thread_manager->activeTask->thread->set_status(ThreadStatus::suspended);
+        //this->thread_manager->active_task->thread->set_status(ThreadStatus::suspended);
 
         /* append the thread to the thread suspension list */
-        if ( this->suspended_threads->thread == nullptr ) {
-        }
+        //if ( this->suspended_threads->thread == nullptr ) {
+        // }
     }
 }
 

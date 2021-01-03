@@ -52,10 +52,16 @@ struct EventFlagsControlBlock {
  * \brief event flags class to manage thread synchronization
  */
 class EventFlags {
+  public:
+    EventFlags(ThreadManager* thread_manager);
+    void set(uint32_t flags);
+    void clear(uint32_t flags);
+    void get(uint32_t flags, EventGetOptions get_options, EventWaitOptions wait_options);
+
   private:
     /* private data */
     uint32_t flags;
-    EventFlagsControlBlock thread_control[system_max_threads];
+    //EventFlagsControlBlock thread_control[system_max_threads];
     EventFlagsControlBlock* suspended_threads;
     ThreadManager* thread_manager;
 
@@ -64,12 +70,8 @@ class EventFlags {
     void check_suspended_threads(void);
     bool check_flags(uint32_t flags, EventGetOptions get_options);
 
-  public:
-    EventFlags(ThreadManager* thread_manager);
-    void set(uint32_t flags);
-    void clear(uint32_t flags);
-    void get(uint32_t flags, EventGetOptions get_options, EventWaitOptions wait_options);
-    void get(uint32_t flags, EventGetOptions get_options, EventWaitOptions wait_options, uint32_t wait_time_ms);
+  
+    //void get(uint32_t flags, EventGetOptions get_options, EventWaitOptions wait_options, uint32_t wait_time_ms);
 };
 
 };  // namespace OS
