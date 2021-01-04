@@ -46,8 +46,8 @@ void Scheduler::run(void){
             tcb->suspended_ticks_remaining -= ticks;
             if ((tcb->suspended_ticks_remaining) <= 0 && (!request_pending)){
                 /* timer has elapsed, so set the pending thread pointer to the current TCB, and set the PendSV interrupt */
-                pending_thread = tcb;
-                tcb->thread->set_status(ThreadStatus::pending);
+                pending_task = tcb;
+                tcb->thread->set_status(ThreadStatus::active);
                 request_pending = true;
                 set_pending();
             }

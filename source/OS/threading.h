@@ -53,7 +53,6 @@ typedef void (*task_ptr_t)(void *arguments);
 enum class ThreadStatus : unsigned {
     active = 0,
     suspended,
-    pending,
 };
 
 /**
