@@ -20,12 +20,14 @@ namespace OS
  * \param clock_source system clock source for running the scheduler
  * \param max_thread_count max number of threads to allow
  * \param set_pending function pointer to the function to set a pending context switch interrupt
+ * \param check_pending function pointer to check if an interrupt is already pending
  */
-Scheduler::Scheduler(SystemClock& clock_source, uint8_t max_thread_count, SetPendingFP set_pending)
+Scheduler::Scheduler(SystemClock& clock_source, uint8_t max_thread_count, SetPendingInterrupt set_pending, IsInterruptPending check_pending)
     : clock(clock_source)
     , last_tick(0)
     , max_thread_count(max_thread_count)
     , set_pending(set_pending)
+    , check_pending(check_pending)
     , thread_count(0)
     , task_control_blocks(std::make_unique<TaskControlBlock[]>(max_thread_count))
     , active_task(&task_control_blocks[0]) 
@@ -37,8 +39,8 @@ Scheduler::Scheduler(SystemClock& clock_source, uint8_t max_thread_count, SetPen
  */
 void Scheduler::run(void){
     uint32_t current_tick{clock.get_ticks()};    
-    uint32_t ticks{current_tick - last_tick};
-    bool request_pending{false};
+    uint32_t ticks{current_tick - last_tick};    
+    bool request_pending{check_pending()};
 
     for (uint8_t thread = 0; thread < thread_count; thread++){
         auto tcb = &task_control_blocks[thread];        
@@ -51,7 +53,7 @@ void Scheduler::run(void){
                 request_pending = true;
                 set_pending();
             }
-        }        
+        }
     }
     last_tick = current_tick;
 }
@@ -82,6 +84,15 @@ uint8_t Scheduler::get_thread_count(void) {
  */
 TaskControlBlock* Scheduler::get_active_tcb_ptr(void) {
     return active_task;
+}
+
+/**
+ * \brief Get the pending task pointer
+ * 
+ * \retval TaskControlBlock* 
+ */
+TaskControlBlock* Scheduler::get_pending_tcb_ptr(void) {
+    return pending_task;
 }
 
 /**

@@ -31,6 +31,14 @@ static void set_pending_irq(){
     pending_irq = true;
 }
 
+/**
+ * \brief function to check if an interrupt is already pending
+ * \return returns true if a request is already pending
+*/
+static bool is_pending_irq(){
+    return pending_irq;
+}
+
 /************************************ Test Fixtures ********************************************/
 /**
 * \brief test fixture class for testing the scheduler and thread registry components of the OS
@@ -40,7 +48,7 @@ protected:
     static void thread_task(void *arguments){};    
 
     void SetUp(void) override {
-        scheduler = std::make_unique<OS::Scheduler>(clock, thread_count, &set_pending_irq);        
+        scheduler = std::make_unique<OS::Scheduler>(clock, thread_count, set_pending_irq, is_pending_irq);
         pending_irq = false;
     }
 
@@ -61,7 +69,7 @@ public:
 class SchedulerTestsWithPreRegisteredThreads : public SchedulerTests {
 protected:
     void SetUp(void) override {
-        scheduler = std::make_unique<OS::Scheduler>(clock, thread_count, &set_pending_irq);                
+        scheduler = std::make_unique<OS::Scheduler>(clock, thread_count, set_pending_irq, is_pending_irq);                
         thread_one = create_thread(reinterpret_cast<OS::task_ptr_t>(&thread_task), nullptr, 1, stack_one, thread_stack_size);
         thread_two = create_thread(reinterpret_cast<OS::task_ptr_t>(&thread_task), nullptr, 2, stack_two, thread_stack_size);
         scheduler->register_thread(thread_one.get());
@@ -178,6 +186,26 @@ TEST_F(SchedulerTestsWithPreRegisteredThreads, test_multiple_threads_asleep_wake
     ASSERT_EQ(OS::ThreadStatus::active, thread_two->get_status());
 }
 
+TEST_F(SchedulerTestsWithPreRegisteredThreads, test_scheduler_doesnt_clobber_pending_request) {
+    scheduler->sleep_thread(1);    
+    auto tcb = scheduler->get_active_tcb_ptr(); 
+    tcb = tcb->next;
+    tcb->suspended_ticks_remaining = 1;
+    tcb->thread->set_status(OS::ThreadStatus::suspended);
+
+    clock.update(1);
+    scheduler->run();
+    scheduler->run();
+    ASSERT_TRUE(pending_irq);
+    ASSERT_EQ(OS::ThreadStatus::active, thread_one->get_status());
+
+    //!< reset the pending flag, and run the scheduler again. The second thread should now trigger
+    pending_irq = false;
+    clock.update(1);
+    scheduler->run();
+    ASSERT_TRUE(pending_irq);
+    ASSERT_EQ(OS::ThreadStatus::active, thread_two->get_status());
+}
 
 TEST_F(SchedulerTestsWithPreRegisteredThreads, test_handle_clock_rollover_with_suspended_thread) {
     clock.update(0xFFFFFFFF); //!< set the clock to rollover

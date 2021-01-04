@@ -12,13 +12,19 @@
 
 namespace OS
 {
+/********************************** Constants *******************************************/
+constexpr uint32_t pendSV_pending_bit_offset = 0x01U << 28;
+
+
 /********************************** Function Declarations *******************************************/
 void set_pending_context_switch(void);
+bool is_context_switch_pending(void);
 
 /********************************** Global Variables *******************************************/
 SystemClock core_clock;
-Scheduler scheduler(core_clock, SYSTEM_MAX_THREADS, );
+Scheduler scheduler(core_clock, SYSTEM_MAX_THREADS, set_pending_context_switch, is_context_switch_pending);
 TaskControlBlock* system_active_task = scheduler.get_active_tcb_ptr();
+TaskControlBlock* system_pending_task = scheduler.get_pending_tcb_ptr();
 
 
 /********************************** Function Definitions *******************************************/
@@ -72,6 +78,15 @@ void sleep_thread(uint32_t ticks){
  */
 void set_pending_context_switch(void) {
     NVIC_SetPendingIRQ(PendSV_IRQn);
+}
+
+/**
+ * \brief check if an interrupt is already pending for a context switch
+ * 
+ * \retval true/false 
+ */
+bool is_context_switch_pending(void) {
+    return static_cast<bool>(SCB->ICSR & pendSV_pending_bit_offset);
 }
 
 

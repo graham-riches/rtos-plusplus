@@ -31,6 +31,7 @@ extern SystemClock core_clock;
 /* C linkage global variables */
 extern "C" {
     extern TaskControlBlock* system_active_task;
+    extern TaskControlBlock* system_pending_task;
 }
 
 

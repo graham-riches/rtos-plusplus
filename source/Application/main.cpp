@@ -63,7 +63,7 @@ static void thread_one_task(void *arguments) {
     while ( true ) {
         green_led.toggle();
         blue_led.toggle();
-        OS::delay_ms(250);
+        OS::sleep_thread(250);
     }
 }
 
@@ -76,6 +76,6 @@ static void thread_two_task(void *arguments) {
     while ( true ) {
         red_led.toggle();
         orange_led.toggle();
-        OS::delay_ms(250);
+        OS::sleep_thread(250);
     }
 }
