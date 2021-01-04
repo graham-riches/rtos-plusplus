@@ -53,11 +53,12 @@ class Scheduler {
     
   private:
     SystemClock &clock;
-    uint32_t last_ticks;
+    uint32_t last_tick;
     uint8_t max_thread_count;
     uint8_t thread_count;
     std::unique_ptr<TaskControlBlock[]> task_control_blocks;
     TaskControlBlock* active_task;
+    TaskControlBlock* pending_task;
     SetPendingFP set_pending;
 };
 

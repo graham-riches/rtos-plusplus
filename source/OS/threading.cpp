@@ -103,6 +103,15 @@ ThreadStatus Thread::get_status(void) {
 }
 
 /**
+ * \brief get a thread's id
+ * 
+ * \retval uint32_t the thread id
+ */
+uint32_t Thread::get_id(void) {
+    return id;
+}
+
+/**
  * \brief get the current stack pointer for the thread
  * 
  * \retval uint32_t* pointer to the active stack pointer address

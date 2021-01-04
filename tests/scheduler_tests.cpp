@@ -49,7 +49,7 @@ public:
     OS::SystemClock clock;
         
     std::unique_ptr<OS::Thread> create_thread(OS::task_ptr_t task_ptr, void *args, uint8_t thread_id, uint32_t *stack_ptr, uint32_t stack_size) {
-        return std::make_unique<OS::Thread>(task_ptr, args, 1, stack_ptr, stack_size);
+        return std::make_unique<OS::Thread>(task_ptr, args, thread_id, stack_ptr, stack_size);
     }
 };
 
@@ -63,7 +63,7 @@ protected:
     void SetUp(void) override {
         scheduler = std::make_unique<OS::Scheduler>(clock, thread_count, &set_pending_irq);                
         thread_one = create_thread(reinterpret_cast<OS::task_ptr_t>(&thread_task), nullptr, 1, stack_one, thread_stack_size);
-        thread_two = create_thread(reinterpret_cast<OS::task_ptr_t>(&thread_task), nullptr, 1, stack_two, thread_stack_size);
+        thread_two = create_thread(reinterpret_cast<OS::task_ptr_t>(&thread_task), nullptr, 2, stack_two, thread_stack_size);
         scheduler->register_thread(thread_one.get());
         scheduler->register_thread(thread_two.get());
         pending_irq = false;
@@ -96,17 +96,18 @@ TEST_F(SchedulerTests, test_registering_thread) {
     ASSERT_EQ(nullptr, tcb->next);
 }
 
-TEST_F(SchedulerTests, test_registering_multiple_threads){
-    /* create one thread and just register it multiple times */
+TEST_F(SchedulerTests, test_registering_multiple_threads){    
     uint32_t stack[thread_stack_size] = {0};    
-    std::unique_ptr<OS::Thread> thread = create_thread(reinterpret_cast<OS::task_ptr_t>(&thread_task), nullptr, 1, stack, thread_stack_size);
-    scheduler->register_thread(thread.get());
-    ASSERT_TRUE(scheduler->register_thread(thread.get()));
+    std::unique_ptr<OS::Thread> thread_one = create_thread(reinterpret_cast<OS::task_ptr_t>(&thread_task), nullptr, 1, stack, thread_stack_size);
+    std::unique_ptr<OS::Thread> thread_two = create_thread(reinterpret_cast<OS::task_ptr_t>(&thread_task), nullptr, 2, stack, thread_stack_size);
+    scheduler->register_thread(thread_one.get());
+    ASSERT_TRUE(scheduler->register_thread(thread_two.get()));
     ASSERT_EQ(2, scheduler->get_thread_count());
     OS::TaskControlBlock* tcb = scheduler->get_active_tcb_ptr();
     OS::TaskControlBlock* tcb_next = tcb->next;
-    ASSERT_EQ(tcb_next->thread, thread.get());
+    ASSERT_EQ(tcb_next->thread, thread_two.get());
     ASSERT_EQ(tcb, tcb_next->next);  //!< linked list is circular
+    ASSERT_EQ(2, tcb_next->thread->get_id());
 }
 
 TEST_F(SchedulerTests, test_filling_tcb_buffer) {
@@ -149,14 +150,34 @@ TEST_F(SchedulerTestsWithPreRegisteredThreads, test_update_from_clock_triggers_c
 }
 
 TEST_F(SchedulerTestsWithPreRegisteredThreads, test_thread_sleep_wake_up) {
-    scheduler->sleep_thread(100);
-    for (int i = 0; i < 100; i++){
-        clock.update(1); //!< note: this could be done in a single call, but this tests the last_ticks logic as well
-        scheduler->run();
-    }
+    scheduler->sleep_thread(1);
+    clock.update(1);
+    scheduler->run();
     ASSERT_TRUE(pending_irq);
     ASSERT_EQ(OS::ThreadStatus::pending, thread_one->get_status());
 }
+
+TEST_F(SchedulerTestsWithPreRegisteredThreads, test_multiple_threads_asleep_wakeup_at_the_same_time) {
+    scheduler->sleep_thread(1);
+    /* TODO: task pointer really needs to not be accessible to prevent shenanigans like the following */
+    auto tcb = scheduler->get_active_tcb_ptr(); 
+    tcb = tcb->next;
+    tcb->suspended_ticks_remaining = 1;
+    tcb->thread->set_status(OS::ThreadStatus::suspended);
+
+    clock.update(1);
+    scheduler->run();
+    ASSERT_TRUE(pending_irq);
+    ASSERT_EQ(OS::ThreadStatus::pending, thread_one->get_status());
+
+    //!< reset the pending flag, and run the scheduler again. The second thread should now trigger
+    pending_irq = false;
+    clock.update(1);
+    scheduler->run();
+    ASSERT_TRUE(pending_irq);
+    ASSERT_EQ(OS::ThreadStatus::pending, thread_two->get_status());
+}
+
 
 TEST_F(SchedulerTestsWithPreRegisteredThreads, test_handle_clock_rollover_with_suspended_thread) {
     clock.update(0xFFFFFFFF); //!< set the clock to rollover

@@ -23,32 +23,37 @@ namespace OS
  */
 Scheduler::Scheduler(SystemClock& clock_source, uint8_t max_thread_count, SetPendingFP set_pending)
     : clock(clock_source)
-    , last_ticks(0)
+    , last_tick(0)
     , max_thread_count(max_thread_count)
     , set_pending(set_pending)
     , thread_count(0)
     , task_control_blocks(std::make_unique<TaskControlBlock[]>(max_thread_count))
-    , active_task(&task_control_blocks[0]) { }
+    , active_task(&task_control_blocks[0]) 
+    , pending_task(nullptr) { }
 
 
 /**
  * \brief run the scheduling algorithm and signal any context switches to the PendSV handler if required.
  */
 void Scheduler::run(void){
-    uint32_t current_ticks = clock.get_ticks();    
-    uint32_t ticks = current_ticks - last_ticks;
+    uint32_t current_tick{clock.get_ticks()};    
+    uint32_t ticks{current_tick - last_tick};
+    bool request_pending{false};
 
     for (uint8_t thread = 0; thread < thread_count; thread++){
         auto tcb = &task_control_blocks[thread];        
         if (tcb->thread->get_status() == ThreadStatus::suspended) {
             tcb->suspended_ticks_remaining -= ticks;
-            if (tcb->suspended_ticks_remaining <= 0){
+            if ((tcb->suspended_ticks_remaining) <= 0 && (!request_pending)){
+                /* timer has elapsed, so set the pending thread pointer to the current TCB, and set the PendSV interrupt */
+                pending_thread = tcb;
                 tcb->thread->set_status(ThreadStatus::pending);
+                request_pending = true;
                 set_pending();
-            }            
+            }
         }        
     }
-    last_ticks = current_ticks;
+    last_tick = current_tick;
 }
 
 /**
@@ -57,7 +62,7 @@ void Scheduler::run(void){
  * \param ticks how many ticks to sleep the active thread for
  */
 void Scheduler::sleep_thread(uint32_t ticks){
-    active_task->suspended_ticks_remaining += ticks;
+    active_task->suspended_ticks_remaining = ticks;
     active_task->thread->set_status(OS::ThreadStatus::suspended);
 }
 
@@ -86,7 +91,7 @@ TaskControlBlock* Scheduler::get_active_tcb_ptr(void) {
  * \retval returns true if the thread registration was successful
  */
 bool Scheduler::register_thread(Thread* thread) {
-    bool retval = false;
+    bool retval{false};
     if ( thread_count < max_thread_count ) {
         /* add the the thread object and it's stack pointer to the next empty task control block */
         task_control_blocks[thread_count].thread = thread;

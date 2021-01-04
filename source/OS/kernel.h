@@ -37,6 +37,8 @@ extern "C" {
 /****************************** Functions Declarations ************************************/
 void enter_kernel(void);
 void set_systick_frequency(uint32_t ticks);
+void sleep_thread(uint32_t ticks);
+
 
 };  // namespace OS
 

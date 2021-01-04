@@ -37,7 +37,7 @@ set(APP_SOURCES
       # OS files
       source/OS/scheduler.cpp
       source/OS/threading.cpp
-      source/OS/timer.cpp
+      source/OS/system_clock.cpp
       source/OS/interrupts.cpp
       source/OS/kernel.cpp
 

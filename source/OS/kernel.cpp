@@ -12,9 +12,12 @@
 
 namespace OS
 {
+/********************************** Function Declarations *******************************************/
+void set_pending_context_switch(void);
+
 /********************************** Global Variables *******************************************/
-Scheduler scheduler(SYSTEM_MAX_THREADS);
 SystemClock core_clock;
+Scheduler scheduler(core_clock, SYSTEM_MAX_THREADS, );
 TaskControlBlock* system_active_task = scheduler.get_active_tcb_ptr();
 
 
@@ -52,5 +55,24 @@ void set_systick_frequency(uint32_t ticks) {
     SysTick_Config(ticks);
     NVIC_SetPriority(SysTick_IRQn, 15);
 }
+
+/**
+ * \brief sleep the calling thread for a set amount of ticks.
+ * \note this is not in ms because the user can configure the systick interrupt to a variable amount
+ *       so there is not a 1:1 correspondence between ticks and ms
+ * 
+ * \param ticks how many ticks to sleep
+ */
+void sleep_thread(uint32_t ticks){
+    scheduler.sleep_thread(ticks);
+}
+
+/**
+ * \brief Set the PendSV interrupt flag in the NVIC to trigger a context switch
+ */
+void set_pending_context_switch(void) {
+    NVIC_SetPendingIRQ(PendSV_IRQn);
+}
+
 
 };  // namespace OS

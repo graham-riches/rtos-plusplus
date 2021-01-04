@@ -65,6 +65,7 @@ class Thread {
     void set_status(ThreadStatus status);
     ThreadStatus get_status(void);
     uint32_t* get_stack_ptr(void);
+    uint32_t get_id(void);
   
   private:
     task_ptr_t task_ptr;

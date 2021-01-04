@@ -11,7 +11,7 @@
 #include "board.h"
 #include "common.h"
 #include "threading.h"
-#include "timer.h"
+#include "kernel.h"
 
 /*********************************** Consts ********************************************/
 
@@ -104,35 +104,20 @@ void SVC_Handler(void) { }
 void DebugMon_Handler(void) { }
 
 /**
- * @brief This function handles Pendable request for system service.
+ * @brief Handling threading context switches which are triggered by the scheduler as pending
+ *        system calls. This allows the SysTick interrupt to run at a high priority while the 
+ *        context switching can be handled at a lower level.
  */
 void PendSV_Handler(void) { }
 
 /**
- * @brief This function handles System tick timer.
+ * @brief Use the SysTick interrupt to drive the operating system core clock and scheduler.
+ *        The scheduler will raise a PendSV interrupt flag if any thread context switches are 
+ *        required.
  */
-__attribute__((naked)) void SysTick_Handler(void) {    
-    /* use the OS namespace to access the task control block pointer */
-    using namespace OS;
-
-    /* increment the tick counter */
-    system_ticks++;
-
-    /* run the task context switching from the scheduler */
-    __asm("CPSID      I                        \n" /* disable interrupts */
-          "PUSH       {R4-R11}                 \n" /* push the remaining core registers */
-          "LDR        R0, =system_active_task  \n" /* load the active task pointer into r0*/
-          "LDR        R1, [R0]                 \n" /* load the stack pointer from the contents of task into R1 */
-          "MOV        R4, SP                   \n" /* move the CPU stack pointer to R4 */
-          "STR        R4, [R1]                 \n" /* store the stack pointer into task */
-          "LDR        R1, [R1, #4]             \n" /* get the next task pointer and load it into R1 - 4 byte offset from stack pointer to next task */
-          "STR        R1, [R0]                 \n" /* store the contents of R1 in R0 */
-          "LDR        R4, [R1]                 \n" /* get the new stack pointer */
-          "MOV        SP, R4                   \n" /* push it to the CPU stack pointer register */
-          "POP        {R4-R11}                 \n" /* pop the stored registers */
-          "CPSIE      I                        \n" /* re-enable interrupts */
-          "BX         LR                       \n" /* branch to the link register */
-    );
+void SysTick_Handler(void) {
+    OS::core_clock.update(1);
+    OS::scheduler.run();        
 }
 
 /**
@@ -145,3 +130,28 @@ void fault_handler(StackContext_t* context) {
     PARAMETER_NOT_USED(context);
     HALT_IF_DEBUGGING();
 }
+
+
+#if 0
+/* use the OS namespace to access the task control block pointer */
+using namespace OS;
+
+/* increment the tick counter */
+system_ticks++;
+
+/* run the task context switching from the scheduler */    
+__asm(  "CPSID      I                        \n" /* disable interrupts */
+        "PUSH       {R4-R11}                 \n" /* push the remaining core registers */
+        "LDR        R0, =system_active_task  \n" /* load the active task pointer into r0*/
+        "LDR        R1, [R0]                 \n" /* load the stack pointer from the contents of task into R1 */
+        "MOV        R4, SP                   \n" /* move the CPU stack pointer to R4 */
+        "STR        R4, [R1]                 \n" /* store the stack pointer into task */
+        "LDR        R1, [R1, #4]             \n" /* get the next task pointer and load it into R1 - 4 byte offset from stack pointer to next task */
+        "STR        R1, [R0]                 \n" /* store the contents of R1 in R0 */
+        "LDR        R4, [R1]                 \n" /* get the new stack pointer */
+        "MOV        SP, R4                   \n" /* push it to the CPU stack pointer register */
+        "POP        {R4-R11}                 \n" /* pop the stored registers */
+        "CPSIE      I                        \n" /* re-enable interrupts */
+        "BX         LR                       \n" /* branch to the link register */
+);
+#endif
