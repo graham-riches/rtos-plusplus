@@ -23,11 +23,11 @@ namespace OS
  * \param check_pending function pointer to check if an interrupt is already pending
  */
 Scheduler::Scheduler(SystemClock& clock_source, uint8_t max_thread_count, SetPendingInterrupt set_pending, IsInterruptPending check_pending)
-    : clock(clock_source)
-    , last_tick(0)
+    : clock(clock_source)    
     , max_thread_count(max_thread_count)
     , set_pending(set_pending)
     , check_pending(check_pending)
+    , last_tick(0)
     , thread_count(0)
     , task_control_blocks(std::make_unique<TaskControlBlock[]>(max_thread_count))
     , active_task(&task_control_blocks[0]) 
@@ -43,29 +43,53 @@ void Scheduler::run(void){
     bool request_pending{check_pending()};
 
     for (uint8_t thread = 0; thread < thread_count; thread++){
-        auto tcb = &task_control_blocks[thread];        
+        auto tcb = &task_control_blocks[thread];
+
+        /* pick up any threads that are waking up from sleep */
         if (tcb->thread->get_status() == ThreadStatus::suspended) {
             tcb->suspended_ticks_remaining -= ticks;
             if ((tcb->suspended_ticks_remaining) <= 0 && (!request_pending)){
-                /* timer has elapsed, so set the pending thread pointer to the current TCB, and set the PendSV interrupt */
-                pending_task = tcb;
-                tcb->thread->set_status(ThreadStatus::active);
                 request_pending = true;
-                set_pending();
+                context_switch_to(tcb);                
             }
         }
+
+        /* otherwise pick up the next active-task */
+
     }
     last_tick = current_tick;
 }
 
 /**
- * \brief sleep the active thread for a set number of ticks
+ * \brief trigger a context switch to the thread pointer to by the task control block
+ * 
+ * \param tcb pointer to the task control block
+ */
+void Scheduler::context_switch_to(TaskControlBlock* tcb) {
+    pending_task = tcb;
+    tcb->thread->set_status(ThreadStatus::active);    
+    set_pending();
+}
+
+/**
+ * \brief sleep the active thread for a set number of ticks. This will trigger a context switch to the
+ *        next active thread as the current thread will be put to sleep!
  * 
  * \param ticks how many ticks to sleep the active thread for
  */
 void Scheduler::sleep_thread(uint32_t ticks){
     active_task->suspended_ticks_remaining = ticks;
     active_task->thread->set_status(OS::ThreadStatus::suspended);
+
+    /* find the next active thread if a context switch is not already pending */
+    if (!check_pending()){
+        for (uint8_t thread = 0; thread < thread_count; thread++){
+            auto tcb = &task_control_blocks[thread];
+            if ((tcb->thread->get_status() == ThreadStatus::active) && (tcb != active_task)) {
+                context_switch_to(tcb);
+            }
+        }
+    }
 }
 
 /**

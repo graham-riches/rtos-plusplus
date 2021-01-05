@@ -52,22 +52,23 @@ class Scheduler {
   public:
     Scheduler(SystemClock& clock_source, uint8_t max_thread_count, SetPendingInterrupt set_pending, IsInterruptPending check_pending);
     void run(void);
+    void context_switch_to(TaskControlBlock* tcb);
     void sleep_thread(uint32_t ticks);
     bool register_thread(Thread* thread);
-    uint8_t get_thread_count(void);
+    uint8_t get_thread_count(void);    
     TaskControlBlock* get_active_tcb_ptr(void);
     TaskControlBlock* get_pending_tcb_ptr(void);
     
   private:
     SystemClock &clock;
-    uint32_t last_tick;
     uint8_t max_thread_count;
+    SetPendingInterrupt set_pending;
+    IsInterruptPending check_pending;
+    uint32_t last_tick;    
     uint8_t thread_count;
     std::unique_ptr<TaskControlBlock[]> task_control_blocks;
     TaskControlBlock* active_task;
-    TaskControlBlock* pending_task;
-    SetPendingInterrupt set_pending;
-    IsInterruptPending check_pending;
+    TaskControlBlock* pending_task;    
 };
 
 
