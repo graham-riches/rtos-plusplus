@@ -68,7 +68,7 @@ class Scheduler {
     uint8_t thread_count;
     std::unique_ptr<TaskControlBlock[]> task_control_blocks;
     TaskControlBlock* active_task;
-    TaskControlBlock* pending_task;    
+    TaskControlBlock* pending_task;
 };
 
 

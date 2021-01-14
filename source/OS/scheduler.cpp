@@ -30,7 +30,7 @@ Scheduler::Scheduler(SystemClock& clock_source, uint8_t max_thread_count, SetPen
     , last_tick(0)
     , thread_count(0)
     , task_control_blocks(std::make_unique<TaskControlBlock[]>(max_thread_count))
-    , active_task(&task_control_blocks[0]) 
+    , active_task(&task_control_blocks[0])
     , pending_task(nullptr) { }
 
 
@@ -39,8 +39,7 @@ Scheduler::Scheduler(SystemClock& clock_source, uint8_t max_thread_count, SetPen
  */
 void Scheduler::run(void){
     uint32_t current_tick{clock.get_ticks()};    
-    uint32_t ticks{current_tick - last_tick};    
-    bool request_pending{check_pending()};
+    uint32_t ticks{current_tick - last_tick}; 
 
     for (uint8_t thread = 0; thread < thread_count; thread++){
         auto tcb = &task_control_blocks[thread];
@@ -48,15 +47,20 @@ void Scheduler::run(void){
         /* pick up any threads that are waking up from sleep */
         if (tcb->thread->get_status() == ThreadStatus::suspended) {
             tcb->suspended_ticks_remaining -= ticks;
-            if ((tcb->suspended_ticks_remaining) <= 0 && (!request_pending)){
-                request_pending = true;
-                context_switch_to(tcb);                
+            if ((tcb->suspended_ticks_remaining) <= 0){
+                tcb->thread->set_status(ThreadStatus::pending); 
             }
         }
-
-        /* otherwise pick up the next active-task */
-
     }
+    /* TODO: messy duplication */
+    for (uint8_t thread = 0; thread < thread_count; thread++){
+        auto tcb = &task_control_blocks[thread];        
+        if (tcb->thread->get_status() == ThreadStatus::pending){
+            context_switch_to(tcb);
+            break;
+        }
+    }
+
     last_tick = current_tick;
 }
 
