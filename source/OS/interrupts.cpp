@@ -14,6 +14,7 @@
 #include "kernel.h"
 
 /*********************************** Consts ********************************************/
+uint32_t counter;
 
 /************************************ Types ********************************************/
 /**
@@ -108,25 +109,7 @@ void DebugMon_Handler(void) { }
  *        system calls. This allows the SysTick interrupt to run at a high priority while the 
  *        context switching can be handled at a lower level.
  */
-void PendSV_Handler(void) { 
-    #if 0
-    /* run the task context switching from the scheduler */ 
-    __asm("CPSID      I                        \n" /* disable interrupts */
-          "PUSH       {R4-R11}                 \n" /* push the remaining core registers */
-          "LDR        R0, =system_active_task  \n" /* load the active task pointer into r0*/
-          "LDR        R1, [R0]                 \n" /* load the stack pointer from the contents of task into R1 */
-          "MOV        R4, SP                   \n" /* move the CPU stack pointer to R4 */
-          "STR        R4, [R1]                 \n" /* store the stack pointer into task */
-          "LDR        R1, [R1, #4]             \n" /* get the next task pointer and load it into R1 - 4 byte offset from stack pointer to next task */
-          "STR        R1, [R0]                 \n" /* store the contents of R1 in R0 */
-          "LDR        R4, [R1]                 \n" /* get the new stack pointer */
-          "MOV        SP, R4                   \n" /* push it to the CPU stack pointer register */
-          "POP        {R4-R11}                 \n" /* pop the stored registers */
-          "CPSIE      I                        \n" /* re-enable interrupts */
-          "BX         LR                       \n" /* branch to the link register */
-    );
-    #endif
-    int a{1};
+void PendSV_Handler(void) {   
     using namespace OS;
 
     __asm(
@@ -138,7 +121,8 @@ void PendSV_Handler(void) {
         "STR        R4, [R1]                 \n" /* store the stack pointer into task */
         "LDR        R1, =system_pending_task \n" /* get the next task pointer and load it into R1 - 4 byte offset from stack pointer to next task */
         "STR        R1, [R0]                 \n" /* store the contents of R1 in R0 */
-        "LDR        R4, [R1]                 \n" /* get the new stack pointer */
+        "LDR        R2, [R0]                 \n" /* grab the pending task pointer and hold it in R2 */
+        "LDR        R4, [R2]                 \n" /* get the new stack pointer */
         "MOV        SP, R4                   \n" /* push it to the CPU stack pointer register */
         "POP        {R4-R11}                 \n" /* pop the stored registers */
         "CPSIE      I                        \n" /* re-enable interrupts */

@@ -48,11 +48,11 @@ Thread::Thread(task_ptr_t task_ptr, void *arguments, uint32_t id, uint32_t* stac
 , stack_top_ptr(stack_ptr)
 , stack_ptr(stack_ptr)
 , stack_size(stack_size)
-, status(ThreadStatus::active) {
+, status(ThreadStatus::pending) {
     
-    assert(("thread task pointer is null", task_ptr != nullptr));
-    assert(("thread stack pointer is null", stack_ptr != nullptr));
-    assert(("stack size is zero", stack_size > 0));
+    assert(task_ptr != nullptr);
+    assert(stack_ptr != nullptr);
+    assert(stack_size > 0);
 
     /* initialize the threads stack with some setup values */
     ThreadContext_t* taskContext = reinterpret_cast<ThreadContext_t*>(&stack_ptr[stack_size - CONTEXT_STACK_SIZE]);

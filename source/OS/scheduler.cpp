@@ -44,7 +44,7 @@ void Scheduler::run(void){
     for (uint8_t thread = 0; thread < thread_count; thread++){
         auto tcb = &task_control_blocks[thread];
 
-        /* pick up any threads that are waking up from sleep */
+        //!< pick up any threads that are waking up from sleep
         if (tcb->thread->get_status() == ThreadStatus::suspended) {
             tcb->suspended_ticks_remaining -= ticks;
             if ((tcb->suspended_ticks_remaining) <= 0){
@@ -52,7 +52,8 @@ void Scheduler::run(void){
             }
         }
     }
-    /* TODO: messy duplication */
+    
+    //!< pick up any pending and context switch if required
     for (uint8_t thread = 0; thread < thread_count; thread++){
         auto tcb = &task_control_blocks[thread];        
         if (tcb->thread->get_status() == ThreadStatus::pending){

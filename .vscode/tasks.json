@@ -19,7 +19,15 @@
          "group": {
             "kind": "build",
             "isDefault": true
-         }
+         },
+      },
+      {
+          "label": "load build",
+          "type": "shell",
+          "options": {
+              "cwd": "${workspaceRoot}/build"
+          },
+          "command": "openocd -f ../stm32f407.cfg -c \"program stm32_discovery.elf verify reset exit\""
       }
    ]
 }

@@ -122,9 +122,3 @@ add_custom_command(TARGET ${BINARY}
 add_custom_command( TARGET ${BINARY}
          POST_BUILD
          COMMAND arm-none-eabi-objdump -d ${BINARY} > ${PROJECT_NAME}_dasm.txt)
-
-# flash the build
-add_custom_command( TARGET ${BINARY}
-         POST_BUILD
-         COMMAND openocd -f ../stm32f407.cfg -c "program stm32_discovery.elf verify reset exit")
-		 

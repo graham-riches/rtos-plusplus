@@ -23,9 +23,11 @@ class SystemClock{
         SystemClock(void);
         uint32_t get_ticks(void);
         void update(uint32_t ticks);
+        void start(void);
 
     private:
-        volatile uint32_t elapsed_ticks;        
+        volatile uint32_t elapsed_ticks;
+        bool running;  
 };
 
 

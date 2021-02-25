@@ -33,7 +33,16 @@ uint32_t SystemClock::get_ticks(void){
  * \param ticks number of elapsed ticks since last update
  */
 void SystemClock::update(uint32_t ticks){
-    elapsed_ticks += ticks;
+    if ( running ){
+        elapsed_ticks += ticks;
+    }    
+}
+
+/**
+ * \brief start the system clock
+ */
+void SystemClock::start(void) {
+    running = true;
 }
 
 };  // namespace OS
