@@ -48,6 +48,7 @@ int main(void) {
     initialize_peripherals();
 
     /* enter the OS kernel */
+    OS::setup_kernel();
     OS::enter_kernel();
 
     /* NOTE: should never reach here! */

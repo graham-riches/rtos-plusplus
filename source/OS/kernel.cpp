@@ -19,7 +19,6 @@ constexpr uint32_t pendSV_pending_bit_offset = 0x01U << 28;
 /********************************** Function Declarations *******************************************/
 void set_pending_context_switch(void);
 bool is_context_switch_pending(void);
-void pickup_first_task(void);
 
 /********************************** Global Variables *******************************************/
 SystemClock core_clock;
@@ -30,9 +29,9 @@ TaskControlBlock* system_pending_task;
 
 /********************************** Function Definitions *******************************************/
 /**
- * \brief launch the kernel
+ * \brief initialize the kernel
  */
-void enter_kernel(void) {
+void setup_kernel(void) {
     //!< initialize the task pointers to initialize the kernel
     system_active_task = scheduler.get_active_tcb_ptr();
     system_pending_task = scheduler.get_pending_tcb_ptr();
@@ -42,10 +41,6 @@ void enter_kernel(void) {
 
     //!< start the system clock
     core_clock.start();
-
-    //!< Note: do not call anything after this function as it contains an inline BX instruction to 
-    //!<       jump to the first task!
-    pickup_first_task();
 }
 
 /**
@@ -89,7 +84,7 @@ bool is_context_switch_pending(void) {
 /**
  * \brief pick up the first task control block pointer
  */
-__attribute__((naked))  void pickup_first_task(void) {
+__attribute__((naked))  void enter_kernel(void) {
     using namespace OS;
 
     __asm("CPSID      I                        \n" /* disable interrupts */

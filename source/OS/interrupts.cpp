@@ -119,8 +119,9 @@ __attribute__((naked)) void PendSV_Handler(void) {
         "LDR        R1, [R0]                 \n" /* dereference the pointer */
         "MOV        R4, SP                   \n" /* stash the current stack pointer */
         "STR        R4, [R1]                 \n" /* update the pointer to the current thread task with the current stack pointer */
-        "LDR        R1, =system_pending_task \n" /* get the next task pointer */      
-        "LDR        R4, [R1]                 \n" /* get the new stack pointer by dereferencing the original pointer */
+        "LDR        R1, =system_active_task  \n" /* get the next task pointer */
+        "LDR        R0, [R1]                 \n" /* dereference the pointer */
+        "LDR        R4, [R0]                 \n" /* get the new stack pointer by dereferencing the original pointer */
         "MOV        SP, R4                   \n" /* push it to the CPU stack pointer register */
         "POP        {R4-R11}                 \n" /* pop the stored registers */
         "CPSIE      I                        \n" /* re-enable interrupts */
