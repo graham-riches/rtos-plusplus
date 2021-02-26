@@ -85,11 +85,11 @@ target_compile_options(${BINARY} PRIVATE
         -fno-data-sections
         -fno-function-sections
         -fno-exceptions
-		  -O0
-		  -g3
+		-O0
+		-g3
         -Wall
-		  -Wextra
-		  -fmessage-length=0        
+		-Wextra
+		-fmessage-length=0        
         )
 
 target_link_options(${BINARY} PRIVATE

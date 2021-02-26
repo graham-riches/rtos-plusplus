@@ -73,6 +73,7 @@ void sleep_thread(uint32_t ticks){
  * \brief Set the PendSV interrupt flag in the NVIC to trigger a context switch
  */
 void set_pending_context_switch(void) {
+    system_pending_task = scheduler.get_pending_tcb_ptr();
     SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
 }
 

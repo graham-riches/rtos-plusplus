@@ -56,7 +56,7 @@ void Scheduler::run(void){
     //!< pick up any pending and context switch if required
     for (uint8_t thread = 0; thread < thread_count; thread++){
         auto tcb = &task_control_blocks[thread];        
-        if (tcb->thread->get_status() == ThreadStatus::pending){
+        if (tcb->thread->get_status() == ThreadStatus::pending){            
             context_switch_to(tcb);
             break;
         }
@@ -91,6 +91,7 @@ void Scheduler::sleep_thread(uint32_t ticks){
         for (uint8_t thread = 0; thread < thread_count; thread++){
             auto tcb = &task_control_blocks[thread];
             if ((tcb->thread->get_status() == ThreadStatus::active) && (tcb != active_task)) {
+                pending_task = tcb;
                 context_switch_to(tcb);
             }
         }
