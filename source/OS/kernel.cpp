@@ -13,8 +13,8 @@
 namespace OS
 {
 /********************************** Constants *******************************************/
-constexpr uint32_t pendSV_pending_bit_offset = 0x01U << 28;
-
+constexpr uint8_t systick_irq_priority = 15;
+constexpr uint8_t pendSV_irq_priority = 16;
 
 /********************************** Function Declarations *******************************************/
 void set_pending_context_switch(void);
@@ -41,6 +41,10 @@ void setup_kernel(void) {
 
     //!< start the system clock
     core_clock.start();
+
+    //!< setup core interrupt priorities
+    NVIC_SetPriority(SysTick_IRQn, 15);
+    NVIC_SetPriority(PendSV_IRQn, 15);
 }
 
 /**
@@ -49,8 +53,7 @@ void setup_kernel(void) {
  * \param ticks of the main sysclock per interrupt
  */
 void set_systick_frequency(uint32_t ticks) {
-    SysTick_Config(ticks);
-    NVIC_SetPriority(SysTick_IRQn, 15);
+    SysTick_Config(ticks);    
 }
 
 /**
@@ -78,7 +81,7 @@ void set_pending_context_switch(void) {
  * \retval true/false 
  */
 bool is_context_switch_pending(void) {
-    return static_cast<bool>(SCB->ICSR & pendSV_pending_bit_offset);
+    return static_cast<bool>(SCB->ICSR & SCB_ICSR_PENDSVSET_Msk);
 }
 
 /**
