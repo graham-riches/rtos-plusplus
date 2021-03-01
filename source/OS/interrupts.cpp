@@ -120,6 +120,7 @@ __attribute__((naked)) void PendSV_Handler(void) {
         "MOV        R4, SP                   \n" /* stash the current stack pointer */
         "STR        R4, [R1]                 \n" /* update the pointer to the current thread task with the current stack pointer */
         "LDR        R1, =system_pending_task \n" /* get the next task pointer */
+        "STR        R1, [R0]                 \n" /* update the active thread to be the pending thread */
         "LDR        R0, [R1]                 \n" /* dereference the pointer */
         "LDR        R4, [R0]                 \n" /* get the new stack pointer by dereferencing the original pointer */
         "MOV        SP, R4                   \n" /* push it to the CPU stack pointer register */

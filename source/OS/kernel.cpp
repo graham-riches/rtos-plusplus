@@ -32,6 +32,8 @@ TaskControlBlock* system_pending_task;
  * \brief initialize the kernel
  */
 void setup_kernel(void) {
+    __asm("CPSID I");
+    
     //!< initialize the task pointers to initialize the kernel
     system_active_task = scheduler.get_active_tcb_ptr();
     system_pending_task = scheduler.get_pending_tcb_ptr();
@@ -45,6 +47,8 @@ void setup_kernel(void) {
     //!< setup core interrupt priorities
     NVIC_SetPriority(SysTick_IRQn, 15);
     NVIC_SetPriority(PendSV_IRQn, 15);
+    
+    __asm("CPSIE I");
 }
 
 /**

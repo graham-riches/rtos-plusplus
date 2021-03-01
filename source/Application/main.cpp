@@ -16,24 +16,23 @@
 
 
 /*********************************** Consts ********************************************/
-#define THREAD_STACK_SIZE 128
-
-/************************************ Types ********************************************/
-
-/*********************************** Macros ********************************************/
+constexpr uint8_t thread_stack_size = 128;
 
 /*********************************** Local Functions ********************************************/
 static void thread_one_task(void *arguments);
 static void thread_two_task(void *arguments);
+static void thread_three_task(void *arguments);
 
 /*********************************** Local Variables ********************************************/
 /* create the thread stacks */
-static uint32_t thread_one_stack[THREAD_STACK_SIZE] = {0};
-static uint32_t thread_two_stack[THREAD_STACK_SIZE] = {0};
+static uint32_t thread_one_stack[thread_stack_size] = {0};
+static uint32_t thread_two_stack[thread_stack_size] = {0};
+static uint32_t thread_three_stack[thread_stack_size] = {0};
 
 /* create the threads */
-static OS::Thread thread_one(thread_one_task, nullptr, 1, thread_one_stack, THREAD_STACK_SIZE);
-static OS::Thread thread_two(thread_two_task, nullptr, 2, thread_two_stack, THREAD_STACK_SIZE);
+static OS::Thread thread_one(thread_one_task, nullptr, 1, thread_one_stack, thread_stack_size);
+static OS::Thread thread_two(thread_two_task, nullptr, 2, thread_two_stack, thread_stack_size);
+static OS::Thread thread_three(thread_three_task, nullptr, 3, thread_three_stack, thread_stack_size);
 
 /**
   * \brief  Main application function
@@ -43,6 +42,7 @@ int main(void) {
     /* register the threads */
     OS::scheduler.register_thread(&thread_one);
     OS::scheduler.register_thread(&thread_two);
+    OS::scheduler.register_thread(&thread_three);
 
     /* configure the project specific HAL drivers and bootup the chip, clocks etc. */
     initialize_peripherals();
@@ -56,8 +56,7 @@ int main(void) {
 }
 
 /**
- * \brief dummy thread one task
- * 
+ * \brief first task to blink two LEDs
  */
 static void thread_one_task(void *arguments) {
     PARAMETER_NOT_USED(arguments);
@@ -69,8 +68,7 @@ static void thread_one_task(void *arguments) {
 }
 
 /**
- * \brief dummy thread two task
- * 
+ * \brief second task to blink the other two LEDs
  */
 static void thread_two_task(void *arguments) {
     PARAMETER_NOT_USED(arguments);
@@ -80,3 +78,18 @@ static void thread_two_task(void *arguments) {
         OS::sleep_thread(250);
     }
 }
+
+/**
+ * \brief third task to just hang out an do nothing in case the other threads are sleeping
+ * \TODO this should be internal to the OS!! ***
+ * 
+ * \param arguments pointer to task arguments
+ */
+static void thread_three_task(void *arguments) {
+    PARAMETER_NOT_USED(arguments);
+    while (true) {
+        __asm("NOP");
+    }
+}
+
+

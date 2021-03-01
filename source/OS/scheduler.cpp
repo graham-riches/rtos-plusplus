@@ -90,8 +90,7 @@ void Scheduler::sleep_thread(uint32_t ticks){
     if (!check_pending()){
         for (uint8_t thread = 0; thread < thread_count; thread++){
             auto tcb = &task_control_blocks[thread];
-            if ((tcb->thread->get_status() == ThreadStatus::active) && (tcb != active_task)) {
-                pending_task = tcb;
+            if ((tcb->thread->get_status() == ThreadStatus::pending) && (tcb != active_task)) {
                 context_switch_to(tcb);
             }
         }
