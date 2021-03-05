@@ -36,20 +36,20 @@ class RingBuffer {
         , max_size(size) { }
 
     /**
-       * \brief initialize the container
-       * 
-       * \param size size of the container
-       */
+     * \brief initialize the container
+     * 
+     * \param size size of the container
+     */
     void initialize(size_t size) {
         this->max_size = size;
         this->buffer = std::make_unique<T[]>(size);
     }
 
     /**
-       * \brief put data onto the ring buffer
-       * 
-       * \param data to put into the ring buffer
-       */
+     * \brief put data onto the ring buffer
+     * 
+     * \param data to put into the ring buffer
+     */
     void put(T data) {
         /* return if the buffer is full */
         if ( this->full ) {
@@ -61,10 +61,10 @@ class RingBuffer {
     }
 
     /**
-       * \brief get data off the ring buffer
-       * 
-       * \retval T 
-       */
+     * \brief get data off the ring buffer
+     * 
+     * \retval T 
+     */
     T get(void) {
         if ( this->is_empty() ) {
             return T();
@@ -77,37 +77,31 @@ class RingBuffer {
     }
 
     /**
-       * \brief check if the buffer is empty 
-       * 
-       * \retval true/false       
-       */
+     * \brief check if the buffer is empty 
+     * 
+     * \retval true/false       
+     */
     bool is_empty(void) {
         return (!this->full && (this->head == this->tail));
     }
 
     /**
-       * \brief check if the buffer is full
-       * 
-       * \retval true/false
-       */
+     * \brief check if the buffer is full
+     * 
+     * \retval true/false
+     */
     bool is_full(void) {
         return this->full;
     }
 
     /**
-       * \brief flush data out of the ring buffer       
-       */
+     * \brief flush data out of the ring buffer       
+     */
     void flush(void) {
         while ( !this->is_empty() ) {
             this->get();
         }
     }
 };
-
-/*********************************** Macros ********************************************/
-
-/******************************* Global Variables **************************************/
-
-/****************************** Functions Prototype ************************************/
 
 #endif /* __RING_BUFFER_H__ */
