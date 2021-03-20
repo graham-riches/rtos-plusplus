@@ -68,7 +68,9 @@ void set_systick_frequency(uint32_t ticks) {
  * \param ticks how many ticks to sleep
  */
 void sleep_thread(uint32_t ticks){
+    __asm("CPSID I\n");
     scheduler.sleep_thread(ticks);
+    __asm("CPSIE I\n");
 }
 
 /**

@@ -54,11 +54,14 @@ void Scheduler::run(void){
     }
     
     //!< pick up any pending and context switch if required
-    for (uint8_t thread = 0; thread < thread_count; thread++){
-        auto tcb = &task_control_blocks[thread];        
-        if (tcb->thread->get_status() == ThreadStatus::pending){            
-            context_switch_to(tcb);
-            break;
+    if ( !check_pending()) {
+        for (uint8_t thread = 0; thread < thread_count; thread++){
+            auto tcb = &task_control_blocks[thread];        
+            if (tcb->thread->get_status() == ThreadStatus::pending){       
+                active_task->thread->set_status(ThreadStatus::pending);     
+                context_switch_to(tcb);
+                break;
+            }
         }
     }
 
@@ -72,7 +75,8 @@ void Scheduler::run(void){
  */
 void Scheduler::context_switch_to(TaskControlBlock* tcb) {
     pending_task = tcb;
-    tcb->thread->set_status(ThreadStatus::active);    
+    tcb->thread->set_status(ThreadStatus::active);
+    active_task = pending_task;
     set_pending();
 }
 
@@ -82,7 +86,7 @@ void Scheduler::context_switch_to(TaskControlBlock* tcb) {
  * 
  * \param ticks how many ticks to sleep the active thread for
  */
-void Scheduler::sleep_thread(uint32_t ticks){
+void Scheduler::sleep_thread(uint32_t ticks){    
     active_task->suspended_ticks_remaining = ticks;
     active_task->thread->set_status(OS::ThreadStatus::suspended);
 
@@ -92,6 +96,7 @@ void Scheduler::sleep_thread(uint32_t ticks){
             auto tcb = &task_control_blocks[thread];
             if ((tcb->thread->get_status() == ThreadStatus::pending) && (tcb != active_task)) {
                 context_switch_to(tcb);
+                break;
             }
         }
     }
