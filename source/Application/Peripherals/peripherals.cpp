@@ -59,13 +59,12 @@ void initialize_peripherals(void) {
     debug_port.initialize();
 
     /* print out a splash screen */
-    /*
     debug_port.send("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
     debug_port.send("STM32F407 Debug Terminal \n");
     debug_port.send("   Author: Graham Riches \n");
     debug_port.send("   Date: November 1, 2020 \n");
     debug_port.send("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
-    */
+    
 
     /* turn on the LEDs for status indication */
     green_led.set(true);
@@ -75,11 +74,6 @@ void initialize_peripherals(void) {
 
     /* initialize the accelerometer */
     accelerometer.initialize();
-
-    /* test the accelerometer and SPI */
-    uint8_t who_am_i = accelerometer.self_test();
-
-    //debug_port.debug("Accelerometer test value: %d", who_am_i);
 }
 
 /**

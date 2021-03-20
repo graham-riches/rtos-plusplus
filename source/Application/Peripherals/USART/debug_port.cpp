@@ -70,7 +70,7 @@ void DebugPort::initialize(void) {
     this->write_control_register(USARTControlRegister1::receive_interrupt_enable, 0x01);
 
     /* register the interrupt in the hal interrupts table */
-    interrupt_manager.register_callback(InterruptName::usart_3, this, 0, 2);
+    interrupt_manager.register_callback(InterruptName::usart_3, this, 0, 14);
 
     /* enable the UART */
     this->write_control_register(USARTControlRegister1::usart_enable, 0x01);
