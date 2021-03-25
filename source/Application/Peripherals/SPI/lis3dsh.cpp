@@ -138,7 +138,7 @@ void LIS3DSH::initialize(void) {
 
     /* register the external interrupts */
     register_external_interrupt(EXTIPort::gpio_port_e, Pins::pin_0, EXTITrigger::rising);
-    interrupt_manager.register_callback(InterruptName::exti_0, this, static_cast<uint8_t>(InterruptType::external_interrupt_1), 10);
+    interrupt_manager.register_callback(InterruptName::exti_0, this, static_cast<uint8_t>(InterruptType::external_interrupt_1), 16);
 
     /* setup the accelerometer speed and setup the data ready interrupt */
     this->set_data_rate(LIS3DSHDataRate::sample_100Hz);

@@ -62,10 +62,10 @@ void NMI_Handler(void) { }
  */
 void HardFault_Handler(void) {
     while ( 1 ) {
-        __asm volatile("tst lr, #4 \n"
-                       "ite eq \n"
-                       "mrseq r0, msp \n"
-                       "mrsne r0, psp \n"
+        __asm volatile("tst lr, #4      \n"
+                       "ite eq          \n"
+                       "mrseq r0, msp   \n"
+                       "mrsne r0, psp   \n"
                        "b fault_handler \n");
     }
 }
@@ -148,7 +148,7 @@ void SysTick_Handler(void) {
  * \param context register context
  * \note this should not be optimized ***
  */
-void fault_handler(StackContext_t* context) {
+__attribute__((optimize("O0"))) void fault_handler(StackContext_t* context) {
     PARAMETER_NOT_USED(context);
     HALT_IF_DEBUGGING();
 }

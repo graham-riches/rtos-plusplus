@@ -15,7 +15,7 @@
 #include <cstring>
 
 /*********************************** Consts ********************************************/
-constexpr uint16_t debug_port_buffer_size = 512;
+constexpr uint16_t debug_port_buffer_size = 128;
 
 /************************************ Types ********************************************/
 
@@ -70,7 +70,7 @@ void DebugPort::initialize(void) {
     this->write_control_register(USARTControlRegister1::receive_interrupt_enable, 0x01);
 
     /* register the interrupt in the hal interrupts table */
-    interrupt_manager.register_callback(InterruptName::usart_3, this, 0, 14);
+    interrupt_manager.register_callback(InterruptName::usart_3, this, 0, 16);
 
     /* enable the UART */
     this->write_control_register(USARTControlRegister1::usart_enable, 0x01);

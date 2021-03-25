@@ -64,7 +64,7 @@ static void thread_one_task(void *arguments) {
         debug_port.send("a\n");
         green_led.toggle();
         blue_led.toggle();
-        OS::sleep_thread(100);
+        OS::sleep_thread(10);
     }
 }
 
@@ -77,7 +77,7 @@ static void thread_two_task(void *arguments) {
         debug_port.send("b\n");
         red_led.toggle();
         orange_led.toggle();
-        OS::sleep_thread(100);
+        OS::sleep_thread(10);
     }
 }
 

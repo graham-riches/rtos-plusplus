@@ -47,6 +47,7 @@ void setup_kernel(void) {
     //!< setup core interrupt priorities
     NVIC_SetPriority(SysTick_IRQn, 15);
     NVIC_SetPriority(PendSV_IRQn, 15);
+    NVIC_SetPriorityGrouping(0U);
     
     __asm("CPSIE I");
 }
