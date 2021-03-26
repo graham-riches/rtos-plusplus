@@ -31,8 +31,8 @@ Scheduler::Scheduler(SystemClock& clock_source, uint8_t max_thread_count, SetPen
     , thread_count(0)
     , task_control_blocks(std::make_unique<TaskControlBlock[]>(max_thread_count))
     , active_task(&task_control_blocks[0])
-    , pending_task(nullptr) { }
-
+    , pending_task(nullptr) 
+    , internal_task() { }
 
 /**
  * \brief run the scheduling algorithm and signal any context switches to the PendSV handler if required.
@@ -53,7 +53,7 @@ void Scheduler::run(void){
         }
     }
     
-    //!< pick up any pending and context switch if required
+    //!< pick up any pending tasks and context switch if required
     if ( !check_pending()) {
         for (uint8_t thread = 0; thread < thread_count; thread++){
             auto tcb = &task_control_blocks[thread];        
@@ -96,10 +96,13 @@ void Scheduler::sleep_thread(uint32_t ticks){
             auto tcb = &task_control_blocks[thread];
             if ((tcb->thread->get_status() == ThreadStatus::pending) && (tcb != active_task)) {
                 context_switch_to(tcb);
-                break;
+                return;
             }
         }
     }
+
+    /* all threads are sleeping so context switch to the internal OS thread */
+    context_switch_to(&internal_task);
 }
 
 /**
@@ -130,6 +133,25 @@ TaskControlBlock* Scheduler::get_pending_tcb_ptr(void) {
 }
 
 /**
+ * \brief get a task control block by thread id
+ * 
+ * \param id the thread id
+ * \retval TaskControlBlock* pointer to the task control block
+ * \todo: should use an optional instead of a nullptr
+ */
+TaskControlBlock* Scheduler::get_task_by_id(uint32_t id) {
+    for (uint8_t thread = 0; thread < thread_count; thread++) {
+        auto tcb = &task_control_blocks[thread];
+        auto thread_ptr = tcb->thread;
+        if (thread_ptr->get_id() == id)
+        {
+            return tcb;
+        }
+    }
+    return nullptr;
+}
+
+/**
  * \brief register a thread with a thread manager
  * 
  * \param thread the thread to register
@@ -154,6 +176,17 @@ bool Scheduler::register_thread(Thread* thread) {
         retval = true;
     }
     return retval;
+}
+
+/**
+ * \brief register a thread as the internal OS thread that will run when all other threads are sleeping
+ * \param thread pointer to the thread to register
+ * \todo could maybe move this into the task constructor?
+ */
+void Scheduler::set_internal_task(Thread* thread) {
+    internal_task.thread = thread;
+    internal_task.active_stack_pointer = thread->get_stack_ptr();
+    internal_task.suspended_ticks_remaining = 0;
 }
 
 };  // namespace OS

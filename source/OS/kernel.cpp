@@ -14,11 +14,13 @@ namespace OS
 {
 /********************************** Constants *******************************************/
 constexpr uint8_t systick_irq_priority = 15;
-constexpr uint8_t pendSV_irq_priority = 16;
+constexpr uint8_t pendSV_irq_priority = 15;
+constexpr uint8_t internal_thread_stack_size = 128;
 
 /********************************** Function Declarations *******************************************/
 void set_pending_context_switch(void);
 bool is_context_switch_pending(void);
+static void internal_thread_task(void *arguments);
 
 /********************************** Global Variables *******************************************/
 SystemClock core_clock;
@@ -26,6 +28,9 @@ Scheduler scheduler(core_clock, SYSTEM_MAX_THREADS, set_pending_context_switch, 
 TaskControlBlock* system_active_task;
 TaskControlBlock* system_pending_task;
 
+/********************************** Local Variables *******************************************/
+static uint32_t internal_thread_stack[internal_thread_stack_size] = {0};
+static OS::Thread internal_thread(internal_thread_task, nullptr, 0xFFFF, internal_thread_stack, internal_thread_stack_size);
 
 /********************************** Function Definitions *******************************************/
 /**
@@ -45,9 +50,12 @@ void setup_kernel(void) {
     core_clock.start();
 
     //!< setup core interrupt priorities
-    NVIC_SetPriority(SysTick_IRQn, 15);
-    NVIC_SetPriority(PendSV_IRQn, 15);
+    NVIC_SetPriority(SysTick_IRQn, systick_irq_priority);
+    NVIC_SetPriority(PendSV_IRQn, pendSV_irq_priority);
     NVIC_SetPriorityGrouping(0U);
+
+    //!< pass the internal thread to the scheduler to handle OS tasks while all application threads are sleeping
+    scheduler.set_internal_task(&internal_thread);
     
     __asm("CPSIE I");
 }
@@ -114,5 +122,17 @@ __attribute__((naked))  void enter_kernel(void) {
           "BX         LR                       \n" /* branch to the link register */
     );
 }
+
+/**
+ * \brief internal thread that will just spin NOPs if all other threads are sleeping
+ * 
+ * \param arguments pointer to task arguments
+ */
+static void internal_thread_task(void *arguments) {
+    PARAMETER_NOT_USED(arguments);
+    while (true) {
+    }
+}
+
 
 };  // namespace OS

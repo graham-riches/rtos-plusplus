@@ -48,11 +48,15 @@ protected:
     static void thread_task(void *arguments){};    
 
     void SetUp(void) override {
+        internal_thread = create_thread(reinterpret_cast<OS::task_ptr_t>(&thread_task), nullptr, 0xFFFF, internal_stack, thread_stack_size);
         scheduler = std::make_unique<OS::Scheduler>(clock, thread_count, set_pending_irq, is_pending_irq);
-        pending_irq = false;
+        scheduler->set_internal_task(internal_thread.get());
+        pending_irq = false;        
     }
 
 public:
+    uint32_t internal_stack[thread_stack_size] = {0};
+    std::unique_ptr<OS::Thread> internal_thread;
     std::unique_ptr<OS::Scheduler> scheduler;
     OS::SystemClock clock;
         
@@ -69,19 +73,21 @@ public:
 class SchedulerTestsWithPreRegisteredThreads : public SchedulerTests {
 protected:
     void SetUp(void) override {
-        scheduler = std::make_unique<OS::Scheduler>(clock, thread_count, set_pending_irq, is_pending_irq);                
+        scheduler = std::make_unique<OS::Scheduler>(clock, thread_count, set_pending_irq, is_pending_irq);
+        internal_thread = create_thread(reinterpret_cast<OS::task_ptr_t>(&thread_task), nullptr, 0xFFFF, internal_stack, thread_stack_size);
         thread_one = create_thread(reinterpret_cast<OS::task_ptr_t>(&thread_task), nullptr, 1, stack_one, thread_stack_size);
-        thread_two = create_thread(reinterpret_cast<OS::task_ptr_t>(&thread_task), nullptr, 2, stack_two, thread_stack_size);
+        thread_two = create_thread(reinterpret_cast<OS::task_ptr_t>(&thread_task), nullptr, 2, stack_two, thread_stack_size);   
+        scheduler->set_internal_task(internal_thread.get());
         scheduler->register_thread(thread_one.get());
-        scheduler->register_thread(thread_two.get());
+        scheduler->register_thread(thread_two.get());        
         pending_irq = false;
     }
 
 public:
     uint32_t stack_one[thread_stack_size] = {0};
-    uint32_t stack_two[thread_stack_size] = {0};
+    uint32_t stack_two[thread_stack_size] = {0};    
     std::unique_ptr<OS::Thread> thread_one;
-    std::unique_ptr<OS::Thread> thread_two;   
+    std::unique_ptr<OS::Thread> thread_two;
 };
 
 
@@ -145,8 +151,17 @@ TEST_F(SchedulerTests, test_thread_sleep_adds_to_tcb_ticks) {
     std::unique_ptr<OS::Thread> thread = create_thread(reinterpret_cast<OS::task_ptr_t>(&thread_task), nullptr, 1, stack, thread_stack_size);
     scheduler->register_thread(thread.get());
     scheduler->sleep_thread(100);
-    auto tcb = scheduler->get_active_tcb_ptr();
+    auto tcb = scheduler->get_task_by_id(1);
     ASSERT_EQ(100, tcb->suspended_ticks_remaining);
+}
+
+TEST_F(SchedulerTests, test_sleeping_all_threads_sets_internal_thread_active) {
+    uint32_t stack[thread_stack_size] = {0};    
+    std::unique_ptr<OS::Thread> thread = create_thread(reinterpret_cast<OS::task_ptr_t>(&thread_task), nullptr, 1, stack, thread_stack_size);
+    scheduler->register_thread(thread.get());
+    scheduler->sleep_thread(1);
+    auto tcb = scheduler->get_active_tcb_ptr();
+    ASSERT_EQ(internal_thread.get(), tcb->thread);
 }
 
 TEST_F(SchedulerTestsWithPreRegisteredThreads, test_update_from_clock_triggers_context_switch) {    
@@ -154,7 +169,7 @@ TEST_F(SchedulerTestsWithPreRegisteredThreads, test_update_from_clock_triggers_c
     clock.update(1);
     scheduler->run();
     ASSERT_TRUE(pending_irq);
-    ASSERT_EQ(OS::ThreadStatus::active, thread_two->get_status());
+    ASSERT_EQ(OS::ThreadStatus::pending, thread_two->get_status());
 }
 
 TEST_F(SchedulerTestsWithPreRegisteredThreads, test_thread_sleep_wakes_up) {
@@ -162,7 +177,7 @@ TEST_F(SchedulerTestsWithPreRegisteredThreads, test_thread_sleep_wakes_up) {
     clock.update(1);
     scheduler->run();
     ASSERT_TRUE(pending_irq);
-    ASSERT_EQ(OS::ThreadStatus::active, thread_one->get_status());
+    ASSERT_EQ(OS::ThreadStatus::pending, thread_one->get_status());
 }
 
 TEST_F(SchedulerTestsWithPreRegisteredThreads, test_multiple_threads_asleep_wakeup_at_the_same_time) {
@@ -176,14 +191,14 @@ TEST_F(SchedulerTestsWithPreRegisteredThreads, test_multiple_threads_asleep_wake
     clock.update(1);
     scheduler->run();
     ASSERT_TRUE(pending_irq);
-    ASSERT_EQ(OS::ThreadStatus::active, thread_one->get_status());
+    ASSERT_EQ(OS::ThreadStatus::pending, thread_one->get_status());
 
     //!< reset the pending flag, and run the scheduler again. The second thread should now trigger
     pending_irq = false;
     clock.update(1);
     scheduler->run();
     ASSERT_TRUE(pending_irq);
-    ASSERT_EQ(OS::ThreadStatus::active, thread_two->get_status());
+    ASSERT_EQ(OS::ThreadStatus::pending, thread_two->get_status());
 }
 
 TEST_F(SchedulerTestsWithPreRegisteredThreads, test_scheduler_doesnt_clobber_pending_request) {
@@ -200,15 +215,15 @@ TEST_F(SchedulerTestsWithPreRegisteredThreads, test_scheduler_doesnt_clobber_pen
     clock.update(1);
     scheduler->run();    
     ASSERT_TRUE(pending_irq);
-    ASSERT_EQ(OS::ThreadStatus::active, thread_one->get_status());
-    ASSERT_EQ(OS::ThreadStatus::pending, thread_two->get_status());
+    ASSERT_EQ(OS::ThreadStatus::pending, thread_one->get_status());
+    ASSERT_EQ(OS::ThreadStatus::active, thread_two->get_status());
 
     //!< reset the pending flag, and run the scheduler again. The second thread should now trigger
     pending_irq = false;
     clock.update(1);
     scheduler->run();
     ASSERT_TRUE(pending_irq);
-    ASSERT_EQ(OS::ThreadStatus::active, thread_two->get_status());
+    ASSERT_EQ(OS::ThreadStatus::pending, thread_two->get_status());
 }
 
 TEST_F(SchedulerTestsWithPreRegisteredThreads, test_handle_clock_rollover_with_suspended_thread) {
@@ -218,5 +233,5 @@ TEST_F(SchedulerTestsWithPreRegisteredThreads, test_handle_clock_rollover_with_s
     clock.update(1);
     scheduler->run();
     ASSERT_TRUE(pending_irq);
-    ASSERT_EQ(OS::ThreadStatus::active, thread_one->get_status());
+    ASSERT_EQ(OS::ThreadStatus::pending, thread_one->get_status());
 }

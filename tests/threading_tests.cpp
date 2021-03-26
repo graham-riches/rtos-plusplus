@@ -42,8 +42,8 @@ class ThreadingTests : public ::testing::Test {
 using ThreadingDeathsTests = ThreadingTests;
 
 /************************************ Tests ********************************************/
-TEST_F(ThreadingTests, test_thread_is_default_active) {
-    ASSERT_EQ(OS::ThreadStatus::active, thread->get_status());
+TEST_F(ThreadingTests, test_thread_is_default_pending) {
+    ASSERT_EQ(OS::ThreadStatus::pending, thread->get_status());
 }
 
 TEST_F(ThreadingTests, test_set_thread_status) {
