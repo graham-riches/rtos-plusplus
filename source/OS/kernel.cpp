@@ -51,8 +51,8 @@ void setup_kernel(void) {
     core_clock.start();
 
     //!< setup core interrupt priorities
-    HAL::interrupt_manager.set_priority(HAL::InterruptName::systick_handler, HAL::PreemptionPriority::level_8, HAL::InterruptPriority::level_2);
-    HAL::interrupt_manager.set_priority(HAL::InterruptName::pendsv_handler, HAL::PreemptionPriority::level_8, HAL::InterruptPriority::level_1);    
+    HAL::interrupt_manager.set_priority(HAL::InterruptName::systick_handler, HAL::PreemptionPriority::level_16);
+    HAL::interrupt_manager.set_priority(HAL::InterruptName::pendsv_handler, HAL::PreemptionPriority::level_16);
 
     //!< pass the internal thread to the scheduler to handle OS tasks while all application threads are sleeping
     scheduler.set_internal_task(&internal_thread);

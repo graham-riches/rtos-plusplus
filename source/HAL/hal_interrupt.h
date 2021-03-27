@@ -20,7 +20,7 @@ namespace HAL
 {
 
 /*********************************** Consts ********************************************/
-#define HAL_NVIC_PRIORITY_GROUP_LEVEL (4ul) //!< enable 8 configurable priority levels and 2 subpriorities
+#define HAL_NVIC_PRIORITY_GROUP_LEVEL (0ul) //!< enable 16 configurable priority levels and no subpriorities
 
 
 /************************************ Types ********************************************/
@@ -144,15 +144,14 @@ enum class PreemptionPriority : unsigned {
     level_6,
     level_7,
     level_8,
-};
-
-/**
- * \brief enumeration of interrupt priority levels
- * \note this is the sub-priority of the interrupt within a given preemption priority grouping
- */
-enum class InterruptPriority : unsigned {
-    level_1 = 0,
-    level_2,
+    level_9,
+    level_10,
+    level_11,
+    level_12,
+    level_13,
+    level_14,
+    level_15,
+    level_16,
 };
 
 /**
@@ -184,12 +183,11 @@ class InterruptManager {
 
   public:
     InterruptManager();
-    void set_priority(InterruptName interrupt, PreemptionPriority preemption_priority, InterruptPriority subpriority);
+    void set_priority(InterruptName interrupt, PreemptionPriority preemption_priority);
     void register_callback(InterruptName interrupt,
                            InterruptPeripheral* peripheral,
                            uint8_t type,
-                           PreemptionPriority preemption_priority,
-                           InterruptPriority subpriority);
+                           PreemptionPriority preemption_priority);                           
     void default_isr_handler(void);
 };
 

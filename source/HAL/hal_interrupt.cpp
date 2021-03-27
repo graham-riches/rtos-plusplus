@@ -43,13 +43,9 @@ InterruptManager::InterruptManager() {
  * 
  * \param interrupt the interrupt to set the priority for
  * \param preemption_priority premption priority level
- * \param subpriority subpriority level
- * \note interrupts with a higher preemption priority will interupt those with a lower preemption level. A higher
- *       subpriority interrupt within the same preemption priority will occur before one with a lower value if both
- *       are pending at the same time.
  */
-void InterruptManager::set_priority(InterruptName interrupt, PreemptionPriority preemption_priority, InterruptPriority subpriority) {
-    uint32_t priority = NVIC_EncodePriority(HAL_NVIC_PRIORITY_GROUP_LEVEL, static_cast<uint32_t>(preemption_priority), static_cast<uint32_t>(subpriority));
+void InterruptManager::set_priority(InterruptName interrupt, PreemptionPriority preemption_priority) {
+    uint32_t priority = NVIC_EncodePriority(HAL_NVIC_PRIORITY_GROUP_LEVEL, static_cast<uint32_t>(preemption_priority), 1UL);
     IRQn external_interrupt_number = static_cast<IRQn>(static_cast<uint8_t>(interrupt) - external_interrupt_offset);
     NVIC_SetPriority(external_interrupt_number, priority);
     NVIC_EnableIRQ(external_interrupt_number);
@@ -69,8 +65,7 @@ void InterruptManager::set_priority(InterruptName interrupt, PreemptionPriority 
 void InterruptManager::register_callback(InterruptName interrupt, 
                                          InterruptPeripheral* peripheral,
                                          uint8_t type,
-                                         PreemptionPriority preemption_priority,
-                                         InterruptPriority subpriority) {
+                                         PreemptionPriority preemption_priority) {
     /* fill the handler structure */
     InterruptHandler handler;
     handler.peripheral = peripheral;
@@ -80,7 +75,7 @@ void InterruptManager::register_callback(InterruptName interrupt,
     this->isr_table[static_cast<uint8_t>(interrupt)] = handler;
 
     /* set the priority level */
-    set_priority(interrupt, preemption_priority, subpriority);
+    set_priority(interrupt, preemption_priority);
 }
 
 /**
