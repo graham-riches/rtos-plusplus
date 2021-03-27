@@ -94,7 +94,7 @@ public:
 /************************************ Tests ********************************************/
 TEST_F(SchedulerTests, test_initialization) {
     ASSERT_EQ(0, scheduler->get_thread_count());
-    OS::TaskControlBlock* tcb = scheduler->get_active_tcb_ptr();
+    OS::Scheduler::TaskControlBlock* tcb = scheduler->get_active_tcb_ptr();
     ASSERT_EQ(nullptr, tcb->active_stack_pointer);
     ASSERT_EQ(nullptr, tcb->next);
     ASSERT_EQ(nullptr, tcb->thread);
@@ -105,7 +105,7 @@ TEST_F(SchedulerTests, test_registering_thread) {
     std::unique_ptr<OS::Thread> thread = create_thread(reinterpret_cast<OS::task_ptr_t>(&thread_task), nullptr, 1, stack, thread_stack_size);
     ASSERT_TRUE(scheduler->register_thread(thread.get()));
     ASSERT_EQ(1, scheduler->get_thread_count());
-    OS::TaskControlBlock* tcb = scheduler->get_active_tcb_ptr();
+    OS::Scheduler::TaskControlBlock* tcb = scheduler->get_active_tcb_ptr();
     ASSERT_EQ(tcb->thread, thread.get());
     ASSERT_EQ(nullptr, tcb->next);
 }
@@ -117,8 +117,8 @@ TEST_F(SchedulerTests, test_registering_multiple_threads){
     scheduler->register_thread(thread_one.get());
     ASSERT_TRUE(scheduler->register_thread(thread_two.get()));
     ASSERT_EQ(2, scheduler->get_thread_count());
-    OS::TaskControlBlock* tcb = scheduler->get_active_tcb_ptr();
-    OS::TaskControlBlock* tcb_next = tcb->next;
+    OS::Scheduler::TaskControlBlock* tcb = scheduler->get_active_tcb_ptr();
+    OS::Scheduler::TaskControlBlock* tcb_next = tcb->next;
     ASSERT_EQ(tcb_next->thread, thread_two.get());
     ASSERT_EQ(tcb, tcb_next->next);  //!< linked list is circular
     ASSERT_EQ(2, tcb_next->thread->get_id());
@@ -132,7 +132,7 @@ TEST_F(SchedulerTests, test_filling_tcb_buffer) {
     scheduler->register_thread(thread.get());
     ASSERT_TRUE(scheduler->register_thread(thread.get()));
     ASSERT_EQ(3, scheduler->get_thread_count());
-    OS::TaskControlBlock* tcb = scheduler->get_active_tcb_ptr();
+    OS::Scheduler::TaskControlBlock* tcb = scheduler->get_active_tcb_ptr();
     ASSERT_TRUE(tcb->next->next != tcb);
 }
 
@@ -151,7 +151,9 @@ TEST_F(SchedulerTests, test_thread_sleep_adds_to_tcb_ticks) {
     std::unique_ptr<OS::Thread> thread = create_thread(reinterpret_cast<OS::task_ptr_t>(&thread_task), nullptr, 1, stack, thread_stack_size);
     scheduler->register_thread(thread.get());
     scheduler->sleep_thread(100);
-    auto tcb = scheduler->get_task_by_id(1);
+    auto maybe_tcb = scheduler->get_task_by_id(1);
+    ASSERT_TRUE(maybe_tcb);
+    auto tcb = maybe_tcb.value();
     ASSERT_EQ(100, tcb->suspended_ticks_remaining);
 }
 
