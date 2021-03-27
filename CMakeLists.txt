@@ -65,6 +65,7 @@ target_include_directories(${BINARY} PRIVATE
     source/Application/Utilities
 
     source/OS
+    source/Utilities
     source/HW_Port
 
     source/Application/Peripherals			
