@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 3.15.3)
-
 set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
 set(CMAKE_SYSTEM_NAME Generic)
 
-project(stm32_discovery)
+# Set the project name
+project(bare_metal_os)
 
+# Set the language standards used
 enable_language(C CXX ASM)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -14,7 +15,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-
+# Set which source files to compile for the project
 set(APP_SOURCES 		      
     # HAL++ source files
     source/HAL/hal_gpio.cpp
@@ -43,10 +44,11 @@ set(APP_SOURCES
     startup/startup_stm32f407xx.s
     )
 
+# Set the target to build
 set(BINARY ${PROJECT_NAME}.elf)
-
 add_executable(${BINARY} ${APP_SOURCES})
 
+# Add compile time definitions
 target_compile_definitions(${BINARY} PRIVATE
     -DARM_MATH_CM4
     -DSTM32F40XX
@@ -55,6 +57,7 @@ target_compile_definitions(${BINARY} PRIVATE
     -D__FPU_USED
     )
 
+# Set source include directories
 target_include_directories(${BINARY} PRIVATE
     source
     source/HAL      
@@ -73,6 +76,7 @@ target_include_directories(${BINARY} PRIVATE
     source/Application/Peripherals/SPI
     )
 
+# Set compiler flags - switch to -03 here for optimization*
 target_compile_options(${BINARY} PRIVATE		
     -mcpu=cortex-m4
     -mthumb
@@ -88,6 +92,7 @@ target_compile_options(${BINARY} PRIVATE
     -fmessage-length=0        
     )
 
+# Set the linker options
 target_link_options(${BINARY} PRIVATE
     -T${CMAKE_SOURCE_DIR}/STM32F407VgTx_FLASH.ld
     -mcpu=cortex-m4

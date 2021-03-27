@@ -11,21 +11,19 @@ project(bare-metal-os-tests)
 set(CMAKE_CXX_FLAGS_RELEASE "/MT")
 set(CMAKE_CXX_FLAGS_DEBUG "/MTd /Zi /Ob0 /Od /RTC1")
 
+# Set Language Standards
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-
 
 # set the parent directory
 get_filename_component(PARENT_DIR ${CMAKE_SOURCE_DIR} DIRECTORY)
 
 # build gtest
 add_subdirectory(googletest)
-
 
 # set the binary and add custom sources as needed
 set(BINARY bare-metal-os-tests)
@@ -45,7 +43,6 @@ set(SOURCES
     )
 
 add_executable(${BINARY} ${SOURCES})
-
 
 # include the project source files
 target_include_directories(${BINARY} PRIVATE

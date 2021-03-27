@@ -27,7 +27,7 @@
           "options": {
               "cwd": "${workspaceRoot}/build"
           },
-          "command": "openocd -f ../stm32f407.cfg -c \"program stm32_discovery.elf verify reset exit\""
+          "command": "openocd -f ../stm32f407.cfg -c \"program bare_metal_os.elf verify reset exit\""
       }
    ]
 }
