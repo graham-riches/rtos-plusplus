@@ -19,7 +19,6 @@
 
 namespace HAL
 {
-
 /*********************************** Consts ********************************************/
 constexpr uint32_t nvic_priority_group_level = 0; //!< enable 16 configurable priority levels and no subpriorities
 constexpr uint32_t active_vector_mask = 0xFF;     //!< mask for currently active interrupt vector
@@ -28,7 +27,6 @@ constexpr uint8_t external_interrupt_offset = 16; //!< offset for mappping inter
 /************************************ Types ********************************************/
 /**
  * \brief enumeration of all interrupts
- * 
  */
 enum class InterruptName : unsigned {
     /* Cortex M- internal interrupts */
@@ -244,12 +242,8 @@ class InterruptManager {
     InterruptHandler isr_table[static_cast<uint8_t>(InterruptName::floating_point_unit)];
 };
 
-/*********************************** Macros ********************************************/
-
 /******************************* Global Variables **************************************/
 extern InterruptManager interrupt_manager;
-
-/****************************** Functions Prototype ************************************/
 
 };  // namespace HAL
 

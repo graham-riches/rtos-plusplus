@@ -89,7 +89,7 @@ uint8_t LIS3DSH::read_register(LIS3DSHRegisters reg) {
     this->send(reinterpret_cast<uint8_t*>(&read_command), sizeof(read_command));
 
     /* block until the register result returns */
-    uint8_t data;
+    uint8_t data = 0;
     while ( !this->rx_buffer.is_empty() ) {
         data = this->rx_buffer.get();
     }

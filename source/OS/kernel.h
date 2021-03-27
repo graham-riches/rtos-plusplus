@@ -28,10 +28,10 @@ namespace OS
 extern Scheduler scheduler;
 extern SystemClock core_clock;
 
-/* C linkage global variables for handling in interrupts */
+/* C linkage global variables for handling context switching in interrupts */
 extern "C" {
-    extern TaskControlBlock* system_active_task;
-    extern TaskControlBlock* system_pending_task;
+    extern Scheduler::TaskControlBlock* system_active_task;
+    extern Scheduler::TaskControlBlock* system_pending_task;
 }
 
 

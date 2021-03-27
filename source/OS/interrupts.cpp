@@ -12,9 +12,7 @@
 #include "common.h"
 #include "threading.h"
 #include "kernel.h"
-
-/*********************************** Consts ********************************************/
-uint32_t counter;
+#include "hal_interrupt.h"
 
 /************************************ Types ********************************************/
 /**
@@ -41,11 +39,8 @@ typedef struct {
         }                                                     \
     } while ( 0 )
 
-/******************************* Global Variables **************************************/
 
-/******************************* Local Variables **************************************/
-
-/****************************** Functions Declarations ************************************/
+/****************************** Function Declarations ************************************/
 extern "C"
 {
     void fault_handler(StackContext_t* context);
@@ -53,12 +48,12 @@ extern "C"
 
 /****************************** Functions Definitions - Includes Cortex M4 Interrupts ************************************/
 /**
- * @brief This function handles Non maskable interrupt
+ * \brief This function handles Non maskable interrupt
  */
 void NMI_Handler(void) { }
 
 /**
- * @brief This function handles Hard fault interrupt.
+ * \brief This function handles Hard fault interrupt.
  */
 void HardFault_Handler(void) {
     while ( 1 ) {
@@ -71,7 +66,7 @@ void HardFault_Handler(void) {
 }
 
 /**
- * @brief This function handles Memory management fault.
+ * \brief This function handles Memory management fault.
  */
 void MemManage_Handler(void) {
     while ( 1 ) {
@@ -79,7 +74,7 @@ void MemManage_Handler(void) {
 }
 
 /**
- * @brief This function handles Pre-fetch fault, memory access fault.
+ * \brief This function handles Pre-fetch fault, memory access fault.
  */
 void BusFault_Handler(void) {
     while ( 1 ) {
@@ -87,7 +82,7 @@ void BusFault_Handler(void) {
 }
 
 /**
- * @brief This function handles Undefined instruction or illegal state.
+ * \brief This function handles Undefined instruction or illegal state.
  */
 void UsageFault_Handler(void) {
     while ( 1 ) {
@@ -95,17 +90,17 @@ void UsageFault_Handler(void) {
 }
 
 /**
- * @brief This function handles System service call via SWI instruction.
+ * \brief This function handles System service call via SWI instruction.
  */
 void SVC_Handler(void) { }
 
 /**
- * @brief This function handles Debug monitor.
+ * \brief This function handles Debug monitor.
  */
 void DebugMon_Handler(void) { }
 
 /**
- * @brief Handling threading context switches which are triggered by the scheduler as pending
+ * \brief Handling threading context switches which are triggered by the scheduler as pending
  *        system calls. This allows the SysTick interrupt to run at a high priority while the 
  *        context switching can be handled at a lower level.
  */
@@ -131,7 +126,7 @@ __attribute__((naked)) void PendSV_Handler(void) {
 }
 
 /**
- * @brief Use the SysTick interrupt to drive the operating system core clock and scheduler.
+ * \brief Use the SysTick interrupt to drive the operating system core clock and scheduler.
  *        The scheduler will raise a PendSV interrupt flag if any thread context switches are 
  *        required.
  */
@@ -140,6 +135,14 @@ void SysTick_Handler(void) {
     OS::core_clock.update(1);
     OS::scheduler.run();
     __asm("CPSIE I\n");    
+}
+
+/**
+* \brief this single function remaps all vector table interrups to the C++ interrupt handler object
+*        which calls the appropriate IRQ which is generally registered to a specific object.
+*/
+void IRQHandler(void) {
+    HAL::interrupt_manager.default_isr_handler();
 }
 
 /**

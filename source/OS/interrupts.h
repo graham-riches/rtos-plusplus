@@ -13,17 +13,8 @@
 extern "C"
 {
 #endif
-/********************************** Includes *******************************************/
 
-/*********************************** Consts ********************************************/
-
-/************************************ Types ********************************************/
-
-/*********************************** Macros ********************************************/
-
-/******************************* Global Variables **************************************/
-
-/****************************** Functions Prototype ************************************/
+/****************************** Interrupt Function Definitions ************************************/
 void NMI_Handler(void);
 void HardFault_Handler(void);
 void MemManage_Handler(void);
@@ -34,6 +25,7 @@ void DebugMon_Handler(void);
 void PendSV_Handler(void);
 void SysTick_Handler(void);
 void OTG_FS_IRQHandler(void);
+void IRQ_Handler(void);
 
 #ifdef __cplusplus
 }

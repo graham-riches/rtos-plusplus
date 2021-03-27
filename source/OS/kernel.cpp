@@ -26,8 +26,8 @@ static void internal_thread_task(void *arguments);
 /********************************** Global Variables *******************************************/
 SystemClock core_clock;
 Scheduler scheduler(core_clock, SYSTEM_MAX_THREADS, set_pending_context_switch, is_context_switch_pending);
-TaskControlBlock* system_active_task;
-TaskControlBlock* system_pending_task;
+Scheduler::TaskControlBlock* system_active_task;
+Scheduler::TaskControlBlock* system_pending_task;
 
 /********************************** Local Variables *******************************************/
 static uint32_t internal_thread_stack[internal_thread_stack_size] = {0};
