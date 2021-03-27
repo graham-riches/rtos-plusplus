@@ -128,7 +128,8 @@ void LIS3DSH::initialize(void) {
     this->set_baudrate(SPIBaudratePrescaler::prescaler_16);  //!< 84MHz / 16 = 5.25 MHz
 
     /* register the SPI interrupt */
-    interrupt_manager.register_callback(InterruptName::spi_1, this, static_cast<uint8_t>(InterruptType::spi_interrupt), 5);
+    interrupt_manager.register_callback(InterruptName::spi_1, this, static_cast<uint8_t>(InterruptType::spi_interrupt),
+                                        PreemptionPriority::level_2, InterruptPriority::level_1);
 
     /* enable the interrupt */
     this->write_control_register(SPIControlRegister2::receive_interrupt_enable, 0x01);
@@ -138,7 +139,8 @@ void LIS3DSH::initialize(void) {
 
     /* register the external interrupts */
     register_external_interrupt(EXTIPort::gpio_port_e, Pins::pin_0, EXTITrigger::rising);
-    interrupt_manager.register_callback(InterruptName::exti_0, this, static_cast<uint8_t>(InterruptType::external_interrupt_1), 16);
+    interrupt_manager.register_callback(InterruptName::exti_0, this, static_cast<uint8_t>(InterruptType::external_interrupt_1),
+                                        PreemptionPriority::level_2, InterruptPriority::level_1);
 
     /* setup the accelerometer speed and setup the data ready interrupt */
     this->set_data_rate(LIS3DSHDataRate::sample_100Hz);

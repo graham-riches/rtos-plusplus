@@ -9,6 +9,7 @@
 /********************************** Includes *******************************************/
 #include "kernel.h"
 #include "stm32f4xx.h"
+#include "hal_interrupt.h"
 
 namespace OS
 {
@@ -50,9 +51,8 @@ void setup_kernel(void) {
     core_clock.start();
 
     //!< setup core interrupt priorities
-    NVIC_SetPriority(SysTick_IRQn, systick_irq_priority);
-    NVIC_SetPriority(PendSV_IRQn, pendSV_irq_priority);
-    NVIC_SetPriorityGrouping(0U);
+    HAL::interrupt_manager.set_priority(HAL::InterruptName::systick_handler, HAL::PreemptionPriority::level_8, HAL::InterruptPriority::level_2);
+    HAL::interrupt_manager.set_priority(HAL::InterruptName::pendsv_handler, HAL::PreemptionPriority::level_8, HAL::InterruptPriority::level_1);    
 
     //!< pass the internal thread to the scheduler to handle OS tasks while all application threads are sleeping
     scheduler.set_internal_task(&internal_thread);

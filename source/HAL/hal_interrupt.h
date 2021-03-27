@@ -20,6 +20,8 @@ namespace HAL
 {
 
 /*********************************** Consts ********************************************/
+#define HAL_NVIC_PRIORITY_GROUP_LEVEL (4ul) //!< enable 8 configurable priority levels and 2 subpriorities
+
 
 /************************************ Types ********************************************/
 /**
@@ -130,15 +132,37 @@ enum class InterruptName : unsigned {
 };
 
 /**
- * \brief base class for peripherals with interrupts
+ * \brief enumeration of preemption priority groupings.
+ * \note an interrupt in the highest priority grouping (level_1) cannot be interrupt by a lower priory grouping interrpt
+ */
+enum class PreemptionPriority : unsigned {
+    level_1 = 0,
+    level_2,
+    level_3,
+    level_4,
+    level_5,
+    level_6,
+    level_7,
+    level_8,
+};
+
+/**
+ * \brief enumeration of interrupt priority levels
+ * \note this is the sub-priority of the interrupt within a given preemption priority grouping
+ */
+enum class InterruptPriority : unsigned {
+    level_1 = 0,
+    level_2,
+};
+
+/**
+ * \brief pure virtual base class for peripherals with interrupts
  * \details this should be inherited to create specific peripheral
  *          classes that have interrupts
  */
 class InterruptPeripheral {
   public:
-    virtual void irq_handler(uint8_t irq_type) {
-        PARAMETER_NOT_USED(irq_type);
-    }
+    virtual void irq_handler(uint8_t irq_type) = 0;
 };
 
 /**
@@ -159,8 +183,13 @@ class InterruptManager {
     InterruptHandler isr_table[static_cast<uint8_t>(InterruptName::floating_point_unit)];
 
   public:
-    InterruptManager(){};
-    void register_callback(InterruptName interrupt, InterruptPeripheral* peripheral, uint8_t type, uint32_t priority);
+    InterruptManager();
+    void set_priority(InterruptName interrupt, PreemptionPriority preemption_priority, InterruptPriority subpriority);
+    void register_callback(InterruptName interrupt,
+                           InterruptPeripheral* peripheral,
+                           uint8_t type,
+                           PreemptionPriority preemption_priority,
+                           InterruptPriority subpriority);
     void default_isr_handler(void);
 };
 
