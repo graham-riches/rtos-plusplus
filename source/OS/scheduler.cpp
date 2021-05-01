@@ -1,4 +1,4 @@
-/*! \file scheduler.c
+/*! \file scheduler.cpp
 *
 *  \brief A simple cooperative scheduler for concurrent tasks.
 *

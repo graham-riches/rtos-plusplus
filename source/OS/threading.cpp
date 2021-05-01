@@ -19,32 +19,6 @@ namespace OS
 #define SYSTEM_MAX_THREADS (16ul)        //!< number of allowed threads
 
 /************************************ Types ********************************************/
-#pragma pack(1)
-/**
- * \brief contains the packed ordering of the processor register state during context switches.
- *        This is super helpful for debugging as you can pre-fill a thread's context with a custom
- *        default register state.
- */
-struct RegisterContext {
-    uint32_t r4;
-    uint32_t r5;
-    uint32_t r6;
-    uint32_t r7;
-    uint32_t r8;
-    uint32_t r9;
-    uint32_t r10;
-    uint32_t r11;
-    uint32_t r0;
-    uint32_t r1;
-    uint32_t r2;
-    uint32_t r3;
-    uint32_t r12;
-    uint32_t lr;
-    uint32_t pc;
-    uint32_t psr;
-};
-#pragma pack(0)
-
 
 /****************************** Method Definitions ***********************************/
 
@@ -68,7 +42,7 @@ Thread::Thread(TaskPointer task_ptr, void *arguments, uint32_t id, uint32_t* sta
     taskContext->psr = PSR_THUMB_MODE;
 
     /* set the program counter to the function pointer for the thread */
-    taskContext->pc = reinterpret_cast<uint32_t>(task_ptr);
+    taskContext->pc = *reinterpret_cast<uint32_t*>(task_ptr);
 
     /* set some garbo values to watch the registers during debugging */
     taskContext->r0 = 0;

@@ -1,4 +1,4 @@
-/*! \file main.c
+/*! \file main.cpp
 *
 *  \brief Main application code
 *  \author Graham Riches

@@ -4,6 +4,7 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
+                "${workspaceFolder}/tests/googletest/googletest/include/**",
                 "D:/Code/Environments/MinGW GCC10.2/include"
             ],
             "defines": [

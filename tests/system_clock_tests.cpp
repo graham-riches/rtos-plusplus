@@ -7,8 +7,9 @@
 */
 
 /********************************** Includes *******************************************/
-#include "gtest\gtest.h"
+#include "gtest/gtest.h"
 #include "system_clock.h"
+#include "common.h"
 #include <iostream>
 #include <memory>
 
@@ -18,11 +19,11 @@
 
 /************************************ Test Fixtures ********************************************/
 /**
- * \brief test fixture class for unit testing some of the threading primitives 
+ * \brief test fixture class for unit testing the system clock
 */
 class SystemClockTests : public ::testing::Test {
   protected:
-    static void thread_task(void *arguments){};    
+    static void thread_task(void *arguments){ PARAMETER_NOT_USED(arguments); };    
 
     void SetUp(void) override {        
         
@@ -39,7 +40,13 @@ TEST_F(SystemClockTests, clock_initializes_ticks_to_zero) {
     ASSERT_EQ(0, clock.get_ticks());
 }
 
-TEST_F(SystemClockTests, test_update_clock_ticks){
+TEST_F(SystemClockTests, test_update_clock_ticks_not_running_fails){
+    clock.update(1);
+    ASSERT_EQ(0, clock.get_ticks());
+}
+
+TEST_F(SystemClockTests, test_update_clock_running_passes) {
+    clock.start();
     clock.update(1);
     ASSERT_EQ(1, clock.get_ticks());
 }
