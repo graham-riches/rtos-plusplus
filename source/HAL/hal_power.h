@@ -6,8 +6,7 @@
 *  \author Graham Riches
 */
 
-#ifndef __HAL_POWER_H__
-#define __HAL_POWER_H__
+#pragma once
 
 /********************************** Includes *******************************************/
 #include "hal_bitwise_operators.h"
@@ -63,5 +62,3 @@ extern PowerManagement power_management;
 /****************************** Functions Prototype ************************************/
 
 };  // namespace HAL
-
-#endif /* __HAL_POWER_H__ */

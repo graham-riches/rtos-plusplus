@@ -9,8 +9,7 @@
 *  \author Graham Riches
 */
 
-#ifndef __KERNEL_H__
-#define __KERNEL_H__
+#pragma once
 
 /********************************** Includes *******************************************/
 #include "common.h"
@@ -42,6 +41,3 @@ void set_systick_frequency(uint32_t ticks);
 void sleep_thread(uint32_t ticks);
 
 };  // namespace OS
-
-
-#endif /* __KERNEL_H__ */

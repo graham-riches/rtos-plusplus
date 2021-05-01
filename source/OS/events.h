@@ -6,8 +6,7 @@
 *  \author Graham Riches
 */
 
-#ifndef __EVENTS_H__
-#define __EVENTS_H__
+#pragma once
 
 /********************************** Includes *******************************************/
 #include "common.h"
@@ -75,5 +74,3 @@ class EventFlags {
 };
 
 };  // namespace OS
-
-#endif /* __EVENTS_H__ */

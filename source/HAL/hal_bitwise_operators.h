@@ -6,8 +6,7 @@
 *  \author Graham Riches
 */
 
-#ifndef __HAL_BITWISE_OPS_H__
-#define __HAL_BITWISE_OPS_H__
+#pragma once
 
 /********************************** Includes *******************************************/
 #include <stdint.h>
@@ -56,5 +55,3 @@ typename std::enable_if_t<EnableBitwiseOperators<Enum>::enable, Enum> operator&(
 }
 
 };  // namespace HAL
-
-#endif /* __HAL_BITWISE_OPS_H__ */

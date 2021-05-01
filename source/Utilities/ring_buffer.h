@@ -6,8 +6,7 @@
 *  \author Graham Riches
 */
 
-#ifndef __RING_BUFFER_H__
-#define __RING_BUFFER_H__
+#pragma once
 
 /********************************** Includes *******************************************/
 #include "common.h"
@@ -103,5 +102,3 @@ class RingBuffer {
         }
     }
 };
-
-#endif /* __RING_BUFFER_H__ */

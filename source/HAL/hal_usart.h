@@ -6,8 +6,7 @@
 *  \author Graham Riches
 */
 
-#ifndef __HAL_USART_H__
-#define __HAL_USART_H__
+#pragma once
 
 /********************************** Includes *******************************************/
 #include "hal_bitwise_operators.h"
@@ -146,5 +145,3 @@ class USARTInterrupt : protected USARTBase, public HAL::InterruptPeripheral {
 /****************************** Functions Prototype ************************************/
 
 };  // namespace HAL
-
-#endif /* __HAL_USART_H__ */

@@ -6,8 +6,7 @@
 *  \author Graham Riches
 */
 
-#ifndef __INTERRUPTS_H__
-#define __INTERRUPTS_H__
+#pragma once
 
 #ifdef __cplusplus
 extern "C"
@@ -30,5 +29,3 @@ void IRQHandler(void);
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* __INTERRUPTS_H__ */

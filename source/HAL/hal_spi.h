@@ -6,8 +6,7 @@
 *  \author Graham Riches
 */
 
-#ifndef __HAL_SPI_H__
-#define __HAL_SPI_H__
+#pragma once
 
 /********************************** Includes *******************************************/
 #include "hal_gpio.h"
@@ -142,4 +141,3 @@ class SPIInterrupt : protected SPIBase, public HAL::InterruptPeripheral {
 /****************************** Functions Prototype ************************************/
 
 };     // namespace HAL
-#endif /* __HAL_SPI_H__ */

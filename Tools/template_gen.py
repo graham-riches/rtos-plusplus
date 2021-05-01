@@ -70,8 +70,7 @@ h_file_template = \
     "*  \\author {author}{eol}"\
     "*/{eol}"\
     "{eol}"\
-    "#ifndef __{modules_name_upper}_H__{eol}"\
-    "#define __{modules_name_upper}_H__{eol}"\
+    "#pragma once{eol}"\    
     "{eol}"\
     "#ifdef __cplusplus{eol}"\
     "extern \"C\" {{{eol}"\

@@ -6,8 +6,7 @@
 *  \author Graham Riches
 */
 
-#ifndef __SYSTEM_CLOCK_H__
-#define __SYSTEM_CLOCK_H__
+#pragma once
 
 /********************************** Includes *******************************************/
 #include "common.h"
@@ -33,6 +32,3 @@ class SystemClock{
 
 
 };  // namespace OS
-
-
-#endif /* __SYSTEM_CLOCK_H__ */

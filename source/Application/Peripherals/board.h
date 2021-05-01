@@ -5,12 +5,7 @@
 *  \author Graham Riches
 */
 
-#ifndef __BOARD_H
-#define __BOARD_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#pragma once
 
 /********************************** Includes *******************************************/
 #include "stm32f4xx.h"
@@ -108,10 +103,4 @@ extern "C" {
 #define AUDIO_IN_ADC_CHANNEL ADC_CHANNEL_1
 #define AUDIO_IN_PIN GPIO_Pin_1
 #define AUDIO_IN_PORT GPIOA
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* __BOARD_H */
 

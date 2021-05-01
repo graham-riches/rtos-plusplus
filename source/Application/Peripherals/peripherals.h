@@ -6,8 +6,7 @@
 *  \author Graham Riches
 */
 
-#ifndef __PERIPHERALS_H__
-#define __PERIPHERALS_H__
+#pragma once
 
 /********************************** Includes *******************************************/
 #include "common.h"
@@ -28,5 +27,3 @@ extern HAL::OutputPin blue_led;
 
 /****************************** Functions Prototype ************************************/
 void initialize_peripherals(void);
-
-#endif /* __PERIPHERALS_H__ */

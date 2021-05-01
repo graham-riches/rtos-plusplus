@@ -6,8 +6,7 @@
 *  \author Graham Riches
 */
 
-#ifndef __HAL_GPIO_H__
-#define __HAL_GPIO_H__
+#pragma once
 
 /********************************** Includes *******************************************/
 #include "hal_bitwise_operators.h"
@@ -138,5 +137,3 @@ class AlternateModePin : protected PinBase {
 /****************************** Function Declarations ************************************/
 
 };  // namespace HAL
-
-#endif /* __HAL_GPIO_H__ */

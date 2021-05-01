@@ -6,13 +6,8 @@
 *  \author Graham Riches
 */
 
-#ifndef __COMMON_H__
-#define __COMMON_H__
+#pragma once
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
 /********************************** Includes *******************************************/
 #include <stdbool.h>
 #include <stdint.h>
@@ -40,13 +35,3 @@ extern "C"
 #ifndef __GNUC__
 #    define __GNUC__
 #endif
-
-    /******************************* Global Variables **************************************/
-
-    /****************************** Functions Prototype ************************************/
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* __COMMON_H */

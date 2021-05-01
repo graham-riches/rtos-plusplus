@@ -6,8 +6,7 @@
 *  \author Graham Riches
 */
 
-#ifndef __HAL_FLASH_H__
-#define __HAL_FLASH_H__
+#pragma once
 
 /********************************** Includes *******************************************/
 #include "hal_bitwise_operators.h"
@@ -57,5 +56,3 @@ extern Flash flash;
 /****************************** Functions Prototype ************************************/
 
 };  // namespace HAL
-
-#endif /* __HAL_FLASH_H__ */

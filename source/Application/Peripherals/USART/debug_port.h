@@ -6,8 +6,7 @@
 *  \author Graham Riches
 */
 
-#ifndef __DEBUG_PORT_H__
-#define __DEBUG_PORT_H__
+#pragma once
 
 /********************************** Includes *******************************************/
 #include "common.h"
@@ -45,7 +44,3 @@ class DebugPort : public HAL::USARTInterrupt {
 
 /******************************* Global Variables **************************************/
 extern DebugPort debug_port;
-
-/****************************** Functions Prototype ************************************/
-
-#endif /* __DEBUG_PORT_H__ */

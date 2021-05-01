@@ -6,8 +6,7 @@
 *  \author Graham Riches
 */
 
-#ifndef __LIS3DSH_H__
-#define __LIS3DSH_H__
+#pragma once
 
 /********************************** Includes *******************************************/
 #include "common.h"
@@ -99,7 +98,3 @@ class LIS3DSH : public HAL::SPIInterrupt {
 
 /******************************* Global Variables **************************************/
 extern LIS3DSH accelerometer;
-
-/****************************** Functions Prototype ************************************/
-
-#endif /* __LIS3DSH_H__ */

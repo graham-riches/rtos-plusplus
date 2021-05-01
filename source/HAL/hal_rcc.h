@@ -6,8 +6,7 @@
 *  \author Graham Riches
 */
 
-#ifndef __HAL_RCC_H__
-#define __HAL_RCC_H__
+#pragma once
 
 /********************************** Includes *******************************************/
 #include "hal_bitwise_operators.h"
@@ -266,4 +265,3 @@ extern ResetControlClock reset_control_clock;
 
 };  // namespace HAL
 
-#endif /* __HAL_RCC_H__ */

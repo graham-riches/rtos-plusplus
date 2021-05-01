@@ -6,8 +6,7 @@
 *  \author Graham Riches
 */
 
-#ifndef __HAL_EXTI_H__
-#define __HAL_EXTI_H__
+#pragma once
 
 /********************************** Includes *******************************************/
 #include "common.h"
@@ -79,5 +78,3 @@ void register_external_interrupt(EXTIPort port, Pins pin, EXTITrigger trigger);
 void clear_external_interrupt_pending(EXTILine line);
 
 };  // namespace HAL
-
-#endif /* __HAL_EXTI_H__ */

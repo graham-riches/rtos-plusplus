@@ -6,8 +6,7 @@
 *  \author Graham Riches
 */
 
-#ifndef __THREADS_H__
-#define __THREADS_H__
+#pragma once
 
 /********************************** Includes *******************************************/
 #include "common.h"
@@ -79,5 +78,3 @@ class Thread {
 
 
 };  // namespace OS
-
-#endif /* __THREADS_H__ */
