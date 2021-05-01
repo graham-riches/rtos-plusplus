@@ -33,10 +33,10 @@ void Scheduler::run(void){
         auto tcb = &task_control_blocks[thread];
 
         //!< pick up any threads that are waking up from sleep
-        if (tcb->thread->get_status() == ThreadStatus::suspended) {
+        if (tcb->thread->get_status() == Thread::Status::suspended) {
             tcb->suspended_ticks_remaining -= ticks;
             if ((tcb->suspended_ticks_remaining) <= 0){
-                tcb->thread->set_status(ThreadStatus::pending); 
+                tcb->thread->set_status(Thread::Status::pending); 
             }
         }
     }
@@ -45,8 +45,8 @@ void Scheduler::run(void){
     if ( !check_pending()) {
         for (uint8_t thread = 0; thread < thread_count; thread++){
             auto tcb = &task_control_blocks[thread];        
-            if (tcb->thread->get_status() == ThreadStatus::pending){       
-                active_task->thread->set_status(ThreadStatus::pending);     
+            if (tcb->thread->get_status() == Thread::Status::pending){       
+                active_task->thread->set_status(Thread::Status::pending);     
                 context_switch_to(tcb);
                 break;
             }
@@ -59,7 +59,7 @@ void Scheduler::run(void){
 
 void Scheduler::context_switch_to(TaskControlBlock* tcb) {
     pending_task = tcb;
-    tcb->thread->set_status(ThreadStatus::active);
+    tcb->thread->set_status(Thread::Status::active);
     active_task = pending_task;
     set_pending();
 }
@@ -67,13 +67,13 @@ void Scheduler::context_switch_to(TaskControlBlock* tcb) {
 
 void Scheduler::sleep_thread(uint32_t ticks){    
     active_task->suspended_ticks_remaining = ticks;
-    active_task->thread->set_status(OS::ThreadStatus::suspended);
+    active_task->thread->set_status(OS::Thread::Status::suspended);
 
     /* find the next active thread if a context switch is not already pending */
     if (!check_pending()){
         for (uint8_t thread = 0; thread < thread_count; thread++){
             auto tcb = &task_control_blocks[thread];
-            if ((tcb->thread->get_status() == ThreadStatus::pending) && (tcb != active_task)) {
+            if ((tcb->thread->get_status() == Thread::Status::pending) && (tcb != active_task)) {
                 context_switch_to(tcb);
                 return;
             }

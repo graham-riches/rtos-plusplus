@@ -43,12 +43,12 @@ using ThreadingDeathsTests = ThreadingTests;
 
 /************************************ Tests ********************************************/
 TEST_F(ThreadingTests, test_thread_is_default_pending) {
-    ASSERT_EQ(OS::ThreadStatus::pending, thread->get_status());
+    ASSERT_EQ(OS::Thread::Status::pending, thread->get_status());
 }
 
 TEST_F(ThreadingTests, test_set_thread_status) {
-    thread->set_status(OS::ThreadStatus::active);
-    ASSERT_EQ(OS::ThreadStatus::active, thread->get_status());
+    thread->set_status(OS::Thread::Status::active);
+    ASSERT_EQ(OS::Thread::Status::active, thread->get_status());
 }
 
 TEST_F(ThreadingTests, test_initial_stack_pointer_dne_stack_top){

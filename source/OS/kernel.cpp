@@ -45,7 +45,7 @@ void setup_kernel(void) {
     system_pending_task = scheduler.get_pending_tcb_ptr();
 
     //!< activate the first task
-    system_active_task->thread->set_status(ThreadStatus::active);
+    system_active_task->thread->set_status(Thread::Status::active);
 
     //!< start the system clock
     core_clock.start();

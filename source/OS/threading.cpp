@@ -1,4 +1,4 @@
-/*! \file threads.c
+/*! \file threads.cpp
 *
 *  \brief OS threading module.
 *
@@ -19,43 +19,50 @@ namespace OS
 #define SYSTEM_MAX_THREADS (16ul)        //!< number of allowed threads
 
 /************************************ Types ********************************************/
-
-
-/*********************************** Macros ********************************************/
-
-/******************************* Global Variables **************************************/
-
-
-/******************************** Local Variables **************************************/
-
-/****************************** Functions Prototype ************************************/
-
-/****************************** Functions Definition ***********************************/
-
+#pragma pack(1)
 /**
- * \brief Construct a new Thread:: Thread object
- * 
- * \param task_ptr function pointer to the task function
- * \param arguments arguments for the task
- * \param id thread id
- * \param stack_ptr pointer to the top of the stack for the thread
- * \param stack_size size of the thread's stack
+ * \brief contains the packed ordering of the processor register state during context switches.
+ *        This is super helpful for debugging as you can pre-fill a thread's context with a custom
+ *        default register state.
  */
-Thread::Thread(task_ptr_t task_ptr, void *arguments, uint32_t id, uint32_t* stack_ptr, uint32_t stack_size) 
+struct RegisterContext {
+    uint32_t r4;
+    uint32_t r5;
+    uint32_t r6;
+    uint32_t r7;
+    uint32_t r8;
+    uint32_t r9;
+    uint32_t r10;
+    uint32_t r11;
+    uint32_t r0;
+    uint32_t r1;
+    uint32_t r2;
+    uint32_t r3;
+    uint32_t r12;
+    uint32_t lr;
+    uint32_t pc;
+    uint32_t psr;
+};
+#pragma pack(0)
+
+
+/****************************** Method Definitions ***********************************/
+
+Thread::Thread(TaskPointer task_ptr, void *arguments, uint32_t id, uint32_t* stack_ptr, uint32_t stack_size) 
 : task_ptr(task_ptr)
 , task_arguments_ptr(arguments)
 , id(id)
 , stack_top_ptr(stack_ptr)
 , stack_ptr(stack_ptr)
 , stack_size(stack_size)
-, status(ThreadStatus::pending) {
+, status(Status::pending) {
     
     assert(task_ptr != nullptr);
     assert(stack_ptr != nullptr);
     assert(stack_size > 0);
 
     /* initialize the threads stack with some setup values */
-    ThreadContext_t* taskContext = reinterpret_cast<ThreadContext_t*>(&stack_ptr[stack_size - CONTEXT_STACK_SIZE]);
+    RegisterContext* taskContext = reinterpret_cast<RegisterContext*>(&stack_ptr[stack_size - CONTEXT_STACK_SIZE]);
 
     /* set the task to run in thumb mode */
     taskContext->psr = PSR_THUMB_MODE;
@@ -84,38 +91,22 @@ Thread::Thread(task_ptr_t task_ptr, void *arguments, uint32_t id, uint32_t* stac
     this->stack_ptr = this->stack_top_ptr + stack_size - CONTEXT_STACK_SIZE;
 }
 
-/**
- * \brief update the thread status
- * 
- * \param status value
- */
-void Thread::set_status(ThreadStatus status) {
+
+void Thread::set_status(Status status) {
     this->status = status;
 }
 
-/**
- * \brief get the current thread status
- * 
- * \retval ThreadStatus 
- */
-ThreadStatus Thread::get_status(void) {
+
+Thread::Status Thread::get_status(void) {
     return status;
 }
 
-/**
- * \brief get a thread's id
- * 
- * \retval uint32_t the thread id
- */
+
 uint32_t Thread::get_id(void) {
     return id;
 }
 
-/**
- * \brief get the current stack pointer for the thread
- * 
- * \retval uint32_t* pointer to the active stack pointer address
- */
+
 uint32_t* Thread::get_stack_ptr(void){
     return stack_ptr;
 }

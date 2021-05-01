@@ -115,7 +115,7 @@ void EventFlags::get(uint32_t flags, EventGetOptions get_options, EventWaitOptio
     /* check if the flag criteria is already met */
     if ( !this->check_flags(flags, get_options) ) {
         /* suspend the calling thread if the condition is not met */
-        //this->thread_manager->active_task->thread->set_status(ThreadStatus::suspended);
+        //this->thread_manager->active_task->thread->set_status(Thread::Status::suspended);
 
         /* append the thread to the thread suspension list */
         //if ( this->suspended_threads->thread == nullptr ) {

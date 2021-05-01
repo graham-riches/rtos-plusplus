@@ -167,11 +167,11 @@ TEST_F(SchedulerTests, test_sleeping_all_threads_sets_internal_thread_active) {
 }
 
 TEST_F(SchedulerTestsWithPreRegisteredThreads, test_update_from_clock_triggers_context_switch) {    
-    thread_two->set_status(OS::ThreadStatus::suspended);
+    thread_two->set_status(OS::Thread::Status::suspended);
     clock.update(1);
     scheduler->run();
     ASSERT_TRUE(pending_irq);
-    ASSERT_EQ(OS::ThreadStatus::pending, thread_two->get_status());
+    ASSERT_EQ(OS::Thread::Status::pending, thread_two->get_status());
 }
 
 TEST_F(SchedulerTestsWithPreRegisteredThreads, test_thread_sleep_wakes_up) {
@@ -179,7 +179,7 @@ TEST_F(SchedulerTestsWithPreRegisteredThreads, test_thread_sleep_wakes_up) {
     clock.update(1);
     scheduler->run();
     ASSERT_TRUE(pending_irq);
-    ASSERT_EQ(OS::ThreadStatus::pending, thread_one->get_status());
+    ASSERT_EQ(OS::Thread::Status::pending, thread_one->get_status());
 }
 
 TEST_F(SchedulerTestsWithPreRegisteredThreads, test_multiple_threads_asleep_wakeup_at_the_same_time) {
@@ -188,19 +188,19 @@ TEST_F(SchedulerTestsWithPreRegisteredThreads, test_multiple_threads_asleep_wake
     auto tcb = scheduler->get_active_tcb_ptr(); 
     tcb = tcb->next;
     tcb->suspended_ticks_remaining = 1;
-    tcb->thread->set_status(OS::ThreadStatus::suspended);
+    tcb->thread->set_status(OS::Thread::Status::suspended);
 
     clock.update(1);
     scheduler->run();
     ASSERT_TRUE(pending_irq);
-    ASSERT_EQ(OS::ThreadStatus::pending, thread_one->get_status());
+    ASSERT_EQ(OS::Thread::Status::pending, thread_one->get_status());
 
     //!< reset the pending flag, and run the scheduler again. The second thread should now trigger
     pending_irq = false;
     clock.update(1);
     scheduler->run();
     ASSERT_TRUE(pending_irq);
-    ASSERT_EQ(OS::ThreadStatus::pending, thread_two->get_status());
+    ASSERT_EQ(OS::Thread::Status::pending, thread_two->get_status());
 }
 
 TEST_F(SchedulerTestsWithPreRegisteredThreads, test_scheduler_doesnt_clobber_pending_request) {
@@ -211,21 +211,21 @@ TEST_F(SchedulerTestsWithPreRegisteredThreads, test_scheduler_doesnt_clobber_pen
     auto tcb = scheduler->get_active_tcb_ptr(); 
     tcb = tcb->next;
     tcb->suspended_ticks_remaining = 1;
-    tcb->thread->set_status(OS::ThreadStatus::suspended);
+    tcb->thread->set_status(OS::Thread::Status::suspended);
 
     /* run an update, which should pick up the first thread */
     clock.update(1);
     scheduler->run();    
     ASSERT_TRUE(pending_irq);
-    ASSERT_EQ(OS::ThreadStatus::pending, thread_one->get_status());
-    ASSERT_EQ(OS::ThreadStatus::active, thread_two->get_status());
+    ASSERT_EQ(OS::Thread::Status::pending, thread_one->get_status());
+    ASSERT_EQ(OS::Thread::Status::active, thread_two->get_status());
 
     //!< reset the pending flag, and run the scheduler again. The second thread should now trigger
     pending_irq = false;
     clock.update(1);
     scheduler->run();
     ASSERT_TRUE(pending_irq);
-    ASSERT_EQ(OS::ThreadStatus::pending, thread_two->get_status());
+    ASSERT_EQ(OS::Thread::Status::pending, thread_two->get_status());
 }
 
 TEST_F(SchedulerTestsWithPreRegisteredThreads, test_handle_clock_rollover_with_suspended_thread) {
@@ -235,5 +235,5 @@ TEST_F(SchedulerTestsWithPreRegisteredThreads, test_handle_clock_rollover_with_s
     clock.update(1);
     scheduler->run();
     ASSERT_TRUE(pending_irq);
-    ASSERT_EQ(OS::ThreadStatus::pending, thread_one->get_status());
+    ASSERT_EQ(OS::Thread::Status::pending, thread_one->get_status());
 }
