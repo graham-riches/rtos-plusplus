@@ -168,7 +168,7 @@ void USARTInterrupt::irq_handler(uint8_t type) {
 
     if ( (rx_data_available) && (rx_interrupt_enabled) ) {
         uint8_t data = static_cast<uint8_t>(this->peripheral->DR & 0xFF);
-        this->rx_buffer.put(data);
+        this->rx_buffer.push(data);
     }
 
     /* handle any tx interrupts */
@@ -176,8 +176,10 @@ void USARTInterrupt::irq_handler(uint8_t type) {
     bool tx_interrupt_enabled = this->read_control_register(USARTControlRegister1::transmit_interrupt_enable);
 
     if ( (tx_data_empty) && (tx_interrupt_enabled) ) {
-        uint8_t data = this->tx_buffer.get();
-        this->peripheral->DR = data;
+        auto maybe_data = this->tx_buffer.pop();
+        if (maybe_data.has_value()) {
+            this->peripheral->DR = maybe_data.value();
+        }
 
         /* if there is no more data to send, disable the interrupt */
         if ( this->tx_buffer.is_empty() ) {
@@ -195,7 +197,7 @@ void USARTInterrupt::irq_handler(uint8_t type) {
 void USARTInterrupt::send(uint8_t* data, uint16_t size) {
     /* put the data on the buffer */
     while ( size-- ) {
-        this->tx_buffer.put(*data++);
+        this->tx_buffer.push(*data++);
         if ( this->tx_buffer.is_full() ) {
             break;
         }
@@ -216,7 +218,7 @@ void USARTInterrupt::send(const char* data) {
 
     for ( uint16_t i = 0; i < size; i++ ) {
         uint8_t dataByte = (uint8_t)data[i];
-        this->tx_buffer.put(dataByte);
+        this->tx_buffer.push(dataByte);
 
         if ( this->tx_buffer.is_full() ) {
             break;
@@ -233,7 +235,7 @@ void USARTInterrupt::send(const char* data) {
  * \param data the character to send
  */
 void USARTInterrupt::send(const char data) {
-    this->tx_buffer.put(static_cast<uint8_t>(data));
+    this->tx_buffer.push(static_cast<uint8_t>(data));
 
     /* enable the tx interrupt */
     this->write_control_register(USARTControlRegister1::transmit_interrupt_enable, 0x01);

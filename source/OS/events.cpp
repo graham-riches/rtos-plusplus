@@ -9,7 +9,7 @@
 /********************************** Includes *******************************************/
 #include "events.h"
 
-namespace OS
+namespace os
 {
 /*********************************** Consts ********************************************/
 
@@ -123,4 +123,4 @@ void EventFlags::get(uint32_t flags, EventGetOptions get_options, EventWaitOptio
     }
 }
 
-};  // namespace OS
+};  // namespace os

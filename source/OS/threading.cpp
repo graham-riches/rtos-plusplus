@@ -10,7 +10,7 @@
 #include "threading.h"
 #include <cassert>
 
-namespace OS
+namespace os
 {
 
 /*********************************** Consts ********************************************/
@@ -87,4 +87,4 @@ uint32_t* Thread::get_stack_ptr(void){
 
 
 
-};  // namespace OS
+};  // namespace os

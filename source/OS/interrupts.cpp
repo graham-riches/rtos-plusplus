@@ -105,7 +105,7 @@ void DebugMon_Handler(void) { }
  *        context switching can be handled at a lower level.
  */
 __attribute__((naked)) void PendSV_Handler(void) {   
-    using namespace OS;
+    using namespace os;
 
     __asm(
         "CPSID      I                        \n" /* disable interrupts */
@@ -132,8 +132,8 @@ __attribute__((naked)) void PendSV_Handler(void) {
  */
 void SysTick_Handler(void) {
     __asm("CPSID I\n");
-    OS::core_clock.update(1);
-    OS::scheduler.run();
+    os::system_clock::update(1);
+    os::scheduler::run();
     __asm("CPSIE I\n");    
 }
 

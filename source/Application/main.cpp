@@ -28,8 +28,8 @@ static uint32_t thread_one_stack[thread_stack_size] = {0};
 static uint32_t thread_two_stack[thread_stack_size] = {0};
 
 /* create the threads */
-static OS::Thread thread_one(thread_one_task, nullptr, 1, thread_one_stack, thread_stack_size);
-static OS::Thread thread_two(thread_two_task, nullptr, 2, thread_two_stack, thread_stack_size);
+static os::Thread thread_one(thread_one_task, nullptr, 1, thread_one_stack, thread_stack_size);
+static os::Thread thread_two(thread_two_task, nullptr, 2, thread_two_stack, thread_stack_size);
 
 /*********************************** Function Definitions ********************************************/
 /**
@@ -37,18 +37,18 @@ static OS::Thread thread_two(thread_two_task, nullptr, 2, thread_two_stack, thre
   * \retval int
   */
 int main(void) {
-    /* register the threads */
-    OS::scheduler.register_thread(&thread_one);
-    OS::scheduler.register_thread(&thread_two);
+    //!< register the threads
+    os::scheduler::register_thread(&thread_one);
+    os::scheduler::register_thread(&thread_two);
 
-    /* configure the project specific HAL drivers and bootup the chip, clocks etc. */
-    initialize_peripherals();
+    //!< configure the project specific HAL drivers and bootup the chip, clocks etc.
+    initialize_peripherals();    
 
-    /* enter the OS kernel */
-    OS::setup_kernel();
-    OS::enter_kernel();
+    //!< jump into the RTOS kernel
+    os::kernel::setup();
+    os::kernel::enter();
 
-    /* NOTE: should never reach here! */
+    //!< NOTE: should never reach here
     return 0;
 }
 
@@ -61,7 +61,7 @@ static void thread_one_task(void *arguments) {
         debug_port.send("a\n");
         green_led.toggle();
         blue_led.toggle();
-        OS::sleep_thread(100);
+        os::this_thread::sleep_for(100);
     }
 }
 
@@ -74,6 +74,6 @@ static void thread_two_task(void *arguments) {
         debug_port.send("b\n");
         red_led.toggle();
         orange_led.toggle();
-        OS::sleep_thread(100);
+        os::this_thread::sleep_for(100);
     }
 }

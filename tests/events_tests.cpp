@@ -26,10 +26,10 @@ constexpr uint32_t test_event_three = 0x03;
 */
 class EventFlagsTest : public ::testing::Test {
   protected:
-    std::unique_ptr<OS::EventFlags> event_flags;
-    std::unique_ptr<OS::Thread> thread_one;
-    std::unique_ptr<OS::Thread> thread_two;
-    std::unique_ptr<OS::ThreadManager> thread_manager;
+    std::unique_ptr<os::EventFlags> event_flags;
+    std::unique_ptr<os::Thread> thread_one;
+    std::unique_ptr<os::Thread> thread_two;
+    std::unique_ptr<os::ThreadManager> thread_manager;
     std::unique_ptr<uint32_t[]> thread_one_stack;
     std::unique_ptr<uint32_t[]> thread_two_stack;
 

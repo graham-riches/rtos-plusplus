@@ -77,7 +77,8 @@ target_include_directories(${BINARY} PRIVATE
     )
 
 # Set compiler flags - switch to -03 here for optimization*
-target_compile_options(${BINARY} PRIVATE		
+target_compile_options(${BINARY} PRIVATE
+    -std=c++17
     -mcpu=cortex-m4
     -mthumb
     -mfpu=fpv4-sp-d16

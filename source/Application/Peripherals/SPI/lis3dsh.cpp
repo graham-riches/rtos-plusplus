@@ -91,7 +91,8 @@ uint8_t LIS3DSH::read_register(LIS3DSHRegisters reg) {
     /* block until the register result returns */
     uint8_t data = 0;
     while ( !this->rx_buffer.is_empty() ) {
-        data = this->rx_buffer.get();
+        auto maybe_data = this->rx_buffer.pop();
+        data = (maybe_data.has_value()) ? maybe_data.value() : 0;
     }
 
     return data;
@@ -212,14 +213,17 @@ void LIS3DSH::spi_irq_handler(void) {
         }
 
         /* put data outgoing into the data register */
-        this->peripheral->DR = this->tx_buffer.get();
+        auto maybe_data = this->tx_buffer.pop();
+        if (maybe_data.has_value()) {
+            this->peripheral->DR = maybe_data.value();
+        }
 
         /* wait for the receive buffer to clear */
         while ( this->read_status_register(HAL::SPIStatusRegister::receive_data_available) == false ) {
         }
 
         /* receive data into the rx buffer */
-        this->rx_buffer.put(static_cast<uint8_t>(this->peripheral->DR));
+        this->rx_buffer.push(static_cast<uint8_t>(this->peripheral->DR));
     }
 
     /* disable the interrupt */
@@ -243,19 +247,21 @@ void LIS3DSH::exti_0_irq_handler(void) {
     this->send(read_data, sizeof(read_data));
 
     /* flush the first byte, which is read back when the address + read byte is first sent */
-    this->rx_buffer.get();
+    this->rx_buffer.pop();
 
     /* update the data values */
     auto convert_data = [this](uint8_t low, uint8_t high) -> float {
         return static_cast<float>(static_cast<int16_t>(low | (high << 8))) / this->conversion_factor;
     };
-    float accel_x = convert_data(this->rx_buffer.get(), this->rx_buffer.get());
-    float accel_y = convert_data(this->rx_buffer.get(), this->rx_buffer.get());
-    float accel_z = convert_data(this->rx_buffer.get(), this->rx_buffer.get());
 
-    this->x_data.put(accel_x);
-    this->y_data.put(accel_y);
-    this->z_data.put(accel_z);
+    //!< TODO: banking on these being successfull reads
+    float accel_x = convert_data(this->rx_buffer.pop().value(), this->rx_buffer.pop().value());
+    float accel_y = convert_data(this->rx_buffer.pop().value(), this->rx_buffer.pop().value());
+    float accel_z = convert_data(this->rx_buffer.pop().value(), this->rx_buffer.pop().value());
+
+    this->x_data.push(accel_x);
+    this->y_data.push(accel_y);
+    this->z_data.push(accel_z);
 
     /* clear the interrupt pending bit */
     HAL::clear_external_interrupt_pending(HAL::EXTILine::line_0);

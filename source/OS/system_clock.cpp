@@ -9,7 +9,7 @@
 /********************************** Includes *******************************************/
 #include "system_clock.h"
 
-namespace OS
+namespace os
 {
 /****************************** Function Definitions ***********************************/
 /**
@@ -45,4 +45,4 @@ void SystemClock::start(void) {
     running = true;
 }
 
-};  // namespace OS
+};  // namespace os

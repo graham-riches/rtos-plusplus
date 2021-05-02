@@ -192,14 +192,17 @@ void SPIInterrupt::irq_handler(uint8_t type) {
         }
 
         /* put data outgoing into the data register */
-        this->peripheral->DR = this->tx_buffer.get();
+        auto maybe_data = this->tx_buffer.pop();
+        if (maybe_data.has_value()) {
+            this->peripheral->DR = maybe_data.value();
+        }
 
         /* wait for the receive buffer to clear */
         while ( this->read_status_register(SPIStatusRegister::receive_data_available) == false ) {
         }
 
         /* receive data into the rx buffer */
-        this->rx_buffer.put(static_cast<uint8_t>(this->peripheral->DR));
+        this->rx_buffer.push(static_cast<uint8_t>(this->peripheral->DR));
     }
 
     /* disable the interrupt */
@@ -216,7 +219,7 @@ void SPIInterrupt::irq_handler(uint8_t type) {
 void SPIInterrupt::send(uint8_t* data, uint16_t size) {
     /* put the data on the buffer */
     while ( size-- ) {
-        this->tx_buffer.put(*data++);
+        this->tx_buffer.push(*data++);
         if ( this->tx_buffer.is_full() ) {
             break;
         }

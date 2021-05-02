@@ -11,7 +11,7 @@
 /********************************** Includes *******************************************/
 #include "common.h"
 
-namespace OS
+namespace os
 {
 /************************************ Types ********************************************/
 /**
@@ -107,4 +107,4 @@ class Thread {
     Status status;
 };
 
-};  // namespace OS
+};  // namespace os

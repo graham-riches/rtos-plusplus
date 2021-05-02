@@ -63,9 +63,7 @@ void initialize_peripherals(void) {
     debug_port.send("STM32F407 Debug Terminal \n");
     debug_port.send("   Author: Graham Riches \n");
     debug_port.send("   Date: November 1, 2020 \n");
-    debug_port.send("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
-
-    
+    debug_port.send("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");    
 
     /* turn on the LEDs for status indication */
     green_led.set(true);
@@ -127,9 +125,9 @@ void system_boot(void) {
     /* set the system clock source */
     HAL::reset_control_clock.set_system_clock_source(HAL::SystemClockSource::phase_locked_loop);
 
-    /* set the systick interrupt frequency to every ms */
+    //!< setup the scheduler clock ticks
     uint32_t sys_clock = HAL::reset_control_clock.get_clock_speed(HAL::Clocks::AHB1);
-    OS::set_systick_frequency(sys_clock / 1000);
+    os::kernel::set_systick_frequency(sys_clock / 1000);
 }
 
 /**

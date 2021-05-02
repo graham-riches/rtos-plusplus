@@ -30,7 +30,7 @@ class SystemClockTests : public ::testing::Test {
     }
 
   public:
-      OS::SystemClock clock;    
+      os::SystemClock clock;    
 };
 
 

@@ -9,8 +9,8 @@
 #pragma once
 
 /********************************** Includes *******************************************/
-#include "common.h"
 #include <memory>
+#include <optional>
 
 /*********************************** Consts ********************************************/
 
@@ -34,29 +34,28 @@ class RingBuffer {
         : buffer(std::make_unique<T[]>(size))
         , max_size(size) { }
 
-    /**
-     * \brief initialize the container
-     * 
-     * \param size size of the container
-     */
-    void initialize(size_t size) {
-        this->max_size = size;
-        this->buffer = std::make_unique<T[]>(size);
-    }
+    //!< delete copies and moves and default construction
+    RingBuffer() = delete;
+    RingBuffer(const RingBuffer& other) = delete;
+    RingBuffer(RingBuffer&& other) = delete;
+    RingBuffer& operator = (const RingBuffer& other) = delete;
+    RingBuffer& operator = (RingBuffer&& other) = delete;
 
     /**
      * \brief put data onto the ring buffer
      * 
      * \param data to put into the ring buffer
+     * \return True if the put was successful
      */
-    void put(T data) {
+    bool push(T data) {
         /* return if the buffer is full */
-        if ( this->full ) {
-            return;
+        if ( this->full ) {            
+            return false;
         }
         this->buffer[this->head] = data;
         this->head = (this->head + 1) % this->max_size;
         this->full = (this->head == this->tail);
+        return true;
     }
 
     /**
@@ -64,9 +63,9 @@ class RingBuffer {
      * 
      * \retval T 
      */
-    T get(void) {
+    std::optional<T> pop(void) {
         if ( this->is_empty() ) {
-            return T();
+            return std::optional<T>();
         }
 
         auto value = this->buffer[tail];
@@ -97,8 +96,6 @@ class RingBuffer {
      * \brief flush data out of the ring buffer       
      */
     void flush(void) {
-        while ( !this->is_empty() ) {
-            this->get();
-        }
+        while ( this->pop().has_value() ) {}        
     }
 };

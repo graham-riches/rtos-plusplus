@@ -12,7 +12,7 @@
 #include "common.h"
 #include "threading.h"
 
-namespace OS
+namespace os
 {
 
 /*********************************** Consts ********************************************/
@@ -73,4 +73,4 @@ class EventFlags {
     //void get(uint32_t flags, EventGetOptions get_options, EventWaitOptions wait_options, uint32_t wait_time_ms);
 };
 
-};  // namespace OS
+};  // namespace os

@@ -47,7 +47,8 @@ set(SOURCES
     #events_tests.cpp
     scheduler_tests.cpp
     threading_tests.cpp
-    system_clock_tests.cpp    
+    system_clock_tests.cpp
+    ring_buffer_tests.cpp    
 
     # add each application file to test here
     #${PARENT_DIR}/source/OS/events.cpp

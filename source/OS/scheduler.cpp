@@ -10,7 +10,7 @@
 #include "scheduler.h"
 #include "threading.h"
 
-namespace OS
+namespace os
 {
 Scheduler::Scheduler(SystemClock& clock_source, uint8_t max_thread_count, SetPendingInterrupt set_pending, IsInterruptPending check_pending)
     : clock(clock_source)    
@@ -67,7 +67,7 @@ void Scheduler::context_switch_to(TaskControlBlock* tcb) {
 
 void Scheduler::sleep_thread(uint32_t ticks){    
     active_task->suspended_ticks_remaining = ticks;
-    active_task->thread->set_status(OS::Thread::Status::suspended);
+    active_task->thread->set_status(os::Thread::Status::suspended);
 
     /* find the next active thread if a context switch is not already pending */
     if (!check_pending()){
@@ -141,4 +141,4 @@ void Scheduler::set_internal_task(Thread* thread) {
     internal_task.suspended_ticks_remaining = 0;
 }
 
-};  // namespace OS
+};  // namespace os

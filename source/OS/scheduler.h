@@ -16,7 +16,7 @@
 #include <memory>
 #include <optional>
 
-namespace OS
+namespace os
 {
 /**
  * \brief class for managing application threads and scheduling context switches
@@ -136,4 +136,4 @@ class Scheduler {
     TaskControlBlock internal_task;
 };
 
-};  // namespace OS
+};  // namespace os
