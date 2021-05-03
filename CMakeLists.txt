@@ -106,6 +106,7 @@ target_link_options(${BINARY} PRIVATE
     -lnosys
     -Wl,-Map=${PROJECT_NAME}.map,--cref
     -Wl,--gc-sections
+    --no-exceptions
     )
 
 # Print executable size

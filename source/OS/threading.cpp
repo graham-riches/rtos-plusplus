@@ -42,7 +42,7 @@ Thread::Thread(TaskPointer task_ptr, void *arguments, uint32_t id, uint32_t* sta
     taskContext->psr = PSR_THUMB_MODE;
 
     /* set the program counter to the function pointer for the thread */
-    taskContext->pc = *reinterpret_cast<uint32_t*>(task_ptr);
+    taskContext->pc = reinterpret_cast<uint32_t>(task_ptr);
 
     /* set some garbo values to watch the registers during debugging */
     taskContext->r0 = 0;
