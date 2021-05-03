@@ -72,7 +72,7 @@ void initialize_peripherals(void) {
     blue_led.set(false);
 
     /* initialize the accelerometer */
-    accelerometer.initialize();
+    //accelerometer.initialize();
 }
 
 /**

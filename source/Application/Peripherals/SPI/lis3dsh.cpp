@@ -255,6 +255,8 @@ void LIS3DSH::exti_0_irq_handler(void) {
     };
 
     //!< TODO: banking on these being successfull reads
+    //!< TODO: this is broken!!
+    #if 0
     float accel_x = convert_data(this->rx_buffer.pop().value(), this->rx_buffer.pop().value());
     float accel_y = convert_data(this->rx_buffer.pop().value(), this->rx_buffer.pop().value());
     float accel_z = convert_data(this->rx_buffer.pop().value(), this->rx_buffer.pop().value());
@@ -262,6 +264,7 @@ void LIS3DSH::exti_0_irq_handler(void) {
     this->x_data.push(accel_x);
     this->y_data.push(accel_y);
     this->z_data.push(accel_z);
+    #endif
 
     /* clear the interrupt pending bit */
     HAL::clear_external_interrupt_pending(HAL::EXTILine::line_0);
