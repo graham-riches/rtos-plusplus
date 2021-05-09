@@ -10,7 +10,7 @@
 #include "debug_port.h"
 #include "peripherals.h"
 #include "stm32f4xx.h"
-#include "kernel.h"
+#include "os.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -28,8 +28,8 @@ static uint32_t thread_one_stack[thread_stack_size] = {0};
 static uint32_t thread_two_stack[thread_stack_size] = {0};
 
 /* create the threads */
-static os::Thread thread_one(thread_one_task, nullptr, 1, thread_one_stack, thread_stack_size);
-static os::Thread thread_two(thread_two_task, nullptr, 2, thread_two_stack, thread_stack_size);
+static os::thread thread_one(thread_one_task, nullptr, 1, thread_one_stack, thread_stack_size);
+static os::thread thread_two(thread_two_task, nullptr, 2, thread_two_stack, thread_stack_size);
 
 /*********************************** Function Definitions ********************************************/
 /**

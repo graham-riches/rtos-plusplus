@@ -14,7 +14,7 @@
 #include "hal_power.h"
 #include "hal_rcc.h"
 #include "lis3dsh.h"
-#include "kernel.h"
+#include "os.h"
 
 
 /*********************************** Consts ********************************************/

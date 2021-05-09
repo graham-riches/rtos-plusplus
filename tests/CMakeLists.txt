@@ -51,10 +51,7 @@ set(SOURCES
     ring_buffer_tests.cpp    
 
     # add each application file to test here
-    #${PARENT_DIR}/source/OS/events.cpp
-    ${PARENT_DIR}/source/OS/scheduler.cpp
-    ${PARENT_DIR}/source/OS/threading.cpp
-    ${PARENT_DIR}/source/OS/system_clock.cpp
+    ${PARENT_DIR}/source/OS/thread/thread_impl.cpp    
     )
 
 add_executable(${BINARY} ${SOURCES})
@@ -71,11 +68,20 @@ target_include_directories(${BINARY} PUBLIC
     ${PARENT_DIR}/source/Application/Debug
     ${PARENT_DIR}/source/Application/Utilities
     ${PARENT_DIR}/source/OS/
+    ${PARENT_DIR}/source/OS/scheduler
+    ${PARENT_DIR}/source/OS/sempahore
+    ${PARENT_DIR}/source/OS/thread
+    ${PARENT_DIR}/source/OS/mutex
+    ${PARENT_DIR}/source/OS/system_clock
     ${PARENT_DIR}/source/Application/Peripherals			
     ${PARENT_DIR}/source/Application/Peripherals/USART
     ${PARENT_DIR}/source/Application/Peripherals/SPI
     ${CMAKE_SOURCE_DIR}/googletest/googletest/include
     )
+
+target_compile_definitions( ${BINARY} PRIVATE
+    -DMAX_THREAD_COUNT=8
+)
 
 add_test(NAME ${BINARY} COMMAND ${BINARY})
 

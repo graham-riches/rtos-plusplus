@@ -1,6 +1,6 @@
 /*! \file interrupts.h
 *
-*  \brief interrupts module functions and variables declarations.
+*  \brief function declarations for Cortex M4 core interrupts
 *
 *
 *  \author Graham Riches

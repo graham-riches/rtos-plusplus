@@ -8,7 +8,7 @@
 
 /********************************** Includes *******************************************/
 #include "gtest/gtest.h"
-#include "system_clock.h"
+#include "system_clock_impl.h"
 #include "common.h"
 #include <iostream>
 #include <memory>
@@ -30,7 +30,7 @@ class SystemClockTests : public ::testing::Test {
     }
 
   public:
-      os::SystemClock clock;    
+      os::system_clock_impl clock;    
 };
 
 

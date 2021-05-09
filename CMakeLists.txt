@@ -38,7 +38,7 @@ set(APP_SOURCES
     source/OS/threading.cpp
     source/OS/system_clock.cpp
     source/OS/interrupts.cpp
-    source/OS/kernel.cpp
+    source/OS/os.cpp
 
     # Start Up File
     startup/startup_stm32f407xx.s
@@ -50,6 +50,7 @@ add_executable(${BINARY} ${APP_SOURCES})
 
 # Add compile time definitions
 target_compile_definitions(${BINARY} PRIVATE
+    -DMAX_THREAD_COUNT=8
     -DARM_MATH_CM4
     -DSTM32F40XX
     -DSTM32F407xx

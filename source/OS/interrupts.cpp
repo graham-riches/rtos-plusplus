@@ -10,8 +10,8 @@
 #include "interrupts.h"
 #include "board.h"
 #include "common.h"
-#include "threading.h"
-#include "kernel.h"
+#include "thread_impl.h"
+#include "os.h"
 #include "hal_interrupt.h"
 
 /************************************ Types ********************************************/
