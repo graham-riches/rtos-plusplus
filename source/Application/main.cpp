@@ -38,8 +38,8 @@ static os::thread thread_two(thread_two_task, nullptr, 2, thread_two_stack, thre
   */
 int main(void) {
     //!< register the threads
-    os::scheduler::register_thread(&thread_one);
-    os::scheduler::register_thread(&thread_two);
+    os::scheduler::register_new_thread(&thread_one);
+    os::scheduler::register_new_thread(&thread_two);
 
     //!< configure the project specific HAL drivers and bootup the chip, clocks etc.
     initialize_peripherals();    
@@ -61,7 +61,7 @@ static void thread_one_task(void *arguments) {
         debug_port.send("a\n");
         green_led.toggle();
         blue_led.toggle();
-        os::this_thread::sleep_for(100);
+        os::scheduler::sleep(100);
     }
 }
 
@@ -74,6 +74,6 @@ static void thread_two_task(void *arguments) {
         debug_port.send("b\n");
         red_led.toggle();
         orange_led.toggle();
-        os::this_thread::sleep_for(100);
+        os::scheduler::sleep(100);
     }
 }

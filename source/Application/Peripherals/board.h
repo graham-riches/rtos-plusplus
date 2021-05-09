@@ -12,10 +12,6 @@
 
 
 /********************************** Macros *******************************************/
-/* NOTE: these macros must exist in pairs! */
-#define DISABLE_INTERRUPTS() uint32_t prim = __get_PRIMASK(); __disable_irq();
-#define ENABLE_INTERRUPTS() if(!prim){__enable_irq();}
-
 
 /*********************************** Consts ********************************************/
 #define PC14_OSC32_IN_Pin GPIO_Pin_14

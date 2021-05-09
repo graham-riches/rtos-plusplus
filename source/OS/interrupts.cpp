@@ -13,6 +13,7 @@
 #include "thread_impl.h"
 #include "os.h"
 #include "hal_interrupt.h"
+#include "cm4_port.h"
 
 /************************************ Types ********************************************/
 /**
@@ -131,10 +132,10 @@ __attribute__((naked)) void PendSV_Handler(void) {
  *        required.
  */
 void SysTick_Handler(void) {
-    __asm("CPSID I\n");
-    os::system_clock::update(1);
-    os::scheduler::run();
-    __asm("CPSIE I\n");    
+    DISABLE_INTERRUPTS();
+    os::system_clock::update_sytem_ticks(1);
+    os::scheduler::update();
+    ENABLE_INTERRUPTS();  
 }
 
 /**

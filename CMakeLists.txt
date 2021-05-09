@@ -34,11 +34,13 @@ set(APP_SOURCES
     source/Application/Peripherals/SPI/lis3dsh.cpp
 
     # OS files
-    source/OS/scheduler.cpp
-    source/OS/threading.cpp
-    source/OS/system_clock.cpp
+    source/OS/scheduler/scheduler.cpp
+    source/OS/thread/thread_impl.cpp
+    source/OS/system_clock/system_clock.cpp
     source/OS/interrupts.cpp
     source/OS/os.cpp
+    source/OS/cm4_port.cpp
+
 
     # Start Up File
     startup/startup_stm32f407xx.s
@@ -69,6 +71,11 @@ target_include_directories(${BINARY} PRIVATE
     source/Application/Utilities
 
     source/OS
+    source/OS/scheduler
+    source/OS/sempahore
+    source/OS/thread
+    source/OS/mutex
+    source/OS/system_clock
     source/Utilities
     source/HW_Port
 

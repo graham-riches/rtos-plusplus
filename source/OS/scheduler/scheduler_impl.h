@@ -10,7 +10,7 @@
 
 /********************************** Includes *******************************************/
 #include "common.h"
-#include "system_clock_impl.h"
+#include "system_clock.h"
 #include "thread_impl.h"
 
 #include <memory>
@@ -57,7 +57,7 @@ class scheduler_impl {
      * \param set_pending function pointer to the function to set a pending context switch interrupt
      * \param check_pending function pointer to check if an interrupt is already pending
      */
-    scheduler_impl(system_clock_impl& clock_source, uint8_t max_thread_count, SetPendingInterrupt set_pending, IsInterruptPending check_pending)
+    scheduler_impl(system_clock& clock_source, uint8_t max_thread_count, SetPendingInterrupt set_pending, IsInterruptPending check_pending)
         : clock(clock_source)
         , max_thread_count(max_thread_count)
         , set_pending(set_pending)
@@ -69,11 +69,13 @@ class scheduler_impl {
         , pending_task(nullptr)
         , internal_task() { }
 
+
+  protected:
     /**
      * \brief run the scheduling algorithm and signal any context switches to the PendSV handler if required.
      */
     void run(void) {
-        uint32_t current_tick{clock.get_ticks()};
+        uint32_t current_tick{clock.get_elapsed_ticks()};
         uint32_t ticks{current_tick - last_tick};
 
         for ( uint8_t thread = 0; thread < thread_count; thread++ ) {
@@ -232,7 +234,7 @@ class scheduler_impl {
         set_pending();
     }
 
-    system_clock_impl& clock;
+    system_clock& clock;
     uint8_t max_thread_count;
     SetPendingInterrupt set_pending;
     IsInterruptPending check_pending;
