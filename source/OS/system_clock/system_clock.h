@@ -21,7 +21,7 @@ namespace os
  * \brief singleton instance of the system clock
  * 
  */
-class system_clock : private system_clock_impl {
+class system_clock : public system_clock_impl {
   public:
     /**
      * \brief static singleton accessor for the system clock

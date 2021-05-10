@@ -57,8 +57,8 @@ class scheduler_impl {
      * \param set_pending function pointer to the function to set a pending context switch interrupt
      * \param check_pending function pointer to check if an interrupt is already pending
      */
-    scheduler_impl(system_clock& clock_source, uint8_t max_thread_count, SetPendingInterrupt set_pending, IsInterruptPending check_pending)
-        : clock(clock_source)
+    scheduler_impl(system_clock_impl* clock_source, uint8_t max_thread_count, SetPendingInterrupt set_pending, IsInterruptPending check_pending)
+        : clock_ptr(clock_source)
         , max_thread_count(max_thread_count)
         , set_pending(set_pending)
         , check_pending(check_pending)
@@ -69,20 +69,18 @@ class scheduler_impl {
         , pending_task(nullptr)
         , internal_task() { }
 
-
-  protected:
     /**
      * \brief run the scheduling algorithm and signal any context switches to the PendSV handler if required.
      */
     void run(void) {
-        uint32_t current_tick{clock.get_elapsed_ticks()};
+        uint32_t current_tick{clock_ptr->get_ticks()};
         uint32_t ticks{current_tick - last_tick};
 
         for ( uint8_t thread = 0; thread < thread_count; thread++ ) {
             auto tcb = &task_control_blocks[thread];
 
             //!< pick up any threads that are waking up from sleep
-            if ( tcb->thread_ptr->get_status() == thread::status::suspended ) {
+            if ( tcb->thread_ptr->get_status() == thread::status::sleeping ) {
                 tcb->suspended_ticks_remaining -= ticks;
                 if ( (tcb->suspended_ticks_remaining) <= 0 ) {
                     tcb->thread_ptr->set_status(thread::status::pending);
@@ -113,21 +111,16 @@ class scheduler_impl {
      */
     void sleep_thread(uint32_t ticks) {
         active_task->suspended_ticks_remaining = ticks;
+        active_task->thread_ptr->set_status(os::thread::status::sleeping);
+        jump_to_next_pending_task();
+    }
+
+    /**
+     * \brief suspends the calling thread and triggers a context switch to the next available thread
+     */
+    void suspend_thread() {
         active_task->thread_ptr->set_status(os::thread::status::suspended);
-
-        /* find the next active thread if a context switch is not already pending */
-        if ( !check_pending() ) {
-            for ( uint8_t thread = 0; thread < thread_count; thread++ ) {
-                auto tcb = &task_control_blocks[thread];
-                if ( (tcb->thread_ptr->get_status() == thread::status::pending) && (tcb != active_task) ) {
-                    context_switch_to(tcb);
-                    return;
-                }
-            }
-        }
-
-        /* all threads are sleeping so context switch to the internal OS thread */
-        context_switch_to(&internal_task);
+        jump_to_next_pending_task();
     }
 
     /**
@@ -234,7 +227,26 @@ class scheduler_impl {
         set_pending();
     }
 
-    system_clock& clock;
+    /**
+     * \brief jump to the next available task
+     */
+    void jump_to_next_pending_task() {
+        /* find the next active thread if a context switch is not already pending */
+        if ( !check_pending() ) {
+            for ( uint8_t thread = 0; thread < thread_count; thread++ ) {
+                auto tcb = &task_control_blocks[thread];
+                if ( (tcb->thread_ptr->get_status() == thread::status::pending) && (tcb != active_task) ) {
+                    context_switch_to(tcb);
+                    return;
+                }
+            }
+        }
+
+        /* all threads are sleeping so context switch to the internal OS thread */
+        context_switch_to(&internal_task);
+    }
+
+    system_clock_impl* clock_ptr;
     uint8_t max_thread_count;
     SetPendingInterrupt set_pending;
     IsInterruptPending check_pending;

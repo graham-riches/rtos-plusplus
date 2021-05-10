@@ -50,7 +50,7 @@ protected:
 
     void SetUp(void) override {
         internal_thread = create_thread(reinterpret_cast<os::thread::task_pointer>(&thread_task), nullptr, 0xFFFF, internal_stack, thread_stack_size);
-        scheduler = std::make_unique<os::scheduler_impl>(clock, thread_count, set_pending_irq, is_pending_irq);
+        scheduler = std::make_unique<os::scheduler_impl>(&clock, thread_count, set_pending_irq, is_pending_irq);
         scheduler->set_internal_task(internal_thread.get());
         pending_irq = false;
         clock.start();
@@ -75,7 +75,7 @@ public:
 class SchedulerTestsWithPreRegisteredThreads : public SchedulerTests {
 protected:
     void SetUp(void) override {
-        scheduler = std::make_unique<os::scheduler_impl>(clock, thread_count, set_pending_irq, is_pending_irq);
+        scheduler = std::make_unique<os::scheduler_impl>(&clock, thread_count, set_pending_irq, is_pending_irq);
         internal_thread = create_thread(reinterpret_cast<os::thread::task_pointer>(&thread_task), nullptr, 0xFFFF, internal_stack, thread_stack_size);
         thread_one = create_thread(reinterpret_cast<os::thread::task_pointer>(&thread_task), nullptr, 1, stack_one, thread_stack_size);
         thread_two = create_thread(reinterpret_cast<os::thread::task_pointer>(&thread_task), nullptr, 2, stack_two, thread_stack_size);   
@@ -170,7 +170,7 @@ TEST_F(SchedulerTests, test_sleeping_all_threads_sets_internal_thread_active) {
 }
 
 TEST_F(SchedulerTestsWithPreRegisteredThreads, test_update_from_clock_triggers_context_switch) {    
-    thread_two->set_status(os::thread::status::suspended);
+    thread_two->set_status(os::thread::status::sleeping);
     clock.update(1);
     scheduler->run();
     ASSERT_TRUE(pending_irq);
@@ -191,7 +191,7 @@ TEST_F(SchedulerTestsWithPreRegisteredThreads, test_multiple_threads_asleep_wake
     auto tcb = scheduler->get_active_tcb_ptr(); 
     tcb = tcb->next;
     tcb->suspended_ticks_remaining = 1;
-    tcb->thread_ptr->set_status(os::thread::status::suspended);
+    tcb->thread_ptr->set_status(os::thread::status::sleeping);
 
     clock.update(1);
     scheduler->run();
@@ -214,7 +214,7 @@ TEST_F(SchedulerTestsWithPreRegisteredThreads, test_scheduler_doesnt_clobber_pen
     auto tcb = scheduler->get_active_tcb_ptr(); 
     tcb = tcb->next;
     tcb->suspended_ticks_remaining = 1;
-    tcb->thread_ptr->set_status(os::thread::status::suspended);
+    tcb->thread_ptr->set_status(os::thread::status::sleeping);
 
     /* run an update, which should pick up the first thread */
     clock.update(1);

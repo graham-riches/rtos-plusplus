@@ -49,6 +49,7 @@ class thread {
     enum class status : unsigned {
         active = 0,
         suspended,
+        sleeping,
         pending,
     };    
 

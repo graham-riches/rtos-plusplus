@@ -28,36 +28,62 @@ namespace os {
  * \tparam T integral semaphore type
  */
 template <typename T>
-class Sempahore {
+class counting_semaphore {
     public:
-        static_assert(std::is_integral<T>::type, "Sempahore must be created with an integral type");
+        static_assert(std::is_integral<T>::type, "Semaphore must be created with an integral type");
         
-        Sempahore(T initial_count, uint8_t max_pending_thread_count)
+        /**
+         * \brief Construct a new counting semaphore object
+         * 
+         * \param scheduler_ptr pointer to a scheduler
+         * \param initial_count initial count for the resource
+         * \param max_pending_thread_count max pending thread depth (for sizing the suspended threads queue)
+         * \todo the size of this can be optimized to be less than the max thread count because the thread cannot
+         *       suspend on itself so this can save a bit of memory in the future
+         */
+        counting_semaphore(scheduler_impl* scheduler_ptr, T initial_count, uint8_t max_pending_thread_count)
         : count(initial_count)
-        , max_pending_threads(max_pending_thread_count) {}
+        , max_pending_threads(max_pending_thread_count)
+        , pending_threads(max_pending_thread_count)
+        , scheduler_ptr(scheduler_ptr) {}
 
         /**
-         * \brief 
+         * \brief try to wait on the semaphore. This will suspend the calling thread if the resource is not available
          */
         void wait() {
-
+            auto tcb = scheduler::get_active_task_control_block();            
+            if ( count <= 0 ){                
+                pending_threads.push(tcb);
+                scheduler_ptr->suspend_thread();
+            }
+            count--;
         }
 
         /**
-         * \brief 
+         * \brief signal the semaphore and wake up the next thread that is pending
          */
-        void put() {
+        void signal() {             
+            //!< wake up the first pending thread
+            if (!pending_threads.is_empty()) {
+                auto maybe_task = pending_threads.pop();
+                if (maybe_task.has_value()) {
+                    auto tcb = maybe_task.value();
+                    tcb->thread_ptr->set_status(thread::status::pending);
+                }
+            }
             
+            //!< increment the semaphore
+            count++;
         }
 
-
-        ~Sempahore(){}
+        ~counting_semaphore(){}
 
 
     protected:
     T count;
     const uint8_t max_pending_threads;
-    RingBuffer<scheduler_impl::TaskControlBlock> pending_threads;
+    RingBuffer<scheduler::TaskControlBlock> pending_threads;
+    scheduler_impl* scheduler_ptr;
 };
 
 };

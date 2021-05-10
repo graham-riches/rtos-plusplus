@@ -62,12 +62,24 @@ class scheduler : public scheduler_impl {
      */
     static TaskControlBlock* get_pending_task_control_block();
 
+    /**
+     * \brief lock the scheduler to perform atomic operations without interrupting
+     */
+    static void lock();
+
+    /**
+     * \brief unlock the scheduler
+     */
+    static void unlock();
+
 
   private:
     /**
      * \brief Construct the os scheduler as a singleton instance
      */
     scheduler();
+
+    bool locked;
 };
 
 };  // namespace os

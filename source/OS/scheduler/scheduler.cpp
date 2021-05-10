@@ -31,7 +31,8 @@ static os::thread internal_thread(internal_thread_task, nullptr, 0xFFFF, interna
 /********************************** Function Definitions *******************************************/
 //!> default construct the scheduler
 scheduler::scheduler()
-    : scheduler_impl(system_clock::get(), MAX_THREAD_COUNT, set_pending_context_switch, is_context_switch_pending) {
+    : scheduler_impl(system_clock::get(), MAX_THREAD_COUNT, set_pending_context_switch, is_context_switch_pending)
+    , locked(false) {
     set_internal_task(&internal_thread);
 }
 
@@ -44,7 +45,9 @@ scheduler& scheduler::get() {
 //!< run the scheduler algorithm
 void scheduler::update() {
     auto& self = get();
-    self.run();
+    if ( !self.locked ) {        
+        self.run();
+    }
 }
 
 //!< register a new thread
@@ -67,13 +70,27 @@ scheduler::TaskControlBlock* scheduler::get_active_task_control_block() {
     return self.get_active_tcb_ptr();
 }
 
-//< get the pending task control block
+//!< get the pending task control block
 scheduler::TaskControlBlock* scheduler::get_pending_task_control_block() {
     auto& self = get();
     return self.get_pending_tcb_ptr();
 }
 
+//!< lock the scheduler
+void scheduler::lock() {    
+    DISABLE_INTERRUPTS();
+    auto& self = get();
+    self.locked = true;
+    ENABLE_INTERRUPTS();
+}
 
+//!< unlock the scheduler
+void scheduler::unlock() {
+    DISABLE_INTERRUPTS();
+    auto& self = get();
+    self.locked = false;
+    ENABLE_INTERRUPTS();
+}
 
 /**
  * \brief empty internal thread task to run when all other threads are sleeping
