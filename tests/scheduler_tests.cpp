@@ -50,7 +50,7 @@ protected:
 
     void SetUp(void) override {
         internal_thread = create_thread(reinterpret_cast<os::thread::task_pointer>(&thread_task), nullptr, 0xFFFF, internal_stack, thread_stack_size);
-        scheduler = std::make_unique<os::scheduler_impl>(&clock, thread_count, set_pending_irq, is_pending_irq);
+        scheduler = std::make_unique<os::scheduler_impl>(clock, thread_count, set_pending_irq, is_pending_irq);
         scheduler->set_internal_task(internal_thread.get());
         pending_irq = false;
         clock.start();
@@ -75,7 +75,7 @@ public:
 class SchedulerTestsWithPreRegisteredThreads : public SchedulerTests {
 protected:
     void SetUp(void) override {
-        scheduler = std::make_unique<os::scheduler_impl>(&clock, thread_count, set_pending_irq, is_pending_irq);
+        scheduler = std::make_unique<os::scheduler_impl>(clock, thread_count, set_pending_irq, is_pending_irq);
         internal_thread = create_thread(reinterpret_cast<os::thread::task_pointer>(&thread_task), nullptr, 0xFFFF, internal_stack, thread_stack_size);
         thread_one = create_thread(reinterpret_cast<os::thread::task_pointer>(&thread_task), nullptr, 1, stack_one, thread_stack_size);
         thread_two = create_thread(reinterpret_cast<os::thread::task_pointer>(&thread_task), nullptr, 2, stack_two, thread_stack_size);   
