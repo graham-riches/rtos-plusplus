@@ -4,14 +4,15 @@ set(CMAKE_SYSTEM_NAME Generic)
 
 # Set the project name
 project(bare_metal_os)
+set(CMAKE_VERBOSE_MAKEFILE on)
 
 # Set the language standards used
 enable_language(C CXX ASM)
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -85,8 +86,7 @@ target_include_directories(${BINARY} PRIVATE
     )
 
 # Set compiler flags - switch to -03 here for optimization*
-target_compile_options(${BINARY} PRIVATE
-    -std=c++17
+target_compile_options(${BINARY} PRIVATE    
     -mcpu=cortex-m4
     -mthumb
     -mfpu=fpv4-sp-d16
@@ -103,7 +103,7 @@ target_compile_options(${BINARY} PRIVATE
 
 # Set the linker options
 target_link_options(${BINARY} PRIVATE
-    -T${CMAKE_SOURCE_DIR}/STM32F407VgTx_FLASH.ld
+    -T${CMAKE_SOURCE_DIR}/STM32F407VGTx_FLASH.ld
     -mcpu=cortex-m4
     -mthumb
     -mfpu=fpv4-sp-d16
