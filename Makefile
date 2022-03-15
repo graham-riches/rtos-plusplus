@@ -5,6 +5,7 @@ TOOLCHAIN:=toolchain.cmake
 BUILD_DIR:=build
 TEST_DIR:=tests
 TEST_BUILD_DIR:=tests/build
+BINARY:=bare_metal_os.bin
 
 help:                                       ## Show this help.
 	@echo "Available Targets to Build"
@@ -21,6 +22,7 @@ build: $(BUILD_DIR)/CMakeCache.txt          ## Cross-compile the main binary
 .PHONY: build-and-load
 build-and-load: $(BUILD_DIR)/CMakeCache.txt ## Cross-compile the main binary and upload via SWD
 	make -j4 -C $(BUILD_DIR) --no-print-directory \	
+	cd build && st-flash write $(BINARY) 0x08000000
 
 .PHONY: cleanbuild
 cleanbuild:                                 ## Clean the main build
@@ -44,3 +46,4 @@ clean:                                      ## Clean the unit tests
 
 .PHONY: load
 load:                                       ## Load the binary to the remote target
+	cd build && st-flash write $(BINARY) 0x08000000
