@@ -10,10 +10,10 @@
  */
 
 /********************************** Includes *******************************************/
-#include "gtest/gtest.h"
 #include "ring_buffer.h"
+#include "gtest/gtest.h"
+#include <array>
 #include <vector>
-
 
 /*********************************** Consts ********************************************/
 
@@ -22,59 +22,96 @@
  * \brief test fixture for ring buffer tests
  */
 class RingBufferTests : public ::testing::Test {
-    public:
-    void SetUp() override {}
+  public:
+    void SetUp() override { }
 
-    void TearDown() override {}
-    
-    RingBuffer<int> buffer{5};
+    void TearDown() override { }
+
+    ring_buffer<int, 5> buffer;
 };
 
-
 TEST_F(RingBufferTests, test_initial_construction) {
-    ASSERT_FALSE(buffer.is_full());
-    ASSERT_TRUE(buffer.is_empty());
+    ASSERT_FALSE(buffer.full());
+    ASSERT_TRUE(buffer.empty());
 }
 
-TEST_F(RingBufferTests, test_filling_buffer_returns_full) {
-    std::vector<int> values = {0, 1, 2, 3, 4};
-    for (const auto& val : values) {
-        ASSERT_TRUE(buffer.push(val));
-    }
-
-    ASSERT_TRUE(buffer.is_full());
-    ASSERT_FALSE(buffer.is_empty());
-
-    for (const auto& val : values) {
-        ASSERT_EQ(val, buffer.pop().value());
+TEST_F(RingBufferTests, test_push_increments_size) {
+    std::array<int, 5> values = {1, 2, 3, 4, 5};
+    for ( auto val : values ) {
+        buffer.push_back(val);
+        ASSERT_EQ(buffer.size(), val);
     }
 }
 
-TEST_F(RingBufferTests, test_trying_push_to_full_buffer_fails) {
-    std::vector<int> values = {0, 1, 2, 3, 4};
-    for (const auto& val : values) {
-        ASSERT_TRUE(buffer.push(val));
+TEST_F(RingBufferTests, test_buffer_wrap_does_not_change_size) {
+    std::array<int, 5> values = {1, 2, 3, 4, 5};
+    for ( auto val : values ) {
+        buffer.push_back(val);
+        ASSERT_EQ(buffer.size(), val);
     }
-    ASSERT_FALSE(buffer.push(5));
+    buffer.push_back(6);
+    ASSERT_EQ(buffer.size(), 5);
 }
 
-TEST_F(RingBufferTests, test_put_then_pop_pointer_wrap_around_works) {
-    std::vector<int> values = {0, 1, 2, 3, 4};
-    for (const auto& val : values) {
-        buffer.push(val);
-    }
-    buffer.pop();
-
-    buffer.push(5);
-    ASSERT_TRUE(buffer.is_full());
+TEST_F(RingBufferTests, test_begin_iterator_gets_first_element) {
+    buffer.push_back(1);
+    auto it = buffer.begin();
+    ASSERT_EQ(*it, 1);
 }
 
-TEST_F(RingBufferTests, test_flush_buffer) {
-    std::vector<int> values = {0, 1, 2, 3, 4};
-    for (const auto& val : values) {
-        buffer.push(val);
+TEST_F(RingBufferTests, test_begin_iterator_gets_first_element_after_wrapping) {
+    ring_buffer<int, 2> buff;
+    buff.push_back(1);
+    buff.push_back(2);
+    buff.push_back(3);  // Has now wrapped
+    auto it = buff.begin();
+    ASSERT_EQ(*it, 2);
+}
+
+TEST_F(RingBufferTests, test_buffer_in_range_based_for) {
+    std::array<int, 5> values = {1, 2, 3, 4, 5};
+    for ( auto val : values ) {
+        buffer.push_back(val);
     }
-    buffer.flush();
-    ASSERT_TRUE(buffer.is_empty());
-    ASSERT_FALSE(buffer.is_full());
+    unsigned count = 0;
+    for ( auto val : buffer ) {
+        ASSERT_EQ(val, values[count++]);        
+    }
+    ASSERT_EQ(5, values[count]);
+}
+
+TEST_F(RingBufferTests, test_creating_const_iterators) {
+    buffer.push_back(1);
+    auto it = buffer.cbegin();
+    ASSERT_EQ(*it, 1);
+    it = buffer.cend();
+    ASSERT_EQ(*it, 1);
+}
+
+TEST_F(RingBufferTests, test_reverse_iterators) {
+    std::array<int, 5> values = {1, 2, 3, 4, 5};
+    for ( auto val : values ) {
+        buffer.push_back(val);
+    }
+    auto rev_array = values.rbegin();
+    auto temp = *rev_array;
+    for (auto it = buffer.rbegin(); it != buffer.rend(); it++) {
+        temp = *rev_array;
+        ASSERT_EQ(*it, *rev_array++);        
+    }
+    ASSERT_EQ(temp, 1);
+}
+
+TEST_F(RingBufferTests, test_const_reverse_iterators) {
+    std::array<int, 5> values = {1, 2, 3, 4, 5};
+    for ( auto val : values ) {
+        buffer.push_back(val);
+    }
+    auto rev_array = values.rbegin();
+    auto temp = *rev_array;
+    for (auto it = buffer.crbegin(); it != buffer.crend(); it++) {
+        temp = *rev_array;
+        ASSERT_EQ(*it, *rev_array++);        
+    }
+    ASSERT_EQ(temp, 1);
 }

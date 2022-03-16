@@ -1,6 +1,6 @@
 /*! \file ring_buffer.h
 *
-*  \brief ring_buffer module functions and variables declarations.
+*  \brief ring_buffer container type that supports iterators 
 *
 *
 *  \author Graham Riches
@@ -9,93 +9,389 @@
 #pragma once
 
 /********************************** Includes *******************************************/
+#include <array>
 #include <memory>
 #include <optional>
+#include <type_traits>
 
 /*********************************** Consts ********************************************/
 
 /************************************ Types ********************************************/
+namespace detail
+{
+
+template <typename It, std::size_t MaxCapacity, bool is_const>
+struct iterator {
+    using iterator_category = std::bidirectional_iterator_tag;
+    using difference_type = std::ptrdiff_t;
+    using value_type = std::conditional_t<is_const, It const, It>;
+    using pointer = value_type*;
+    using reference = value_type&;
+
+    iterator(pointer ptr, pointer buffer)
+        : m_ptr(ptr)
+        , m_buff(buffer)
+        , m_end(buffer + MaxCapacity - 1)
+        , m_start(ptr) { }
+
+    reference operator*() const {
+        return *m_ptr;
+    }
+    pointer operator->() {
+        return m_ptr;
+    }
+
+    iterator& operator++() {
+        m_ptr++;
+        if ( m_ptr == m_end ) {
+            m_ptr = m_buff;
+        }
+        if ( m_ptr == m_start ) {
+            m_ptr = nullptr;
+        }
+        return *this;
+    }
+
+    iterator operator++(It) {
+        auto temp = *this;
+        ++(*this);
+        return temp;
+    }
+
+    iterator& operator--() {
+        m_ptr--;
+        if ( m_ptr < m_buff ) {
+            m_ptr = m_end;
+        }
+        if ( m_ptr == m_start ) {
+            m_ptr = nullptr;
+        }
+        return *this;
+    }
+
+    iterator operator--(It) {
+        auto temp = *this;
+        --(*this);
+        return temp;
+    }
+
+    bool operator!=(const iterator& other) {
+        return m_ptr != other.m_ptr;
+    }
+
+  private:
+    pointer m_ptr;
+    pointer m_buff;
+    pointer m_end;
+    pointer m_start;
+};
+
+template <typename It, std::size_t MaxCapacity, bool is_const>
+struct reverse_iterator {
+    using iterator_category = std::bidirectional_iterator_tag;
+    using difference_type = std::ptrdiff_t;
+    using value_type = std::conditional_t<is_const, It const, It>;
+    using pointer = value_type*;
+    using reference = value_type&;
+
+    reverse_iterator(pointer ptr, pointer buffer)
+        : m_ptr(ptr)
+        , m_buff(buffer)
+        , m_end(buffer + MaxCapacity - 1)
+        , m_start(ptr) { }
+
+    reference operator*() const {
+        return *m_ptr;
+    }
+    pointer operator->() {
+        return m_ptr;
+    }
+
+    reverse_iterator& operator++() {
+        m_ptr--;
+        if ( m_ptr < m_buff ) {
+            m_ptr = m_end;
+        }
+        if ( m_ptr == m_start ) {
+            m_ptr = nullptr;
+        }
+        return *this;
+    }
+
+    reverse_iterator operator++(It) {
+        auto temp = *this;
+        ++(*this);
+        return temp;
+    }
+
+    reverse_iterator& operator--() {
+        m_ptr++;
+        if ( m_ptr == m_end ) {
+            m_ptr = m_buff;
+        }
+        if ( m_ptr == m_start ) {
+            m_ptr = nullptr;
+        }
+        return *this;
+    }
+
+    reverse_iterator operator--(It) {
+        auto temp = *this;
+        --(*this);
+        return temp;
+    }
+
+    bool operator!=(const reverse_iterator& other) {
+        return m_ptr != other.m_ptr;
+    }
+
+  private:
+    pointer m_ptr;
+    pointer m_buff;
+    pointer m_end;
+    pointer m_start;
+};
+
+};  // namespace detail
+
 /**
  * \brief template class for a re-usable ring buffer
  * 
  * \tparam T parameter type
  */
-template <typename T>
-class RingBuffer {
-  private:
-    std::unique_ptr<T[]> buffer;
-    const size_t max_size;
-    size_t head = 0;
-    size_t tail = 0;
-    bool full = false;
+template <typename T, std::size_t MaxCapacity>
+class ring_buffer {
+    static_assert((MaxCapacity > 0), "ring_buffer size must be non-zero");
 
   public:
-    explicit RingBuffer(size_t size)
-        : buffer(std::make_unique<T[]>(size))
-        , max_size(size) { }
-
-    //!< delete copies and moves and default construction
-    RingBuffer() = delete;
-    RingBuffer(const RingBuffer& other) = delete;
-    RingBuffer(RingBuffer&& other) = delete;
-    RingBuffer& operator = (const RingBuffer& other) = delete;
-    RingBuffer& operator = (RingBuffer&& other) = delete;
+    //!< Constructors
 
     /**
-     * \brief put data onto the ring buffer
+     * \brief Construct a new Ring Buffer object
      * 
-     * \param data to put into the ring buffer
-     * \return True if the put was successful
      */
-    bool push(T data) {
-        /* return if the buffer is full */
-        if ( this->full ) {            
-            return false;
+    explicit ring_buffer()
+        : m_head(0)
+        , m_tail(0) { }
+
+    //!< Delete copies and moves
+    ring_buffer(const ring_buffer& other) = delete;
+    ring_buffer(ring_buffer&& other) = delete;
+    ring_buffer& operator=(const ring_buffer& other) = delete;
+    ring_buffer& operator=(ring_buffer&& other) = delete;
+
+    //!< Public Members
+    /**
+     * \brief Push a value to the back of the buffer
+     * 
+     * @tparam ValueType Type of the buffer templated to overload on lvalues and rvalues
+     * \param data Universal reference to the data to put into the buffer
+     */
+    template <typename ValueType>
+    void push_back(ValueType&& data) {
+        static_assert(std::is_same_v<std::remove_reference_t<ValueType>, T>, "Invalid type for ring_buffer");
+        if ( full() ) {
+            increment(m_tail);
+        } else {
+            ++m_size;
         }
-        this->buffer[this->head] = data;
-        this->head = (this->head + 1) % this->max_size;
-        this->full = (this->head == this->tail);
-        return true;
+        m_buffer[m_head] = data;
+        increment(m_head);
     }
 
     /**
-     * \brief get data off the ring buffer
+     * \brief WIP -- Logic not complete
      * 
-     * \retval T 
+     * @tparam ValueType 
+     * \param data 
+     */
+    template <typename ValueType>
+    void push_front(ValueType&& data) {
+        static_assert(std::is_same_v<std::remove_reference_t<ValueType>, T>, "Invalid type for ring_buffer");
+    }
+
+    /**
+     * \brief Pop an item from the buffer
+     * 
+     * \return std::optional<T> Returns an optional if popping from an empty buffer
      */
     std::optional<T> pop(void) {
-        if ( this->is_empty() ) {
+        if ( empty() ) {
             return std::optional<T>();
         }
 
-        auto value = this->buffer[tail];
-        this->tail = (this->tail + 1) % this->max_size;
-        this->full = false;
+        auto value = m_buffer[m_tail];
+        increment(m_tail);
+        m_full = false;
+        --m_size;
         return value;
     }
 
+    //!< Iterators
+    // clang-format off
+    using forward_iterator       = detail::iterator<T, MaxCapacity, false>;
+    using const_forward_iterator = detail::iterator<T, MaxCapacity, true>;
+    using reverse_iterator       = detail::reverse_iterator<T, MaxCapacity, false>;
+    using const_reverse_iterator = detail::reverse_iterator<T, MaxCapacity, true>;
+    // clang-format on
+
     /**
-     * \brief check if the buffer is empty 
+     * \brief Returns a forward_iterator to the first item in the buffer
      * 
-     * \retval true/false       
+     * \return forward_iterator 
      */
-    bool is_empty(void) {
-        return (!this->full && (this->head == this->tail));
+    forward_iterator begin() {
+        return forward_iterator(&m_buffer[m_tail], m_buffer.data());
     }
 
     /**
-     * \brief check if the buffer is full
+     * \brief Returns a const_forward_iterator to the first item in the buffer
      * 
-     * \retval true/false
+     * \return const_forward_iterator 
      */
-    bool is_full(void) {
-        return this->full;
+    const_forward_iterator cbegin() {
+        return const_forward_iterator(&m_buffer[m_tail], m_buffer.data());
     }
 
     /**
-     * \brief flush data out of the ring buffer       
+     * \brief Returns a forward_iterator to the last item in the collection
+     * 
+     * \return forward_iterator 
      */
-    void flush(void) {
-        while ( this->pop().has_value() ) {}        
+    forward_iterator end() {
+        if ( full() ) {
+            return forward_iterator(nullptr, m_buffer.data());
+        }
+        auto temp = m_head;
+        decrement(temp);
+        return forward_iterator(&m_buffer[temp], m_buffer.data());
     }
+
+    /**
+     * \brief Returns a const iterator to the last item in the collection
+     * 
+     * \return const_forward_iterator 
+     */
+    const_forward_iterator cend() {
+        if ( full() ) {
+            return const_forward_iterator(nullptr, m_buffer.data());
+        }
+        auto temp = m_head;
+        decrement(temp);
+        return const_forward_iterator(&m_buffer[temp], m_buffer.data());
+    }
+
+    //!< Reverse Iterators
+    /**
+     * \brief Returns an initial reverse iterator
+     * 
+     * \return reverse_iterator 
+     */
+    reverse_iterator rbegin() {
+        auto temp = m_head;
+        decrement(temp);
+        return reverse_iterator(&m_buffer[temp], m_buffer.data());
+    }
+
+    /**
+     * \brief Returns an initial const reverse iterator
+     * 
+     * \return const_reverse_iterator 
+     */
+    const_reverse_iterator crbegin() {
+        auto temp = m_head;
+        decrement(temp);
+        return const_reverse_iterator(&m_buffer[temp], m_buffer.data());
+    }
+
+    /**
+     * \brief Returns a ending reverse iterator
+     * 
+     * \return iterator 
+     */
+    reverse_iterator rend() {
+        if ( full() ) {
+            return reverse_iterator(nullptr, m_buffer.data());
+        }
+        return reverse_iterator(&m_buffer[m_tail], m_buffer.data());
+    }
+
+    /**
+     * \brief Returns an ending const reverse iterator
+     * 
+     * \return const_reverse_iterator 
+     */
+    const_reverse_iterator crend() {
+        if ( full() ) {
+            return const_reverse_iterator(nullptr, m_buffer.data());
+        }
+        return const_reverse_iterator(&m_buffer[m_tail], m_buffer.data());
+    }
+
+    /**
+     * \brief Returns the current size of the buffer
+     * 
+     * \return std::size_t 
+     */
+    std::size_t size() const {
+        return m_size;
+    }
+
+    /**
+     * \brief Checks if the buffer is empty
+     * 
+     * \return bool True if empty
+     */
+    bool empty() const {
+        return size() == 0;
+    }
+
+    /**
+     * \brief Checks if the buffer is full
+     * 
+     * \return bool True if full
+     */
+    bool full() const {
+        return size() == MaxCapacity;
+    }
+
+    /**
+     * \brief Flushes all items from the buffer
+     */
+    void flush() {
+        while ( pop().has_value() ) {
+        }
+    }
+
+  private:
+    /**
+     * \brief Helper to increment an index
+     * 
+     * \param index The index to increment
+     */
+    inline void increment(std::size_t& index) {
+        index++;
+        if ( index >= MaxCapacity ) {
+            index = 0;
+        }
+    }
+
+    /**
+     * \brief Helper to decrement an index
+     * 
+     * \param index The index to decrement
+     */
+    inline void decrement(std::size_t& index) {
+        if ( index == 0 ) {
+            index = MaxCapacity - 1;
+        } else {
+            index--;
+        }
+    }
+
+    std::array<T, MaxCapacity> m_buffer;
+    std::size_t m_head = 0;
+    std::size_t m_tail = 0;
+    std::size_t m_size = 0;
+    bool m_full = false;
 };

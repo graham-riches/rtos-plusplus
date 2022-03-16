@@ -121,8 +121,8 @@ class SPIPolling : protected SPIBase {
  */
 class SPIInterrupt : protected SPIBase, public HAL::InterruptPeripheral {
   protected:
-    RingBuffer<uint8_t> tx_buffer;
-    RingBuffer<uint8_t> rx_buffer;
+    ring_buffer<uint8_t> tx_buffer;
+    ring_buffer<uint8_t> rx_buffer;
 
   public:
     SPIInterrupt(SPI_TypeDef* spi_peripheral_address, OutputPin chip_select, size_t tx_size, size_t rx_size)

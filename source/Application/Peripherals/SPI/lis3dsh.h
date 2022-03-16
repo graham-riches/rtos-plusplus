@@ -75,9 +75,9 @@ class LIS3DSH : public HAL::SPIInterrupt {
   private:
     /* private data */
     uint16_t conversion_factor;
-    RingBuffer<float> x_data;
-    RingBuffer<float> y_data;
-    RingBuffer<float> z_data;
+    ring_buffer<float> x_data;
+    ring_buffer<float> y_data;
+    ring_buffer<float> z_data;
 
     /* private methods */
     uint8_t read_register(LIS3DSHRegisters reg);

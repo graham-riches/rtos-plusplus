@@ -123,8 +123,8 @@ class USARTBase {
  */
 class USARTInterrupt : protected USARTBase, public HAL::InterruptPeripheral {
   protected:
-    RingBuffer<uint8_t> tx_buffer;
-    RingBuffer<uint8_t> rx_buffer;
+    ring_buffer<uint8_t> tx_buffer;
+    ring_buffer<uint8_t> rx_buffer;
 
   public:
     USARTInterrupt(USART_TypeDef* usart, size_t tx_size, size_t rx_size)

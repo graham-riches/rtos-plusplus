@@ -82,7 +82,7 @@ class counting_semaphore {
     protected:
     T count;
     const uint8_t max_pending_threads;
-    RingBuffer<scheduler::TaskControlBlock> pending_threads;
+    ring_buffer<scheduler::TaskControlBlock> pending_threads;
     scheduler_impl* scheduler_ptr;
 };
 
