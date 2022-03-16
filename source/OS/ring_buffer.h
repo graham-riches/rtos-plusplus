@@ -19,7 +19,13 @@
 /************************************ Types ********************************************/
 namespace detail
 {
-
+/**
+ * \brief Regular forward iterator type
+ * 
+ * @tparam It Type of the iterator
+ * @tparam MaxCapacity max size of the buffer
+ * @tparam is_const flag for const iterator
+ */
 template <typename It, std::size_t MaxCapacity, bool is_const>
 struct iterator {
     using iterator_category = std::bidirectional_iterator_tag;
@@ -42,10 +48,11 @@ struct iterator {
     }
 
     iterator& operator++() {
-        m_ptr++;
         if ( m_ptr == m_end ) {
             m_ptr = m_buff;
-        }
+        } else {
+            m_ptr++;
+        } 
         if ( m_ptr == m_start ) {
             m_ptr = nullptr;
         }
@@ -86,6 +93,13 @@ struct iterator {
     pointer m_start;
 };
 
+/**
+ * \brief Reverse iterator type
+ * 
+ * @tparam It Type of the iterator
+ * @tparam MaxCapacity max size of the buffer
+ * @tparam is_const flag for const iterator
+ */
 template <typename It, std::size_t MaxCapacity, bool is_const>
 struct reverse_iterator {
     using iterator_category = std::bidirectional_iterator_tag;
@@ -126,7 +140,7 @@ struct reverse_iterator {
 
     reverse_iterator& operator--() {
         m_ptr++;
-        if ( m_ptr == m_end ) {
+        if ( m_ptr >= m_end ) {
             m_ptr = m_buff;
         }
         if ( m_ptr == m_start ) {
@@ -155,7 +169,7 @@ struct reverse_iterator {
 };  // namespace detail
 
 /**
- * \brief template class for a re-usable ring buffer
+ * \brief template class for a STL-like re-usable ring buffer with no dynamic allocation
  * 
  * \tparam T parameter type
  */
@@ -200,14 +214,21 @@ class ring_buffer {
     }
 
     /**
-     * \brief WIP -- Logic not complete
+     * \brief Push a value to the front of the buffer
      * 
-     * @tparam ValueType 
-     * \param data 
+     * @tparam ValueType Type of the buffer templated to overload on lvalues and rvalues
+     * \param data Universal reference to the data to put into the buffer
      */
     template <typename ValueType>
     void push_front(ValueType&& data) {
         static_assert(std::is_same_v<std::remove_reference_t<ValueType>, T>, "Invalid type for ring_buffer");
+        decrement(m_tail);
+        if ( full() ) {
+            increment(m_head);
+        } else {
+            ++m_size;
+        }
+        m_buffer[m_tail] = data;                
     }
 
     /**
@@ -215,14 +236,13 @@ class ring_buffer {
      * 
      * \return std::optional<T> Returns an optional if popping from an empty buffer
      */
-    std::optional<T> pop(void) {
+    std::optional<T> pop_front() {
         if ( empty() ) {
             return std::optional<T>();
         }
 
         auto value = m_buffer[m_tail];
-        increment(m_tail);
-        m_full = false;
+        increment(m_tail);        
         --m_size;
         return value;
     }
@@ -359,7 +379,7 @@ class ring_buffer {
      * \brief Flushes all items from the buffer
      */
     void flush() {
-        while ( pop().has_value() ) {
+        while ( pop_front().has_value() ) {
         }
     }
 
@@ -392,6 +412,5 @@ class ring_buffer {
     std::array<T, MaxCapacity> m_buffer;
     std::size_t m_head = 0;
     std::size_t m_tail = 0;
-    std::size_t m_size = 0;
-    bool m_full = false;
+    std::size_t m_size = 0;    
 };
