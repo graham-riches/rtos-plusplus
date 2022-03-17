@@ -9,7 +9,6 @@
 #pragma once
 
 /********************************** Includes *******************************************/
-#include <array>
 #include <memory>
 #include <optional>
 #include <type_traits>
@@ -169,7 +168,7 @@ struct reverse_iterator {
 };  // namespace detail
 
 /**
- * \brief template class for a STL-like re-usable ring buffer with no dynamic allocation
+ * \brief template cla  ss for a STL-like re-usable ring buffer with no dynamic allocation
  * 
  * \tparam T parameter type
  */
@@ -185,7 +184,8 @@ class ring_buffer {
      * 
      */
     explicit ring_buffer()
-        : m_head(0)
+        : m_buffer()
+        , m_head(0)
         , m_tail(0) { }
 
     //!< Delete copies and moves
@@ -232,13 +232,29 @@ class ring_buffer {
     }
 
     /**
-     * \brief Pop an item from the buffer
+     * \brief Pop from the front of the buffer
      * 
      * \return std::optional<T> Returns an optional if popping from an empty buffer
      */
     std::optional<T> pop_front() {
         if ( empty() ) {
-            return std::optional<T>();
+            return {};
+        }
+        auto temp = m_head;
+        decrement(temp);
+        auto value = m_buffer[temp];
+        --m_size;
+        return value;                
+    }
+
+    /**
+     * \brief Pop from the back of the buffer
+     * 
+     * \return std::optional<T> Returns an empty optional if the buffer is empty, otherwise the item
+     */
+    std::optional<T> pop_back() {
+        if ( empty() ) {
+            return {};
         }
 
         auto value = m_buffer[m_tail];
@@ -261,7 +277,7 @@ class ring_buffer {
      * \return forward_iterator 
      */
     forward_iterator begin() {
-        return forward_iterator(&m_buffer[m_tail], m_buffer.data());
+        return forward_iterator(&m_buffer[m_tail], m_buffer);
     }
 
     /**
@@ -270,7 +286,7 @@ class ring_buffer {
      * \return const_forward_iterator 
      */
     const_forward_iterator cbegin() {
-        return const_forward_iterator(&m_buffer[m_tail], m_buffer.data());
+        return const_forward_iterator(&m_buffer[m_tail], m_buffer);
     }
 
     /**
@@ -280,11 +296,11 @@ class ring_buffer {
      */
     forward_iterator end() {
         if ( full() ) {
-            return forward_iterator(nullptr, m_buffer.data());
+            return forward_iterator(nullptr, m_buffer);
         }
         auto temp = m_head;
         decrement(temp);
-        return forward_iterator(&m_buffer[temp], m_buffer.data());
+        return forward_iterator(&m_buffer[temp], m_buffer);
     }
 
     /**
@@ -294,11 +310,11 @@ class ring_buffer {
      */
     const_forward_iterator cend() {
         if ( full() ) {
-            return const_forward_iterator(nullptr, m_buffer.data());
+            return const_forward_iterator(nullptr, m_buffer);
         }
         auto temp = m_head;
         decrement(temp);
-        return const_forward_iterator(&m_buffer[temp], m_buffer.data());
+        return const_forward_iterator(&m_buffer[temp], m_buffer);
     }
 
     //!< Reverse Iterators
@@ -310,7 +326,7 @@ class ring_buffer {
     reverse_iterator rbegin() {
         auto temp = m_head;
         decrement(temp);
-        return reverse_iterator(&m_buffer[temp], m_buffer.data());
+        return reverse_iterator(&m_buffer[temp], m_buffer);
     }
 
     /**
@@ -321,7 +337,7 @@ class ring_buffer {
     const_reverse_iterator crbegin() {
         auto temp = m_head;
         decrement(temp);
-        return const_reverse_iterator(&m_buffer[temp], m_buffer.data());
+        return const_reverse_iterator(&m_buffer[temp], m_buffer);
     }
 
     /**
@@ -331,9 +347,9 @@ class ring_buffer {
      */
     reverse_iterator rend() {
         if ( full() ) {
-            return reverse_iterator(nullptr, m_buffer.data());
+            return reverse_iterator(nullptr, m_buffer);
         }
-        return reverse_iterator(&m_buffer[m_tail], m_buffer.data());
+        return reverse_iterator(&m_buffer[m_tail], m_buffer);
     }
 
     /**
@@ -343,9 +359,9 @@ class ring_buffer {
      */
     const_reverse_iterator crend() {
         if ( full() ) {
-            return const_reverse_iterator(nullptr, m_buffer.data());
+            return const_reverse_iterator(nullptr, m_buffer);
         }
-        return const_reverse_iterator(&m_buffer[m_tail], m_buffer.data());
+        return const_reverse_iterator(&m_buffer[m_tail], m_buffer);
     }
 
     /**
@@ -409,7 +425,7 @@ class ring_buffer {
         }
     }
 
-    std::array<T, MaxCapacity> m_buffer;
+    T m_buffer[MaxCapacity];
     std::size_t m_head = 0;
     std::size_t m_tail = 0;
     std::size_t m_size = 0;    

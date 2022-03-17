@@ -140,16 +140,16 @@ TEST_F(RingBufferTests, test_push_back_pop_front_gets_correct_item) {
     buffer.push_back(1);
     buffer.push_back(2);
     auto val = buffer.pop_front();
-    ASSERT_EQ(val.value(), 1);    
+    ASSERT_EQ(val.value(), 2);    
 }
 
-TEST_F(RingBufferTests, test_pop_after_wrap_works) {
+TEST_F(RingBufferTests, test_pop_front_after_wrap_works) {
     ring_buffer<int, 2> buff;
     buff.push_back(1);
     buff.push_back(2);
     buff.push_back(3);  // Has now wrapped
     auto val = buff.pop_front();
-    ASSERT_EQ(val.value(), 2);
+    ASSERT_EQ(val.value(), 3);
 }
 
 TEST_F(RingBufferTests, test_push_front) {
@@ -157,9 +157,9 @@ TEST_F(RingBufferTests, test_push_front) {
     ASSERT_EQ(buffer.size(), 1);
     buffer.push_front(2);
     ASSERT_EQ(buffer.size(), 2);
-    auto val = buffer.pop_front();
+    auto val = buffer.pop_back();
     ASSERT_EQ(val.value(), 2);
-    val = buffer.pop_front();
+    val = buffer.pop_back();
     ASSERT_EQ(val.value(), 1);
 }
 
@@ -175,3 +175,18 @@ TEST_F(RingBufferTests, test_push_front_gets_sequence_correct){
     }
 }
 
+TEST_F(RingBufferTests, test_pop_back) {
+    ring_buffer<int, 2> buff;
+    buff.push_front(1);
+    auto val = buff.pop_front();
+    ASSERT_EQ(val.value(), 1);
+}
+
+TEST_F(RingBufferTests, test_pop_back_after_wrapping_around) {
+    ring_buffer<int, 2> buff;
+    buff.push_back(1);
+    buff.push_back(2);
+    buff.push_back(3);  // Has now wrapped
+    auto val = buff.pop_back();
+    ASSERT_EQ(val.value(), 2);
+}
