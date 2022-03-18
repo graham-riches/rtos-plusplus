@@ -14,115 +14,48 @@
 
 namespace HAL
 {
-
-/*********************************** Consts ********************************************/
-
-/************************************ Types ********************************************/
-
-/*********************************** Macros ********************************************/
-
-/******************************* Global Variables **************************************/
-
-/******************************** Local Variables **************************************/
-
-/****************************** Functions Prototype ************************************/
-
 /****************************** Function Definitions ***********************************/
-/**
- * \brief Construct a new USARTBase::USARTBase object
- * 
- * \param usart the usart peripheral address
- */
+
 USARTBase::USARTBase(USART_TypeDef* usart) {
     assert(usart != nullptr);
-    this->peripheral = usart;
+    peripheral = usart;
 }
 
-/**
- * \brief read a value from the status register
- * 
- * \param reg the register 
- * \retval register value
- */
 uint8_t USARTBase::read_status_register(USARTStatusRegister reg) {
-    return static_cast<uint8_t>(this->peripheral->SR & (0x01u << static_cast<uint8_t>(reg)));
+    return static_cast<uint8_t>(peripheral->SR & (0x01u << static_cast<uint8_t>(reg)));
 }
 
-/**
- * \brief write a value into a usart peripherals CR1
- * 
- * \param reg the register
- * \param value value register value to set
- */
 void USARTBase::write_control_register(USARTControlRegister1 reg, uint8_t value) {
-    /* clear the register */
-    this->peripheral->CR1 &= ~static_cast<uint16_t>((static_cast<uint8_t>(0x01) << static_cast<uint8_t>(reg)));
-
-    /* write the value */
-    this->peripheral->CR1 |= static_cast<uint16_t>(((value & 0x01) << static_cast<uint8_t>(reg)));
+    peripheral->CR1 = peripheral->CR1 & ~static_cast<uint16_t>((static_cast<uint8_t>(0x01) << static_cast<uint8_t>(reg)));
+    peripheral->CR1 = peripheral->CR1 | static_cast<uint16_t>(((value & 0x01) << static_cast<uint8_t>(reg)));
 }
 
-/**
- * \brief write a value into a usart peripherals CR2
- * 
- * \param reg the register
- * \param value value
- */
-void USARTBase::write_control_register(USARTControlRegister2 reg, uint8_t value) {
-    /* clear the register */
-    this->peripheral->CR2 &= ~static_cast<uint16_t>((static_cast<uint8_t>(0x01) << static_cast<uint8_t>(reg)));
-
-    /* write the value */
-    this->peripheral->CR2 |= static_cast<uint16_t>(((value & 0x01) << static_cast<uint8_t>(reg)));
+void USARTBase::write_control_register(USARTControlRegister2 reg, uint8_t value) {    
+    peripheral->CR2 &= ~static_cast<uint16_t>((static_cast<uint8_t>(0x01) << static_cast<uint8_t>(reg)));
+    
+    peripheral->CR2 |= static_cast<uint16_t>(((value & 0x01) << static_cast<uint8_t>(reg)));
 }
 
-/**
- * \brief write a value into a usart peripherals CR3
- * 
- * \param reg the register
- * \param value value
- */
-void USARTBase::write_control_register(USARTControlRegister3 reg, uint8_t value) {
-    /* clear the register */
-    this->peripheral->CR3 &= ~static_cast<uint16_t>((static_cast<uint8_t>(0x01) << static_cast<uint8_t>(reg)));
-
-    /* write the value */
-    this->peripheral->CR3 |= static_cast<uint16_t>(((value & 0x01) << static_cast<uint8_t>(reg)));
+void USARTBase::write_control_register(USARTControlRegister3 reg, uint8_t value) {    
+    peripheral->CR3 &= ~static_cast<uint16_t>((static_cast<uint8_t>(0x01) << static_cast<uint8_t>(reg)));    
+    peripheral->CR3 |= static_cast<uint16_t>(((value & 0x01) << static_cast<uint8_t>(reg)));
 }
 
-/**
- * \brief read a control register from CR1
- * 
- * \param reg register to read
- * \retval uint8_t value of the register
- */
 uint8_t USARTBase::read_control_register(USARTControlRegister1 reg) {
     uint8_t register_mask = 0b1;
-    uint8_t register_value = static_cast<uint8_t>(this->peripheral->CR1 & (register_mask << static_cast<uint8_t>(reg)));
+    uint8_t register_value = static_cast<uint8_t>(peripheral->CR1 & (register_mask << static_cast<uint8_t>(reg)));
     return register_value;
 }
 
-/**
- * \brief read a value from CR2
- * 
- * \param reg register to read
- * \retval uint8_t value of the register
- */
 uint8_t USARTBase::read_control_register(USARTControlRegister2 reg) {
     uint8_t register_mask = 0b1;
-    uint8_t register_value = static_cast<uint8_t>(this->peripheral->CR2 & (register_mask << static_cast<uint8_t>(reg)));
+    uint8_t register_value = static_cast<uint8_t>(peripheral->CR2 & (register_mask << static_cast<uint8_t>(reg)));
     return register_value;
 }
 
-/**
- * \brief read a value from CR3
- * 
- * \param reg register to read
- * \retval uint8_t value of the register
- */
 uint8_t USARTBase::read_control_register(USARTControlRegister3 reg) {
     uint8_t register_mask = 0b1;
-    uint8_t register_value = static_cast<uint8_t>(this->peripheral->CR3 & (register_mask << static_cast<uint8_t>(reg)));
+    uint8_t register_value = static_cast<uint8_t>(peripheral->CR3 & (register_mask << static_cast<uint8_t>(reg)));
     return register_value;
 }
 
@@ -136,23 +69,16 @@ uint8_t USARTBase::read_control_register(USARTControlRegister3 reg) {
  */
 void USARTBase::set_baudrate(HAL::Clocks clock, uint32_t baudrate) {
     uint32_t base_clock_rate = HAL::reset_control_clock.get_clock_speed(clock);
-
-    uint32_t usart_div = (100 * base_clock_rate) / (16 * baudrate);
-
-    /* calculate the integer component */
-    uint32_t integer_component = usart_div / 100;
-
-    /* calculate the fractional component */
+    uint32_t usart_div = (100 * base_clock_rate) / (16 * baudrate);    
+    uint32_t integer_component = usart_div / 100;    
     uint32_t fractional_temp = usart_div - (100 * integer_component);
 
-    /* round the fractional component */
+    // round the fractional component
     uint32_t fractional_component = (((fractional_temp * 16) + 50) / 100);
 
-    /* build out the register value */
-    uint32_t register_value = (integer_component << 4) | (fractional_component & 0x0F);
-
-    /* write it to the register */
-    this->peripheral->BRR = static_cast<uint16_t>(register_value);
+    // build out the register value and write it
+    uint32_t register_value = (integer_component << 4) | (fractional_component & 0x0F);    
+    peripheral->BRR = static_cast<uint16_t>(register_value);
 }
 
 /**
@@ -162,83 +88,61 @@ void USARTBase::set_baudrate(HAL::Clocks clock, uint32_t baudrate) {
 void USARTInterrupt::irq_handler(uint8_t type) {
     PARAMETER_NOT_USED(type);
 
-    /* handle any rx interrupts */
-    bool rx_data_available = this->read_status_register(USARTStatusRegister::receive_data_available);
-    bool rx_interrupt_enabled = this->read_control_register(USARTControlRegister1::receive_interrupt_enable);
+    // Handle RX interrupts
+    bool rx_data_available = read_status_register(USARTStatusRegister::receive_data_available);
+    bool rx_interrupt_enabled = read_control_register(USARTControlRegister1::receive_interrupt_enable);
 
     if ( (rx_data_available) && (rx_interrupt_enabled) ) {
-        uint8_t data = static_cast<uint8_t>(this->peripheral->DR & 0xFF);
-        this->rx_buffer.push(data);
+        uint8_t data = static_cast<uint8_t>(peripheral->DR & 0xFF);
+        rx_buffer.push_back(data);
     }
 
-    /* handle any tx interrupts */
-    bool tx_data_empty = this->read_status_register(USARTStatusRegister::transmit_data_empty);
-    bool tx_interrupt_enabled = this->read_control_register(USARTControlRegister1::transmit_interrupt_enable);
+    // Handle any tx interrupts
+    bool tx_data_empty = read_status_register(USARTStatusRegister::transmit_data_empty);
+    bool tx_interrupt_enabled = read_control_register(USARTControlRegister1::transmit_interrupt_enable);
 
     if ( (tx_data_empty) && (tx_interrupt_enabled) ) {
-        auto maybe_data = this->tx_buffer.pop();
+        auto maybe_data = tx_buffer.pop_front();
         if (maybe_data.has_value()) {
-            this->peripheral->DR = maybe_data.value();
+            peripheral->DR = maybe_data.value();
         }
 
-        /* if there is no more data to send, disable the interrupt */
-        if ( this->tx_buffer.is_empty() ) {
-            this->write_control_register(USARTControlRegister1::transmit_interrupt_enable, 0x00);
+        // If there is no more data to send, disable the interrupt
+        if ( tx_buffer.empty() ) {
+            write_control_register(USARTControlRegister1::transmit_interrupt_enable, 0x00);
         }
     }
 }
 
-/**
- * \brief send data over a interrupt based usart
- * 
- * \param data pointer to the data to send
- * \param size amount of data
- */
-void USARTInterrupt::send(uint8_t* data, uint16_t size) {
-    /* put the data on the buffer */
+void USARTInterrupt::send(uint8_t* data, uint16_t size) {    
     while ( size-- ) {
-        this->tx_buffer.push(*data++);
-        if ( this->tx_buffer.is_full() ) {
+        tx_buffer.push_back(*data++);
+        if ( tx_buffer.full() ) {
             break;
         }
     }
-
-    /* enable the tx interrupt */
-    this->write_control_register(USARTControlRegister1::transmit_interrupt_enable, 0x01);
+    
+    write_control_register(USARTControlRegister1::transmit_interrupt_enable, 0x01);
 }
 
-/**
- * \brief overloaded send for string based messages
- * 
- * \param data string data
- */
-void USARTInterrupt::send(const char* data) {
-    //!< TODO: possible unsafe strlen here?
+void USARTInterrupt::send(const char* data) {    
     uint16_t size = strlen(data);
 
     for ( uint16_t i = 0; i < size; i++ ) {
         uint8_t dataByte = (uint8_t)data[i];
-        this->tx_buffer.push(dataByte);
+        tx_buffer.push_back(dataByte);
 
-        if ( this->tx_buffer.is_full() ) {
+        if ( tx_buffer.full() ) {
             break;
         }
     }
-
-    /* enable the tx interrupt */
-    this->write_control_register(USARTControlRegister1::transmit_interrupt_enable, 0x01);
+    
+    write_control_register(USARTControlRegister1::transmit_interrupt_enable, 0x01);
 }
 
-/**
- * \brief overloaded send for a single character
- * 
- * \param data the character to send
- */
 void USARTInterrupt::send(const char data) {
-    this->tx_buffer.push(static_cast<uint8_t>(data));
-
-    /* enable the tx interrupt */
-    this->write_control_register(USARTControlRegister1::transmit_interrupt_enable, 0x01);
+    tx_buffer.push_back(static_cast<uint8_t>(data));    
+    write_control_register(USARTControlRegister1::transmit_interrupt_enable, 0x01);
 }
 
 };  // namespace HAL

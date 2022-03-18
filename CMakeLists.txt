@@ -4,7 +4,7 @@ set(CMAKE_SYSTEM_NAME Generic)
 
 # Set the project name
 project(bare_metal_os)
-set(CMAKE_VERBOSE_MAKEFILE on)
+set(CMAKE_VERBOSE_MAKEFILE off)
 
 # Set the language standards used
 enable_language(C CXX ASM)

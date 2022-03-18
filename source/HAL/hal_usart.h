@@ -120,17 +120,18 @@ class USARTBase {
 /**
  * \brief base class for interrupt driven usart peripherals. This is meant to be inherited
  *        to create an interrupt driven object
+ * \todo Remove this class after reworking IRQ handler side
  */
 class USARTInterrupt : protected USARTBase, public HAL::InterruptPeripheral {
   protected:
-    ring_buffer<uint8_t> tx_buffer;
-    ring_buffer<uint8_t> rx_buffer;
+    //!< TODO: Hack in the ring buffer size for now until reworking the HAL
+    ring_buffer<uint8_t, 128> tx_buffer;
+    ring_buffer<uint8_t, 128> rx_buffer;
 
   public:
-    USARTInterrupt(USART_TypeDef* usart, size_t tx_size, size_t rx_size)
-        : USARTBase(usart)
-        , tx_buffer(tx_size)
-        , rx_buffer(rx_size) { }
+
+    USARTInterrupt(USART_TypeDef* usart)
+        : USARTBase(usart) { }
 
     void irq_handler(uint8_t type);
     void send(uint8_t* data, uint16_t size);

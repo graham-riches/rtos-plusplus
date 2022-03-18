@@ -121,23 +121,17 @@ class SPIPolling : protected SPIBase {
  */
 class SPIInterrupt : protected SPIBase, public HAL::InterruptPeripheral {
   protected:
-    ring_buffer<uint8_t> tx_buffer;
-    ring_buffer<uint8_t> rx_buffer;
+    //!< TODO: hardcoded buffers for now until interrupts are reworked
+    ring_buffer<uint8_t, 128> tx_buffer;
+    ring_buffer<uint8_t, 128> rx_buffer;
 
   public:
-    SPIInterrupt(SPI_TypeDef* spi_peripheral_address, OutputPin chip_select, size_t tx_size, size_t rx_size)
-        : SPIBase(spi_peripheral_address, chip_select)
-        , tx_buffer(tx_size)
-        , rx_buffer(rx_size) { }
+    SPIInterrupt(SPI_TypeDef* spi_peripheral_address, OutputPin chip_select)
+        : SPIBase(spi_peripheral_address, chip_select) { }
 
     void irq_handler(uint8_t type);
     void send(uint8_t* data, uint16_t size);
 };
 
-/*********************************** Macros ********************************************/
-
-/******************************* Global Variables **************************************/
-
-/****************************** Functions Prototype ************************************/
 
 };     // namespace HAL

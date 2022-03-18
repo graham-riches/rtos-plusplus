@@ -14,7 +14,6 @@
 #include "hal_rcc.h"
 #include <map>
 
-
 /*********************************** Consts ********************************************/
 constexpr uint8_t buffer_size = 128;
 constexpr uint8_t data_fifo_depth = 16;
@@ -34,10 +33,7 @@ enum class InterruptType : unsigned {
     external_interrupt_1,
 };
 
-/*********************************** Macros ********************************************/
-
 /******************************* Global Variables **************************************/
-/* create the pins */
 static HAL::OutputPin
     accelerometer_chip_select(GPIOE, HAL::Pins::pin_3, HAL::PinMode::output, HAL::Speed::low, HAL::PullMode::pull_up, HAL::OutputMode::push_pull);
 static HAL::AlternateModePin accelerometer_sck(
@@ -47,7 +43,7 @@ static HAL::AlternateModePin accelerometer_miso(
 static HAL::AlternateModePin accelerometer_mosi(
     GPIOA, HAL::Pins::pin_7, HAL::PinMode::alternate, HAL::Speed::very_high, HAL::PullMode::pull_up, HAL::OutputMode::push_pull, HAL::AlternateMode::af5);
 
-LIS3DSH accelerometer(SPI1, accelerometer_chip_select, buffer_size, buffer_size, data_fifo_depth);
+LIS3DSH accelerometer(SPI1, accelerometer_chip_select);
 
 static std::map<LIS3DSHResolution, uint16_t> acceleration_conversion_map = {{LIS3DSHResolution::resolution_2g, 0x4000},
                                                                             {LIS3DSHResolution::resolution_4g, 0x2000},
@@ -55,27 +51,16 @@ static std::map<LIS3DSHResolution, uint16_t> acceleration_conversion_map = {{LIS
                                                                             {LIS3DSHResolution::resolution_8g, 0x1000},
                                                                             {LIS3DSHResolution::resolution_16g, 0x0800}};
 
-/******************************** Local Variables **************************************/
 
-/****************************** Functions Prototype ************************************/
-
-/****************************** Functions Definition ***********************************/
 /**
  * \brief Construct a new LIS3DSH::LIS3DSH object
  * 
- * \param spi_peripheral_address the memory mapped peripheral address
- * \param chip_select the chip select pin
- * \param tx_size size of the tx buffer
- * \param rx_size size of the rx_buffer
- * \param data_fifo_depth how many measurements to buffer
+ * \param spi_peripheral_address 
+ * \param chip_select 
  */
-LIS3DSH::LIS3DSH(SPI_TypeDef* spi_peripheral_address, HAL::OutputPin chip_select, size_t tx_size, size_t rx_size, size_t data_fifo_depth)
-    : HAL::SPIInterrupt(spi_peripheral_address, chip_select, tx_size, rx_size)
-    , x_data(data_fifo_depth)
-    , y_data(data_fifo_depth)
-    , z_data(data_fifo_depth) {
-    /* default initialize the conversion factor to +/- 2g */
-    this->conversion_factor = acceleration_conversion_map[LIS3DSHResolution::resolution_2g];
+LIS3DSH::LIS3DSH(SPI_TypeDef* spi_peripheral_address, HAL::OutputPin chip_select)
+    : HAL::SPIInterrupt(spi_peripheral_address, chip_select) {
+    conversion_factor = acceleration_conversion_map[LIS3DSHResolution::resolution_2g];
 }
 
 /**
@@ -86,12 +71,12 @@ LIS3DSH::LIS3DSH(SPI_TypeDef* spi_peripheral_address, HAL::OutputPin chip_select
  */
 uint8_t LIS3DSH::read_register(LIS3DSHRegisters reg) {
     uint16_t read_command = static_cast<uint8_t>(reg) | device_read;
-    this->send(reinterpret_cast<uint8_t*>(&read_command), sizeof(read_command));
+    send(reinterpret_cast<uint8_t*>(&read_command), sizeof(read_command));
 
-    /* block until the register result returns */
+    // block until the register result returns
     uint8_t data = 0;
-    while ( !this->rx_buffer.is_empty() ) {
-        auto maybe_data = this->rx_buffer.pop();
+    while ( !rx_buffer.empty() ) {
+        auto maybe_data = rx_buffer.pop_front();
         data = (maybe_data.has_value()) ? maybe_data.value() : 0;
     }
 
@@ -109,7 +94,7 @@ void LIS3DSH::write_register(LIS3DSHRegisters reg, uint8_t value) {
     write_command[0] = (static_cast<uint8_t>(reg) | device_write);
     write_command[1] = value;
 
-    this->send(write_command, sizeof(write_command));
+    send(write_command, sizeof(write_command));
 }
 
 /**
@@ -118,34 +103,34 @@ void LIS3DSH::write_register(LIS3DSHRegisters reg, uint8_t value) {
 void LIS3DSH::initialize(void) {
     using namespace HAL;
 
-    /* enable the peripheral clock */
+    // Enable the peripheral clock
     reset_control_clock.set_apb_clock(APB2Clocks::spi_1, true);
 
-    /* setup the SPI control register settings */
-    this->write_control_register(SPIControlRegister1::master_select, 0x01);
-    this->write_control_register(SPIControlRegister1::clock_polarity, 0x01);
-    this->write_control_register(SPIControlRegister1::clock_phase, 0x01);
-    this->write_control_register(SPIControlRegister2::slave_select_output_enable, 0x01);
-    this->set_baudrate(SPIBaudratePrescaler::prescaler_16);  //!< 84MHz / 16 = 5.25 MHz
+    // Setup the SPI control register settings
+    write_control_register(SPIControlRegister1::master_select, 0x01);
+    write_control_register(SPIControlRegister1::clock_polarity, 0x01);
+    write_control_register(SPIControlRegister1::clock_phase, 0x01);
+    write_control_register(SPIControlRegister2::slave_select_output_enable, 0x01);
+    set_baudrate(SPIBaudratePrescaler::prescaler_16);  //!< 84MHz / 16 = 5.25 MHz
 
-    /* register the SPI interrupt */
+    // Register the SPI interrupt
     interrupt_manager.register_callback(InterruptName::spi_1, this, static_cast<uint8_t>(InterruptType::spi_interrupt), PreemptionPriority::level_2);
 
-    /* enable the interrupt */
-    this->write_control_register(SPIControlRegister2::receive_interrupt_enable, 0x01);
+    // Enable the interrupt
+    write_control_register(SPIControlRegister2::receive_interrupt_enable, 0x01);
 
-    /* enable the peripheral */
-    this->write_control_register(SPIControlRegister1::spi_enable, 0x01);
+    // Enable the peripheral
+    write_control_register(SPIControlRegister1::spi_enable, 0x01);
 
-    /* register the external interrupts */
+    // Register the external interrupts
     register_external_interrupt(EXTIPort::gpio_port_e, Pins::pin_0, EXTITrigger::rising);
     interrupt_manager.register_callback(InterruptName::exti_0, this, static_cast<uint8_t>(InterruptType::external_interrupt_1), PreemptionPriority::level_2);
 
-    /* setup the accelerometer speed and setup the data ready interrupt */
-    this->set_data_rate(LIS3DSHDataRate::sample_100Hz);
-    this->set_resolution(LIS3DSHResolution::resolution_2g);
-    this->write_register(LIS3DSHRegisters::control_register_3, interrupt_1_data_ready);
-    this->write_register(LIS3DSHRegisters::control_register_6, enable_multibyte_read);
+    // Setup the accelerometer speed and setup the data ready interrupt
+    set_data_rate(LIS3DSHDataRate::sample_100Hz);
+    set_resolution(LIS3DSHResolution::resolution_2g);
+    write_register(LIS3DSHRegisters::control_register_3, interrupt_1_data_ready);
+    write_register(LIS3DSHRegisters::control_register_6, enable_multibyte_read);
 }
 
 /**
@@ -154,7 +139,7 @@ void LIS3DSH::initialize(void) {
  * \param rate the rate
  */
 void LIS3DSH::set_data_rate(LIS3DSHDataRate rate) {
-    this->write_register(LIS3DSHRegisters::control_register_4, static_cast<uint8_t>(rate));
+    write_register(LIS3DSHRegisters::control_register_4, static_cast<uint8_t>(rate));
 }
 
 /**
@@ -163,8 +148,8 @@ void LIS3DSH::set_data_rate(LIS3DSHDataRate rate) {
  * \param resolution the resolution in units of g's
  */
 void LIS3DSH::set_resolution(LIS3DSHResolution resolution) {
-    this->write_register(LIS3DSHRegisters::control_register_5, static_cast<uint8_t>(resolution));
-    this->conversion_factor = acceleration_conversion_map[resolution];
+    write_register(LIS3DSHRegisters::control_register_5, static_cast<uint8_t>(resolution));
+    conversion_factor = acceleration_conversion_map[resolution];
 }
 
 /**
@@ -172,7 +157,7 @@ void LIS3DSH::set_resolution(LIS3DSHResolution resolution) {
  * \retval return the result of the who am I register
  */
 uint8_t LIS3DSH::self_test(void) {
-    uint8_t self_test = this->read_register(LIS3DSHRegisters::who_am_i);
+    uint8_t self_test = read_register(LIS3DSHRegisters::who_am_i);
     return self_test;
 }
 
@@ -186,11 +171,11 @@ void LIS3DSH::irq_handler(uint8_t type) {
 
     switch ( interrupt ) {
         case InterruptType::spi_interrupt:
-            this->spi_irq_handler();
+            spi_irq_handler();
             break;
 
         case InterruptType::external_interrupt_1:
-            this->exti_0_irq_handler();
+            exti_0_irq_handler();
             break;
 
         default:
@@ -203,34 +188,30 @@ void LIS3DSH::irq_handler(uint8_t type) {
  * \note because there are multiple interrupts attached to the LIS3HD object,
  *       this here is a copy of the SPI interrupt
  */
-void LIS3DSH::spi_irq_handler(void) {
-    /* enable the chip select */
-    this->chip_select.set(false);
+void LIS3DSH::spi_irq_handler(void) {    
+    chip_select.set(false);
 
-    while ( !this->tx_buffer.is_empty() ) {
-        /* wait for the transmit buffer to clear */
-        while ( this->read_status_register(HAL::SPIStatusRegister::transmit_data_empty) == false ) {
+    while ( !tx_buffer.empty() ) {
+        // Wait for the transmit buffer to clear
+        while ( read_status_register(HAL::SPIStatusRegister::transmit_data_empty) == false ) {
         }
 
-        /* put data outgoing into the data register */
-        auto maybe_data = this->tx_buffer.pop();
-        if (maybe_data.has_value()) {
-            this->peripheral->DR = maybe_data.value();
+        // Put data outgoing into the data register
+        auto maybe_data = tx_buffer.pop_front();
+        if ( maybe_data.has_value() ) {
+            peripheral->DR = maybe_data.value();
         }
 
-        /* wait for the receive buffer to clear */
-        while ( this->read_status_register(HAL::SPIStatusRegister::receive_data_available) == false ) {
+        // Wait for the receive buffer to clear
+        while ( read_status_register(HAL::SPIStatusRegister::receive_data_available) == false ) {
         }
 
-        /* receive data into the rx buffer */
-        this->rx_buffer.push(static_cast<uint8_t>(this->peripheral->DR));
+        // Receive data into the rx buffer
+        rx_buffer.push_back(static_cast<uint8_t>(peripheral->DR));
     }
-
-    /* disable the interrupt */
-    this->write_control_register(HAL::SPIControlRegister2::transmit_interrupt_enable, 0x00);
-
-    /* disable the chip select */
-    this->chip_select.set(true);
+    
+    write_control_register(HAL::SPIControlRegister2::transmit_interrupt_enable, 0x00);    
+    chip_select.set(true);
 }
 
 /**
@@ -239,32 +220,29 @@ void LIS3DSH::spi_irq_handler(void) {
  * 
  */
 void LIS3DSH::exti_0_irq_handler(void) {
-    this->rx_buffer.flush();
+    rx_buffer.flush();
 
-    /* read XYZ data - Note: the registers are chained so it can be done in a single burst */
+    // Read XYZ data - Note: the registers are chained so it can be done in a single call
     uint8_t read_data[read_register_data_size] = {0};
     read_data[0] = static_cast<uint8_t>(LIS3DSHRegisters::output_x) | device_read;
-    this->send(read_data, sizeof(read_data));
+    send(read_data, sizeof(read_data));
 
-    /* flush the first byte, which is read back when the address + read byte is first sent */
-    this->rx_buffer.pop();
+    // Flush the first byte, which is read back when the address + read byte is first sent
+    rx_buffer.pop_front();
+    
+    auto convert_data = [this](uint8_t low, uint8_t high) -> float { return static_cast<float>(static_cast<int16_t>(low | (high << 8))) / conversion_factor; };
 
-    /* update the data values */
-    auto convert_data = [this](uint8_t low, uint8_t high) -> float {
-        return static_cast<float>(static_cast<int16_t>(low | (high << 8))) / this->conversion_factor;
-    };
+//!< TODO: banking on these being successfull reads
+//!< TODO: this is broken!!
+#if 0
+    float accel_x = convert_data(rx_buffer.pop().value(), rx_buffer.pop().value());
+    float accel_y = convert_data(rx_buffer.pop().value(), rx_buffer.pop().value());
+    float accel_z = convert_data(rx_buffer.pop().value(), rx_buffer.pop().value());
 
-    //!< TODO: banking on these being successfull reads
-    //!< TODO: this is broken!!
-    #if 0
-    float accel_x = convert_data(this->rx_buffer.pop().value(), this->rx_buffer.pop().value());
-    float accel_y = convert_data(this->rx_buffer.pop().value(), this->rx_buffer.pop().value());
-    float accel_z = convert_data(this->rx_buffer.pop().value(), this->rx_buffer.pop().value());
-
-    this->x_data.push(accel_x);
-    this->y_data.push(accel_y);
-    this->z_data.push(accel_z);
-    #endif
+    x_data.push(accel_x);
+    y_data.push(accel_y);
+    z_data.push(accel_z);
+#endif
 
     /* clear the interrupt pending bit */
     HAL::clear_external_interrupt_pending(HAL::EXTILine::line_0);

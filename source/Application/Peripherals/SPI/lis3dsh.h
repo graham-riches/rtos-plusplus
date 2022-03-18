@@ -70,23 +70,22 @@ enum class LIS3DSHResolution : unsigned {
 
 /**
  * \brief class for the LIS302DL accelerometer
+ * \todo Rework buffer sizes after fixing up interrupts
  */
 class LIS3DSH : public HAL::SPIInterrupt {
-  private:
-    /* private data */
+  private:    
     uint16_t conversion_factor;
-    ring_buffer<float> x_data;
-    ring_buffer<float> y_data;
-    ring_buffer<float> z_data;
-
-    /* private methods */
+    ring_buffer<float, 16> x_data;
+    ring_buffer<float, 16> y_data;
+    ring_buffer<float, 16> z_data;
+    
     uint8_t read_register(LIS3DSHRegisters reg);
     void write_register(LIS3DSHRegisters reg, uint8_t value);
     void spi_irq_handler(void);
     void exti_0_irq_handler(void);
 
   public:
-    LIS3DSH(SPI_TypeDef* spi_peripheral_address, HAL::OutputPin chip_select, size_t tx_size, size_t rx_size, size_t data_fifo_depth);
+    LIS3DSH(SPI_TypeDef* spi_peripheral_address, HAL::OutputPin chip_select);
     void initialize(void);
     uint8_t self_test(void);
     void set_data_rate(LIS3DSHDataRate rate);

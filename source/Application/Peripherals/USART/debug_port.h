@@ -32,7 +32,7 @@ class DebugPort : public HAL::USARTInterrupt {
 
   public:
     DebugPort();
-    DebugPort(USART_TypeDef* usart, size_t tx_size, size_t rx_size);
+    DebugPort(USART_TypeDef* usart);
     void initialize(void);
     void debug(const char* message, ...);
     void info(const char* message, ...);
