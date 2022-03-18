@@ -57,8 +57,7 @@ int main(void) {
  */
 static void thread_one_task(void *arguments) {
     PARAMETER_NOT_USED(arguments);
-    while ( true ) {        
-        debug_port.send("a\n");
+    while ( true ) {                
         green_led.toggle();
         blue_led.toggle();
         os::scheduler::sleep(100);
@@ -70,8 +69,7 @@ static void thread_one_task(void *arguments) {
  */
 static void thread_two_task(void *arguments) {
     PARAMETER_NOT_USED(arguments);
-    while ( true ) {
-        debug_port.send("b\n");
+    while ( true ) {        
         red_led.toggle();
         orange_led.toggle();
         os::scheduler::sleep(100);

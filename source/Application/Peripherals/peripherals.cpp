@@ -56,14 +56,14 @@ void initialize_peripherals(void) {
     system_boot();
 
     /* initialize the debug UART and print a welcome banner */
-    debug_port.initialize();
+    //debug_port.initialize();
 
     /* print out a splash screen */
-    debug_port.send("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
-    debug_port.send("STM32F407 Debug Terminal \n");
-    debug_port.send("   Author: Graham Riches \n");
-    debug_port.send("   Date: November 1, 2020 \n");
-    debug_port.send("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");    
+    //debug_port.send("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+    //debug_port.send("STM32F407 Debug Terminal \n");
+    //debug_port.send("   Author: Graham Riches \n");
+    //debug_port.send("   Date: November 1, 2020 \n");
+    //debug_port.send("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");    
 
     /* turn on the LEDs for status indication */
     green_led.set(true);

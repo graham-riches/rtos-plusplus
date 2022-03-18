@@ -34,14 +34,35 @@ enum class InterruptType : unsigned {
 };
 
 /******************************* Global Variables **************************************/
-static HAL::OutputPin
-    accelerometer_chip_select(GPIOE, HAL::Pins::pin_3, HAL::PinMode::output, HAL::Speed::low, HAL::PullMode::pull_up, HAL::OutputMode::push_pull);
-static HAL::AlternateModePin accelerometer_sck(
-    GPIOA, HAL::Pins::pin_5, HAL::PinMode::alternate, HAL::Speed::very_high, HAL::PullMode::pull_up, HAL::OutputMode::push_pull, HAL::AlternateMode::af5);
-static HAL::AlternateModePin accelerometer_miso(
-    GPIOA, HAL::Pins::pin_6, HAL::PinMode::alternate, HAL::Speed::very_high, HAL::PullMode::pull_up, HAL::OutputMode::push_pull, HAL::AlternateMode::af5);
-static HAL::AlternateModePin accelerometer_mosi(
-    GPIOA, HAL::Pins::pin_7, HAL::PinMode::alternate, HAL::Speed::very_high, HAL::PullMode::pull_up, HAL::OutputMode::push_pull, HAL::AlternateMode::af5);
+static HAL::OutputPin accelerometer_chip_select(GPIOE,
+                                                HAL::Pins::pin_3,
+                                                HAL::PinMode::output,
+                                                HAL::Speed::low,
+                                                HAL::PullMode::pull_up,
+                                                HAL::OutputMode::push_pull);
+static HAL::AlternateModePin accelerometer_sck(GPIOA,
+                                               HAL::Pins::pin_5,
+                                               HAL::PinMode::alternate,
+                                               HAL::Speed::very_high,
+                                               HAL::PullMode::pull_up,
+                                               HAL::OutputMode::push_pull,
+                                               HAL::AlternateMode::af5);
+
+static HAL::AlternateModePin accelerometer_miso(GPIOA,
+                                                HAL::Pins::pin_6,
+                                                HAL::PinMode::alternate,
+                                                HAL::Speed::very_high,
+                                                HAL::PullMode::pull_up,
+                                                HAL::OutputMode::push_pull,
+                                                HAL::AlternateMode::af5);
+
+static HAL::AlternateModePin accelerometer_mosi(GPIOA,
+                                                HAL::Pins::pin_7,
+                                                HAL::PinMode::alternate,
+                                                HAL::Speed::very_high,
+                                                HAL::PullMode::pull_up,
+                                                HAL::OutputMode::push_pull,
+                                                HAL::AlternateMode::af5);
 
 LIS3DSH accelerometer(SPI1, accelerometer_chip_select);
 
@@ -50,7 +71,6 @@ static std::map<LIS3DSHResolution, uint16_t> acceleration_conversion_map = {{LIS
                                                                             {LIS3DSHResolution::resolution_6g, 0x1554},
                                                                             {LIS3DSHResolution::resolution_8g, 0x1000},
                                                                             {LIS3DSHResolution::resolution_16g, 0x0800}};
-
 
 /**
  * \brief Construct a new LIS3DSH::LIS3DSH object
@@ -114,7 +134,8 @@ void LIS3DSH::initialize(void) {
     set_baudrate(SPIBaudratePrescaler::prescaler_16);  //!< 84MHz / 16 = 5.25 MHz
 
     // Register the SPI interrupt
-    interrupt_manager.register_callback(InterruptName::spi_1, this, static_cast<uint8_t>(InterruptType::spi_interrupt), PreemptionPriority::level_2);
+    interrupt_manager.register_callback(
+        InterruptName::spi_1, this, static_cast<uint8_t>(InterruptType::spi_interrupt), isr_preemption_priority::level_2);
 
     // Enable the interrupt
     write_control_register(SPIControlRegister2::receive_interrupt_enable, 0x01);
@@ -124,7 +145,8 @@ void LIS3DSH::initialize(void) {
 
     // Register the external interrupts
     register_external_interrupt(EXTIPort::gpio_port_e, Pins::pin_0, EXTITrigger::rising);
-    interrupt_manager.register_callback(InterruptName::exti_0, this, static_cast<uint8_t>(InterruptType::external_interrupt_1), PreemptionPriority::level_2);
+    interrupt_manager.register_callback(
+        InterruptName::exti_0, this, static_cast<uint8_t>(InterruptType::external_interrupt_1), isr_preemption_priority::level_2);
 
     // Setup the accelerometer speed and setup the data ready interrupt
     set_data_rate(LIS3DSHDataRate::sample_100Hz);
@@ -188,7 +210,7 @@ void LIS3DSH::irq_handler(uint8_t type) {
  * \note because there are multiple interrupts attached to the LIS3HD object,
  *       this here is a copy of the SPI interrupt
  */
-void LIS3DSH::spi_irq_handler(void) {    
+void LIS3DSH::spi_irq_handler(void) {
     chip_select.set(false);
 
     while ( !tx_buffer.empty() ) {
@@ -209,8 +231,8 @@ void LIS3DSH::spi_irq_handler(void) {
         // Receive data into the rx buffer
         rx_buffer.push_back(static_cast<uint8_t>(peripheral->DR));
     }
-    
-    write_control_register(HAL::SPIControlRegister2::transmit_interrupt_enable, 0x00);    
+
+    write_control_register(HAL::SPIControlRegister2::transmit_interrupt_enable, 0x00);
     chip_select.set(true);
 }
 
@@ -229,8 +251,10 @@ void LIS3DSH::exti_0_irq_handler(void) {
 
     // Flush the first byte, which is read back when the address + read byte is first sent
     rx_buffer.pop_front();
-    
-    auto convert_data = [this](uint8_t low, uint8_t high) -> float { return static_cast<float>(static_cast<int16_t>(low | (high << 8))) / conversion_factor; };
+
+    auto convert_data = [this](uint8_t low, uint8_t high) -> float {
+        return static_cast<float>(static_cast<int16_t>(low | (high << 8))) / conversion_factor;
+    };
 
 //!< TODO: banking on these being successfull reads
 //!< TODO: this is broken!!

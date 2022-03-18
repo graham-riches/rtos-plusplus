@@ -70,10 +70,10 @@ FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 1024K
 SECTIONS
 {
   /* The startup code goes first into FLASH */
-  .isr_vector :
+  .vectors :
   {
     . = ALIGN(4);
-    KEEP(*(.isr_vector)) /* Startup code */
+    KEEP(*(.vectors)) /* Startup code */
     . = ALIGN(4);
   } >FLASH
 

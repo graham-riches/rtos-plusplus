@@ -3,7 +3,7 @@ BasedOnStyle:  WebKit
 TabWidth:        4
 IndentWidth:     4
 UseTab:          Never
-ColumnLimit: 160
+ColumnLimit: 140
 
 
 ---
@@ -20,7 +20,7 @@ AlignConsecutiveMacros : true
 AlignEscapedNewlinesLeft: true
 AlignOperands:   true
 AlignTrailingComments: true
-AllowAllParametersOfDeclarationOnNextLine: true
+AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortBlocksOnASingleLine: false
 AllowShortCaseLabelsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: Empty

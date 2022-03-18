@@ -117,32 +117,4 @@ class USARTBase {
     void set_baudrate(HAL::Clocks clock, uint32_t baudrate);
 };
 
-/**
- * \brief base class for interrupt driven usart peripherals. This is meant to be inherited
- *        to create an interrupt driven object
- * \todo Remove this class after reworking IRQ handler side
- */
-class USARTInterrupt : protected USARTBase, public HAL::InterruptPeripheral {
-  protected:
-    //!< TODO: Hack in the ring buffer size for now until reworking the HAL
-    ring_buffer<uint8_t, 128> tx_buffer;
-    ring_buffer<uint8_t, 128> rx_buffer;
-
-  public:
-
-    USARTInterrupt(USART_TypeDef* usart)
-        : USARTBase(usart) { }
-
-    void irq_handler(uint8_t type);
-    void send(uint8_t* data, uint16_t size);
-    void send(const char* data);
-    void send(const char data);
-};
-
-/*********************************** Macros ********************************************/
-
-/******************************* Global Variables **************************************/
-
-/****************************** Functions Prototype ************************************/
-
 };  // namespace HAL

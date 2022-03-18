@@ -11,7 +11,7 @@
 
 /********************************** Includes *******************************************/
 #include "scheduler.h"
-#include "cm4_port.h"
+#include "device_port.h"
 #include "system_clock.h"
 #include "thread_impl.h"
 

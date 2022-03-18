@@ -116,22 +116,6 @@ class SPIPolling : protected SPIBase {
     void write(uint8_t* tx_buffer, uint16_t size);
 };
 
-/**
- * \brief class to manage interrupt driven SPI peripherals
- */
-class SPIInterrupt : protected SPIBase, public HAL::InterruptPeripheral {
-  protected:
-    //!< TODO: hardcoded buffers for now until interrupts are reworked
-    ring_buffer<uint8_t, 128> tx_buffer;
-    ring_buffer<uint8_t, 128> rx_buffer;
-
-  public:
-    SPIInterrupt(SPI_TypeDef* spi_peripheral_address, OutputPin chip_select)
-        : SPIBase(spi_peripheral_address, chip_select) { }
-
-    void irq_handler(uint8_t type);
-    void send(uint8_t* data, uint16_t size);
-};
 
 
 };     // namespace HAL

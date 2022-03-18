@@ -24,7 +24,7 @@
  * \brief class definition for a debug port
  * 
  */
-class DebugPort : public HAL::USARTInterrupt {
+class DebugPort {
   private:
     std::unique_ptr<char[]> print_buffer;
     size_t print_buffer_size;

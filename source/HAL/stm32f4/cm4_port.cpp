@@ -10,9 +10,9 @@
  */
 
 /********************************** Includes *******************************************/
-#include "hal_interrupt.h"
-#include "stm32f4xx.h"
+#include "cm4_port.h"
 #include "os.h"
+#include "stm32f4xx.h"
 
 namespace os
 {
@@ -21,7 +21,7 @@ namespace os
 /**
  * \brief Set the PendSV interrupt flag in the NVIC to trigger a context switch
  */
-void set_pending_context_switch(void) {
+void set_pending_context_switch() {
     system_pending_task = scheduler::get_pending_task_control_block();
     SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
 }
@@ -31,7 +31,7 @@ void set_pending_context_switch(void) {
  * 
  * \retval true/false 
  */
-bool is_context_switch_pending(void) {
+bool is_context_switch_pending() {
     return static_cast<bool>(SCB->ICSR & SCB_ICSR_PENDSVSET_Msk);
 }
 

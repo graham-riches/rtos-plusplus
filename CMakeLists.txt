@@ -16,6 +16,10 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Set the device name which is used to find device specific HAL/OS port
+set(DEVICE_PORT_NAME stm32f4)
+
+
 # Set which source files to compile for the project
 set(APP_SOURCES 		      
     # HAL++ source files
@@ -23,24 +27,21 @@ set(APP_SOURCES
     source/HAL/hal_rcc.cpp
     source/HAL/hal_flash.cpp
     source/HAL/hal_power.cpp
-    source/HAL/hal_usart.cpp
-    source/HAL/hal_interrupt.cpp
+    source/HAL/hal_usart.cpp    
     source/HAL/hal_spi.cpp
     source/HAL/hal_exti.cpp
+    source/HAL/${DEVICE_PORT_NAME}/device_port.cpp
 
     # Application Source Files
     source/Application/main.cpp
-    source/Application/Peripherals/USART/debug_port.cpp
+    #source/Application/Peripherals/USART/debug_port.cpp
     source/Application/Peripherals/peripherals.cpp
-    source/Application/Peripherals/SPI/lis3dsh.cpp
 
     # OS files
     source/OS/scheduler/scheduler.cpp
     source/OS/thread/thread_impl.cpp
-    source/OS/system_clock/system_clock.cpp
-    source/OS/interrupts.cpp
-    source/OS/os.cpp
-    source/OS/cm4_port.cpp
+    source/OS/system_clock/system_clock.cpp    
+    source/OS/os.cpp    
 
 
     # Start Up File
@@ -64,11 +65,12 @@ target_compile_definitions(${BINARY} PRIVATE
 # Set source include directories
 target_include_directories(${BINARY} PRIVATE
     source
-    source/HAL      
+    source/HAL
+    source/HAL/${DEVICE_PORT_NAME}      
     source/Application
-    source/Application/Accelerometer      
-    source/Application/Audio
-    source/Application/Debug
+    #source/Application/Accelerometer      
+    #source/Application/Audio
+    #source/Application/Debug
     source/Application/Utilities
 
     source/OS

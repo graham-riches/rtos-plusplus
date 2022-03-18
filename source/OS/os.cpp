@@ -10,7 +10,7 @@
 #include "os.h"
 #include "hal_interrupt.h"
 #include "stm32f4xx.h"
-#include "cm4_port.h"
+#include "device_port.h"
 
 
 namespace os
@@ -42,8 +42,8 @@ void setup(void) {
     system_clock::initialize();
 
     //!< setup core interrupt priorities
-    HAL::interrupt_manager.set_priority(HAL::InterruptName::systick_handler, HAL::PreemptionPriority::level_16);
-    HAL::interrupt_manager.set_priority(HAL::InterruptName::pendsv_handler, HAL::PreemptionPriority::level_16);
+    interrupt_manager.set_priority(stm32f4_irq::systick_handler, HAL::isr_preemption_priority::level_16);
+    interrupt_manager.set_priority(stm32f4_irq::pendsv_handler, HAL::isr_preemption_priority::level_16);
 
     ENABLE_INTERRUPTS();
 }

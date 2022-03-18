@@ -18,13 +18,7 @@
 
 namespace os
 {
-/**
- * \brief class for managing application threads and scheduling context switches
- * \note  there is nothing preventing the user from creating multiple instances of this class, which has pros and cons.
- *        On one hand, it's a lot easier to test, on the other there should only be a single instance of this class
- *        in the application so instead, a single extern instance exists in the kernel, which supplies all the outwards
- *        facing components of the OS to the user application.
- */
+//!< Scheduler implementation details
 class scheduler_impl {
   public:
     /**

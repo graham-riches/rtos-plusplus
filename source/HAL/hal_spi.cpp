@@ -92,46 +92,4 @@ void SPIPolling::write(uint8_t* tx_buffer, uint16_t size) {
     read_write(tx_buffer, nullptr, size);
 }
 
-/****************************** SPIInterrupt Definitions ***********************************/
-void SPIInterrupt::irq_handler(uint8_t type) {
-    PARAMETER_NOT_USED(type);
-    /* enable the chip select */
-    chip_select.set(false);
-
-    while ( !tx_buffer.empty() ) {
-        // Wait for the transmit buffer to clear 
-        while ( read_status_register(SPIStatusRegister::transmit_data_empty) == false ) {
-        }
-
-        // Put data outgoing into the data register
-        auto maybe_data = tx_buffer.pop_front();
-        if (maybe_data.has_value()) {
-            peripheral->DR = maybe_data.value();
-        }
-
-        // Wait for the receive buffer to clear
-        while ( read_status_register(SPIStatusRegister::receive_data_available) == false ) {
-        }
-
-        // Receive data into the rx buffer
-        rx_buffer.push_back(static_cast<uint8_t>(peripheral->DR));
-    }
-
-    /* disable the interrupt */
-    write_control_register(SPIControlRegister2::transmit_interrupt_enable, 0x00);
-
-    /* disable the chip select */
-    chip_select.set(true);
-}
-
-void SPIInterrupt::send(uint8_t* data, uint16_t size) {    
-    while ( size-- ) {
-        tx_buffer.push_front(*data++);
-        if ( tx_buffer.full() ) {
-            break;
-        }
-    }    
-    write_control_register(SPIControlRegister2::transmit_interrupt_enable, 0x01);
-}
-
 };  // namespace HAL

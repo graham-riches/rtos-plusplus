@@ -72,7 +72,7 @@ enum class LIS3DSHResolution : unsigned {
  * \brief class for the LIS302DL accelerometer
  * \todo Rework buffer sizes after fixing up interrupts
  */
-class LIS3DSH : public HAL::SPIInterrupt {
+class LIS3DSH {
   private:    
     uint16_t conversion_factor;
     ring_buffer<float, 16> x_data;
