@@ -15,11 +15,22 @@
 #include <cstring>
 
 /******************************** Local Variables **************************************/
-/* create the GPIO pins */
-static HAL::AlternateModePin tx_pin(
-    GPIOB, HAL::Pins::pin_10, HAL::PinMode::alternate, HAL::Speed::very_high, HAL::PullMode::pull_up, HAL::OutputMode::push_pull, HAL::AlternateMode::af7);
-static HAL::AlternateModePin rx_pin(
-    GPIOB, HAL::Pins::pin_11, HAL::PinMode::alternate, HAL::Speed::very_high, HAL::PullMode::pull_up, HAL::OutputMode::push_pull, HAL::AlternateMode::af7);
+using namespace HAL::gpio;
+static alternate_mode_pin tx_pin(GPIOB,
+                                 pin_id::pin_10,
+                                 pin_mode::alternate,
+                                 pin_speed::very_high,
+                                 pull_mode::pull_up,
+                                 output_mode::push_pull,
+                                 alternate_mode::af7);
+
+static alternate_mode_pin rx_pin(GPIOB,
+                                 pin_id::pin_11,
+                                 pin_mode::alternate,
+                                 pin_speed::very_high,
+                                 pull_mode::pull_up,
+                                 output_mode::push_pull,
+                                 alternate_mode::af7);
 
 /******************************* Global Variables **************************************/
 DebugPort debug_port(USART3);
@@ -37,7 +48,7 @@ DebugPort debug_port(USART3);
 DebugPort::DebugPort(USART_TypeDef* usart)
     : HAL::USARTInterrupt(usart)
     , print_buffer(std::make_unique<char[]>(128)) {
-        //!< TODO: fix hard coded print buffer size!!
+    //!< TODO: fix hard coded print buffer size!!
     print_buffer_size = 128;
 }
 

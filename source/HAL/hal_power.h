@@ -9,7 +9,6 @@
 #pragma once
 
 /********************************** Includes *******************************************/
-#include "hal_bitwise_operators.h"
 #include "stm32f4xx.h"
 #include <stdint.h>
 

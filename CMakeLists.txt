@@ -23,7 +23,7 @@ set(DEVICE_PORT_NAME stm32f4)
 # Set which source files to compile for the project
 set(APP_SOURCES 		      
     # HAL++ source files
-    source/HAL/hal_gpio.cpp
+    source/HAL/gpio/pin_base.cpp
     source/HAL/hal_rcc.cpp
     source/HAL/hal_flash.cpp
     source/HAL/hal_power.cpp
@@ -66,6 +66,7 @@ target_compile_definitions(${BINARY} PRIVATE
 target_include_directories(${BINARY} PRIVATE
     source
     source/HAL
+    source/HAL/gpio
     source/HAL/${DEVICE_PORT_NAME}      
     source/Application
     #source/Application/Accelerometer      

@@ -12,17 +12,6 @@
 
 namespace HAL
 {
-/*********************************** Consts ********************************************/
-
-/************************************ Types ********************************************/
-
-/*********************************** Macros ********************************************/
-
-/******************************* Global Variables **************************************/
-
-/******************************** Local Variables **************************************/
-
-/****************************** Functions Prototype ************************************/
 
 /****************************** Functions Definition ***********************************/
 /**
@@ -37,7 +26,7 @@ namespace HAL
  *          there is a solution :)
  *          
  */
-void register_external_interrupt(EXTIPort port, Pins pin, EXTITrigger trigger) {
+void register_external_interrupt(EXTIPort port, gpio::pin_id pin, EXTITrigger trigger) {
     /* make sure the syscfg clock is on */
     reset_control_clock.set_apb_clock(APB2Clocks::sys_config, true);
 

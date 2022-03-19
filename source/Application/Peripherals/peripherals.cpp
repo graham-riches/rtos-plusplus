@@ -8,12 +8,10 @@
 
 /********************************** Includes *******************************************/
 #include "peripherals.h"
-#include "debug_port.h"
 #include "hal_flash.h"
 #include "hal_interrupt.h"
 #include "hal_power.h"
 #include "hal_rcc.h"
-#include "lis3dsh.h"
 #include "os.h"
 
 
@@ -25,15 +23,12 @@ constexpr uint8_t RCC_PLL_Q_FACTOR = 7;
 constexpr HAL::PLLOutputPrescaler RCC_PLL_P_FACTOR = HAL::PLLOutputPrescaler::prescaler_2;
 constexpr HAL::PLLSource RCC_PLL_SOURCE = HAL::PLLSource::high_speed_external;
 
-/************************************ Types ********************************************/
-
-/*********************************** Macros ********************************************/
-
 /******************************* Global Variables **************************************/
-HAL::OutputPin green_led(GPIOD, HAL::Pins::pin_12, HAL::PinMode::output, HAL::Speed::low, HAL::PullMode::pull_down, HAL::OutputMode::push_pull);
-HAL::OutputPin orange_led(GPIOD, HAL::Pins::pin_13, HAL::PinMode::output, HAL::Speed::low, HAL::PullMode::pull_down, HAL::OutputMode::push_pull);
-HAL::OutputPin red_led(GPIOD, HAL::Pins::pin_14, HAL::PinMode::output, HAL::Speed::low, HAL::PullMode::pull_down, HAL::OutputMode::push_pull);
-HAL::OutputPin blue_led(GPIOD, HAL::Pins::pin_15, HAL::PinMode::output, HAL::Speed::low, HAL::PullMode::pull_down, HAL::OutputMode::push_pull);
+using namespace HAL::gpio;
+output_pin green_led(GPIOD, pin_id::pin_12, pin_mode::output, pin_speed::low, pull_mode::pull_down, output_mode::push_pull);
+output_pin orange_led(GPIOD, pin_id::pin_13, pin_mode::output, pin_speed::low, pull_mode::pull_down, output_mode::push_pull);
+output_pin red_led(GPIOD, pin_id::pin_14, pin_mode::output, pin_speed::low, pull_mode::pull_down, output_mode::push_pull);
+output_pin blue_led(GPIOD, pin_id::pin_15, pin_mode::output, pin_speed::low, pull_mode::pull_down, output_mode::push_pull);
 
 /******************************** Local Variables **************************************/
 

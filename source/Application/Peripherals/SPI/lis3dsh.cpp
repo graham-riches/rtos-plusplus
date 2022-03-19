@@ -34,35 +34,37 @@ enum class InterruptType : unsigned {
 };
 
 /******************************* Global Variables **************************************/
-static HAL::OutputPin accelerometer_chip_select(GPIOE,
-                                                HAL::Pins::pin_3,
-                                                HAL::PinMode::output,
-                                                HAL::Speed::low,
-                                                HAL::PullMode::pull_up,
-                                                HAL::OutputMode::push_pull);
-static HAL::AlternateModePin accelerometer_sck(GPIOA,
-                                               HAL::Pins::pin_5,
-                                               HAL::PinMode::alternate,
-                                               HAL::Speed::very_high,
-                                               HAL::PullMode::pull_up,
-                                               HAL::OutputMode::push_pull,
-                                               HAL::AlternateMode::af5);
+using namespace HAL::gpio;
+static output_pin accelerometer_chip_select(GPIOE, 
+                                            pin_id::pin_3, 
+                                            pin_mode::output, 
+                                            pin_speed::low, 
+                                            pull_mode::pull_up,
+                                            output_mode::push_pull);
+                                            
+static alternate_mode_pin accelerometer_sck(GPIOA,
+                                            pin_id::pin_5,
+                                            pin_mode::alternate,
+                                            pin_speed::very_high,
+                                            pull_mode::pull_up,
+                                            output_mode::push_pull,
+                                            alternate_mode::af5);
 
-static HAL::AlternateModePin accelerometer_miso(GPIOA,
-                                                HAL::Pins::pin_6,
-                                                HAL::PinMode::alternate,
-                                                HAL::Speed::very_high,
-                                                HAL::PullMode::pull_up,
-                                                HAL::OutputMode::push_pull,
-                                                HAL::AlternateMode::af5);
+static alternate_mode_pin accelerometer_miso(GPIOA,
+                                             pin_id::pin_6,
+                                             pin_mode::alternate,
+                                             pin_speed::very_high,
+                                             pull_mode::pull_up,
+                                             output_mode::push_pull,
+                                             alternate_mode::af5);
 
-static HAL::AlternateModePin accelerometer_mosi(GPIOA,
-                                                HAL::Pins::pin_7,
-                                                HAL::PinMode::alternate,
-                                                HAL::Speed::very_high,
-                                                HAL::PullMode::pull_up,
-                                                HAL::OutputMode::push_pull,
-                                                HAL::AlternateMode::af5);
+static alternate_mode_pin accelerometer_mosi(GPIOA,
+                                             pin_id::pin_7,
+                                             pin_mode::alternate,
+                                             pin_speed::very_high,
+                                             pull_mode::pull_up,
+                                             output_mode::push_pull,
+                                             alternate_mode::af5);
 
 LIS3DSH accelerometer(SPI1, accelerometer_chip_select);
 
@@ -78,7 +80,7 @@ static std::map<LIS3DSHResolution, uint16_t> acceleration_conversion_map = {{LIS
  * \param spi_peripheral_address 
  * \param chip_select 
  */
-LIS3DSH::LIS3DSH(SPI_TypeDef* spi_peripheral_address, HAL::OutputPin chip_select)
+LIS3DSH::LIS3DSH(SPI_TypeDef* spi_peripheral_address, HAL::gpio::output_pin chip_select)
     : HAL::SPIInterrupt(spi_peripheral_address, chip_select) {
     conversion_factor = acceleration_conversion_map[LIS3DSHResolution::resolution_2g];
 }
@@ -144,7 +146,7 @@ void LIS3DSH::initialize(void) {
     write_control_register(SPIControlRegister1::spi_enable, 0x01);
 
     // Register the external interrupts
-    register_external_interrupt(EXTIPort::gpio_port_e, Pins::pin_0, EXTITrigger::rising);
+    register_external_interrupt(EXTIPort::gpio_port_e, pin_id::pin_0, EXTITrigger::rising);
     interrupt_manager.register_callback(
         InterruptName::exti_0, this, static_cast<uint8_t>(InterruptType::external_interrupt_1), isr_preemption_priority::level_2);
 

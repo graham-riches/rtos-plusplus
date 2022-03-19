@@ -9,7 +9,6 @@
 #pragma once
 
 /********************************** Includes *******************************************/
-#include "hal_bitwise_operators.h"
 #include "hal_gpio.h"
 #include "hal_interrupt.h"
 #include "hal_rcc.h"

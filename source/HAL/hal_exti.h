@@ -74,7 +74,7 @@ enum class EXTITrigger : unsigned {
 /******************************* Global Variables **************************************/
 
 /****************************** Functions Prototype ************************************/
-void register_external_interrupt(EXTIPort port, Pins pin, EXTITrigger trigger);
+void register_external_interrupt(EXTIPort port, gpio::pin_id pin, EXTITrigger trigger);
 void clear_external_interrupt_pending(EXTILine line);
 
 };  // namespace HAL

@@ -12,18 +12,11 @@
 #include "common.h"
 #include "hal_gpio.h"
 
-/*********************************** Consts ********************************************/
-
-/************************************ Types ********************************************/
-
-/*********************************** Macros ********************************************/
-
 /******************************* Global Variables **************************************/
-/* LEDS */
-extern HAL::OutputPin green_led;
-extern HAL::OutputPin orange_led;
-extern HAL::OutputPin red_led;
-extern HAL::OutputPin blue_led;
+extern HAL::gpio::output_pin green_led;
+extern HAL::gpio::output_pin orange_led;
+extern HAL::gpio::output_pin red_led;
+extern HAL::gpio::output_pin blue_led;
 
 /****************************** Functions Prototype ************************************/
 void initialize_peripherals(void);

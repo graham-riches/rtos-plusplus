@@ -85,12 +85,8 @@ enum class SPIBaudratePrescaler : unsigned {
  * \brief base class for SPI peripherals 
  */
 class SPIBase {
-  protected:
-    SPI_TypeDef* peripheral;
-    OutputPin chip_select;
-
   public:
-    SPIBase(SPI_TypeDef* spi_peripheral_address, OutputPin chip_select);
+    SPIBase(SPI_TypeDef* spi_peripheral_address, gpio::output_pin& chip_select);
 
     /* interface setup function */
     virtual void initialize(){};
@@ -101,6 +97,10 @@ class SPIBase {
     uint8_t read_control_register(SPIControlRegister1 reg);
     uint8_t read_control_register(SPIControlRegister2 reg);
     void set_baudrate(SPIBaudratePrescaler prescaler);
+
+  protected:
+    SPI_TypeDef* m_peripheral;
+    gpio::output_pin* m_chip_select;    
 };
 
 /**
@@ -108,7 +108,7 @@ class SPIBase {
  */
 class SPIPolling : protected SPIBase {
   public:
-    SPIPolling(SPI_TypeDef* spi_peripheral_address, OutputPin chip_select)
+    SPIPolling(SPI_TypeDef* spi_peripheral_address, gpio::output_pin chip_select)
         : SPIBase(spi_peripheral_address, chip_select) { }
 
     void read_write(uint8_t* tx_buffer, uint8_t* rx_buffer, uint16_t size);

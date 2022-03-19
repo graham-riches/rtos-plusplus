@@ -30,8 +30,6 @@
   .fpu softvfp
   .thumb
 
-.global  Default_Handler
-
 /* start address for the initialization values of the .data section. 
 defined in linker script */
 .word  _sidata
