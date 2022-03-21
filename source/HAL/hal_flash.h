@@ -12,17 +12,14 @@
 #include "stm32f4xx.h"
 #include <stdint.h>
 
-namespace HAL
+namespace HAL::flash
 {
-/*********************************** Consts ********************************************/
-
 /************************************ Types ********************************************/
-
 /**
  * \brief bit offsets for the flash peripheral access control register
  * 
  */
-enum class FlashAccessControlRegister : unsigned {
+enum class access_control_register : unsigned {
     latency = 0,
     prefetch_enable = 8,
     instruction_cache_enable = 9,
@@ -31,27 +28,14 @@ enum class FlashAccessControlRegister : unsigned {
     data_cache_reset = 12
 };
 
+/****************************** Function Declarations ************************************/
 /**
- * \brief flash memory peripheral class
+ * \brief Set a bit in the flash access control register
  * 
+ * \param reg The register to set the bit 
+ * \param bit Bit to set
+ * \param value Bit set high or low
  */
-class Flash {
-  private:
-    FLASH_TypeDef* peripheral;
+void set_access_control_register_bit(FLASH_TypeDef* flash, access_control_register bit, uint8_t value);
 
-  public:
-    Flash(FLASH_TypeDef* flash_peripheral_address) {
-        this->peripheral = flash_peripheral_address;
-    }
-
-    void set_access_control_register(FlashAccessControlRegister reg, uint8_t value);
-};
-
-/*********************************** Macros ********************************************/
-
-/******************************* Global Variables **************************************/
-extern Flash flash;
-
-/****************************** Functions Prototype ************************************/
-
-};  // namespace HAL
+};  // namespace HAL::flash

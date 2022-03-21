@@ -1,64 +1,29 @@
-/**
-  ******************************************************************************
-  * @file      startup_stm32f407xx.s
-  * @author    MCD Application Team
-  * @brief     STM32F407xx Devices vector table for GCC based toolchains. 
-  *            This module performs:
-  *                - Set the initial SP
-  *                - Set the initial PC == Reset_Handler,
-  *                - Set the vector table entries with the exceptions ISR address
-  *                - Branches to main in the C library (which eventually
-  *                  calls main()).
-  *            After Reset the Cortex-M4 processor is in Thread mode,
-  *            priority is Privileged, and the Stack is set to Main.
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
-  ******************************************************************************
-  */
-    
   .syntax unified
   .cpu cortex-m4
   .fpu softvfp
   .thumb
 
-/* start address for the initialization values of the .data section. 
-defined in linker script */
+// Start address for the initialization values of the .data section. defined in linker script
 .word  _sidata
-/* start address for the .data section. defined in linker script */  
+// Start address for the .data section. defined in linker script
 .word  _sdata
-/* end address for the .data section. defined in linker script */
+// End address for the .data section. defined in linker script
 .word  _edata
-/* start address for the .bss section. defined in linker script */
+// Start address for the .bss section. defined in linker script
 .word  _sbss
-/* end address for the .bss section. defined in linker script */
+// End address for the .bss section. defined in linker script
 .word  _ebss
-/* stack used for SystemInit_ExtMemCtl; always internal RAM used */
+// stack used for SystemInit_ExtMemCtl; always internal RAM used
 
-/**
- * @brief  This is the code that gets called when the processor first
- *          starts execution following a reset event. Only the absolutely
- *          necessary set is performed, after which the application
- *          supplied main() routine is called. 
- * @param  None
- * @retval : None
-*/
 
-    .section  .text.isr_reset_handler
+// System Startup Code
+.section  .text.isr_reset_handler
   .weak  isr_reset_handler
   .type  isr_reset_handler, %function
 isr_reset_handler:  
-  ldr   sp, =_estack     /* set stack pointer */
+  ldr   sp, =_estack     // Initialize Stack Pointer
 
-/* Copy the data segment initializers from flash to SRAM */  
+// Copy the data segment initializers from flash to SRAM 
   movs  r1, #0
   b  LoopCopyDataInit
 
@@ -76,7 +41,8 @@ LoopCopyDataInit:
   bcc  CopyDataInit
   ldr  r2, =_sbss
   b  LoopFillZerobss
-/* Zero fill the bss segment. */  
+
+// Zero fill BSS
 FillZerobss:
   movs  r3, #0
   str  r3, [r2], #4
@@ -86,11 +52,13 @@ LoopFillZerobss:
   cmp  r2, r3
   bcc  FillZerobss
 
-/* Call the clock system intitialization function.*/
-/*  bl  SystemInit   */
-/* Call static constructors */
+// Call the HAL startup code
+    bl __system_startup
+
+// Call static constructors
    bl __libc_init_array
-/* Call the application's entry point.*/
+
+// Call the application's entry point
   bl  main
   bx  lr    
 .size  isr_reset_handler, .-isr_reset_handler

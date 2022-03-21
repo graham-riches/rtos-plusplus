@@ -11,16 +11,14 @@
 
 #pragma once
 
+/****************************** Includes ***********************************/
 #include "gpio_definitions.h"
 #include "hal_utilities.h"
 #include "pin_base.h"
 
 namespace HAL::gpio
 {
-
-/**
- * \brief class type for a GPIO output pin
- */
+/****************************** Types ***********************************/
 class output_pin final : protected pin_base {
   public:
     /**
@@ -34,12 +32,13 @@ class output_pin final : protected pin_base {
      * \param output_mode Output mode     
      */
     explicit output_pin(GPIO_TypeDef* bank,
-                                  pin_id pin,
-                                  pin_mode mode,
-                                  pin_speed speed,
-                                  pull_mode pull_mode,
-                                  output_mode output_mode)
-        : pin_base(bank, pin, mode, speed, pull_mode, output_mode)
+                        AHB1Clocks peripheral_clock,
+                        pin_id pin,
+                        pin_mode mode,
+                        pin_speed speed,
+                        pull_mode pull_mode,
+                        output_mode output_mode)
+        : pin_base(bank, peripheral_clock, pin, mode, speed, pull_mode, output_mode)
         , m_pin(pin) { }
 
     //!< Disable moves, copies, and default construction

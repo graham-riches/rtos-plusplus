@@ -36,13 +36,13 @@ static os::thread thread_two(thread_two_task, nullptr, 2, thread_two_stack, thre
   * \brief  Main application function
   * \retval int
   */
-int main(void) {
+int main(void) {    
     //!< register the threads
     os::scheduler::register_new_thread(&thread_one);
     os::scheduler::register_new_thread(&thread_two);
 
-    //!< configure the project specific HAL drivers and bootup the chip, clocks etc.
-    initialize_peripherals();    
+    //!< Configure peripherals
+    initialize_peripherals();
 
     //!< jump into the RTOS kernel
     os::kernel::setup();

@@ -22,8 +22,7 @@ set(DEVICE_PORT_NAME stm32f4)
 
 # Set which source files to compile for the project
 set(APP_SOURCES 		      
-    # HAL++ source files
-    source/HAL/gpio/pin_base.cpp
+    # HAL++ source files    
     source/HAL/hal_rcc.cpp
     source/HAL/hal_flash.cpp
     source/HAL/hal_power.cpp
@@ -33,6 +32,7 @@ set(APP_SOURCES
     source/HAL/${DEVICE_PORT_NAME}/device_port.cpp
 
     # Application Source Files
+    source/Application/system_startup.cpp
     source/Application/main.cpp
     #source/Application/Peripherals/USART/debug_port.cpp
     source/Application/Peripherals/peripherals.cpp

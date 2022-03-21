@@ -8,53 +8,34 @@
 
 /********************************** Includes *******************************************/
 #include "hal_flash.h"
+#include "hal_utilities.h"
 
-namespace HAL
+namespace HAL::flash
 {
-/*********************************** Consts ********************************************/
-
-/************************************ Types ********************************************/
-
-/*********************************** Macros ********************************************/
-
-/******************************* Global Variables **************************************/
-Flash flash(FLASH);
-
-/******************************** Local Variables **************************************/
-
-/****************************** Functions Prototype ************************************/
-
 /****************************** Function Definitions ***********************************/
-/**
- * \brief configure a register in the flash access control register
- * 
- * \param value the value of the register
- */
-void Flash::set_access_control_register(FlashAccessControlRegister reg, uint8_t value) {
-    switch ( reg ) {
-        /* handle the single bit registers in one case */
-        case FlashAccessControlRegister::data_cache_enable:
-        case FlashAccessControlRegister::prefetch_enable:
-        case FlashAccessControlRegister::instruction_cache_enable:
-        case FlashAccessControlRegister::data_cache_reset:
-        case FlashAccessControlRegister::instruction_cache_reset:
-            /* clear the register */
-            this->peripheral->ACR &= ~static_cast<uint8_t>(0x01u << static_cast<uint8_t>(reg));
-            /* set it */
-            this->peripheral->ACR |= static_cast<uint8_t>((value & 0x01u) << static_cast<uint8_t>(reg));
+
+void set_access_control_register_bit(FLASH_TypeDef* flash, access_control_register bit, uint8_t value) {
+    switch ( bit ) {
+        // Handle the single bit width registers in one case
+        case access_control_register::data_cache_enable:
+        case access_control_register::prefetch_enable:
+        case access_control_register::instruction_cache_enable:
+        case access_control_register::data_cache_reset:
+        case access_control_register::instruction_cache_reset:
+            clear_bits(flash->ACR, 0x01u << static_cast<uint32_t>(bit));
+            if ( value > 0 ) {
+                set_bits(flash->ACR, 0x01u << static_cast<uint32_t>(bit));
+            }
             break;
 
-        /* handle the latency (4-bits) separately */
-        case FlashAccessControlRegister::latency:
-            /* clear the register */
-            this->peripheral->ACR &= ~static_cast<uint8_t>(0x0Fu << static_cast<uint8_t>(reg));
-            /* set it */
-            this->peripheral->ACR |= static_cast<uint8_t>((value & 0x0Fu) << static_cast<uint8_t>(reg));
+        // Latency is a special case of 4-bits wide
+        case access_control_register::latency:
+            clear_bits(flash->ACR, 0x0Fu << static_cast<uint32_t>(bit));
+            set_bits(flash->ACR, (value & 0x0Fu) << static_cast<uint32_t>(bit));
             break;
 
         default:
             break;
     }
 }
-
-};  // namespace HAL
+};  // namespace HAL::flash
