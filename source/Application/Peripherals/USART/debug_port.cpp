@@ -59,7 +59,7 @@ void DebugPort::initialize(void) {
     using namespace HAL;
 
     /* enable the GPIO clocks and the USART clocks */
-    reset_control_clock.set_apb_clock(APB1Clocks::usart_3, true);
+    reset_control_clock.set_apb_clock(apb1_clocks::usart_3, true);
 
     /* configure the usart with the application specific settings */
     write_control_register(USARTControlRegister1::parity_selection, 0x00);
@@ -67,7 +67,7 @@ void DebugPort::initialize(void) {
     write_control_register(USARTControlRegister2::stop_bits, 0x00);
     write_control_register(USARTControlRegister3::cts_enable, 0x00);
     write_control_register(USARTControlRegister3::rts_enable, 0x00);
-    set_baudrate(Clocks::APB1, 115200);
+    set_baudrate(clocks::APB1, 115200);
 
     /* enable the usart and interrupts */
     write_control_register(USARTControlRegister1::receiver_enable, 0x01);

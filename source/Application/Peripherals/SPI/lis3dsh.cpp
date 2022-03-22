@@ -126,7 +126,7 @@ void LIS3DSH::initialize(void) {
     using namespace HAL;
 
     // Enable the peripheral clock
-    reset_control_clock.set_apb_clock(APB2Clocks::spi_1, true);
+    reset_control_clock.set_apb_clock(apb2_clocks::spi_1, true);
 
     // Setup the SPI control register settings
     write_control_register(SPIControlRegister1::master_select, 0x01);

@@ -28,7 +28,7 @@ namespace HAL
  */
 void register_external_interrupt(EXTIPort port, gpio::pin_id pin, EXTITrigger trigger) {
     /* make sure the syscfg clock is on */
-    reset_control_clock.set_apb_clock(APB2Clocks::sys_config, true);
+    rcc::set_apb_clock(rcc::apb2_clocks::sys_config, true);
 
     uint8_t pin_offset = static_cast<uint8_t>(pin);
     uint8_t pin_number = 1;

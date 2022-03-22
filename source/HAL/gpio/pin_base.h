@@ -42,7 +42,7 @@ class pin_base {
      * \param output_mode Output mode
      */
     explicit pin_base(GPIO_TypeDef* bank,
-                      AHB1Clocks peripheral_clock,
+                      rcc::ahb1_clocks peripheral_clock,
                       pin_id pin,
                       pin_mode mode,
                       pin_speed speed,
@@ -50,7 +50,7 @@ class pin_base {
                       output_mode output_mode)
         : m_bank(bank) {            
         // Enable GPIO clock
-        reset_control_clock.set_ahb_clock(peripheral_clock, true);
+        rcc::set_ahb_clock(peripheral_clock, true);
         
         // Find the pin and setup the common registers
         for ( unsigned i = 0; i < TOTAL_PINS; i++ ) {

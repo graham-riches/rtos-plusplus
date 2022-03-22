@@ -67,8 +67,8 @@ uint8_t USARTBase::read_control_register(USARTControlRegister3 reg) {
  * \todo remove base clock rate and get that direct from HAL_rcc
  * \todo account for oversampling mode
  */
-void USARTBase::set_baudrate(HAL::Clocks clock, uint32_t baudrate) {
-    uint32_t base_clock_rate = HAL::reset_control_clock.get_clock_speed(clock);
+void USARTBase::set_baudrate(rcc::clocks clock, uint32_t baudrate) {
+    uint32_t base_clock_rate = rcc::get_clock_speed(clock);
     uint32_t usart_div = (100 * base_clock_rate) / (16 * baudrate);    
     uint32_t integer_component = usart_div / 100;    
     uint32_t fractional_temp = usart_div - (100 * integer_component);

@@ -32,7 +32,7 @@ class output_pin final : protected pin_base {
      * \param output_mode Output mode     
      */
     explicit output_pin(GPIO_TypeDef* bank,
-                        AHB1Clocks peripheral_clock,
+                        rcc::ahb1_clocks peripheral_clock,
                         pin_id pin,
                         pin_mode mode,
                         pin_speed speed,

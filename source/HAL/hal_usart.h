@@ -113,7 +113,7 @@ class USARTBase {
     uint8_t read_control_register(USARTControlRegister1 reg);
     uint8_t read_control_register(USARTControlRegister2 reg);
     uint8_t read_control_register(USARTControlRegister3 reg);
-    void set_baudrate(HAL::Clocks clock, uint32_t baudrate);
+    void set_baudrate(rcc::clocks clock, uint32_t baudrate);
 };
 
 };  // namespace HAL

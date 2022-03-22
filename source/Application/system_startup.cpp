@@ -22,8 +22,8 @@ constexpr uint32_t HSE_FREQUENCY = 8000000;
 constexpr uint8_t RCC_PLL_M_FACTOR = 8;
 constexpr uint16_t RCC_PLL_N_FACTOR = 336;
 constexpr uint8_t RCC_PLL_Q_FACTOR = 7;
-constexpr HAL::PLLOutputPrescaler RCC_PLL_P_FACTOR = HAL::PLLOutputPrescaler::prescaler_2;
-constexpr HAL::PLLSource RCC_PLL_SOURCE = HAL::PLLSource::high_speed_external;
+constexpr HAL::rcc::pll_output_prescaler RCC_PLL_P_FACTOR = HAL::rcc::pll_output_prescaler::prescaler_2;
+constexpr HAL::rcc::pll_source RCC_PLL_SOURCE = HAL::rcc::pll_source::high_speed_external;
 
 /****************************** Functions Definition ***********************************/
 /**
@@ -39,34 +39,33 @@ extern "C" void __system_startup() {
 #endif
 
     // Enable high speed external
-    reset_control_clock.set_control_register(RCCRegister::hse_on, 0x01);
+    rcc::set_control_register(rcc::control_register::hse_on, 0x01);
 
     // Wait for the high speed clock to stabilize
     volatile bool hse_ready = false;
     do {
-        hse_ready = static_cast<bool>(reset_control_clock.get_control_register(RCCRegister::hse_ready));
+        hse_ready = static_cast<bool>(rcc::get_control_register(rcc::control_register::hse_ready));
     } while ( !hse_ready );
 
     // Select regulator voltage output Scale 1 mode
-    reset_control_clock.set_apb_clock(APB1Clocks::power_management, true);
+    rcc::set_apb_clock(rcc::apb1_clocks::power_management, true);
     power_management.set_control_register(PowerManagementControlRegister::voltage_output_selection, 0x03);
 
     // Setup the clock prescalers
-    reset_control_clock.configure_ahb_clock(AHBPrescaler::prescaler_none);
-    reset_control_clock.configure_apb1_clock(APBPrescaler::prescaler_4);
-    reset_control_clock.configure_apb2_clock(APBPrescaler::prescaler_2);
+    rcc::configure_ahb_clock(rcc::ahb_prescaler::prescaler_none);
+    rcc::configure_apb1_clock(rcc::apb_prescaler::prescaler_4);
+    rcc::configure_apb2_clock(rcc::apb_prescaler::prescaler_2);
 
     // Configure the main phase locked loop
-    reset_control_clock.configure_main_pll(
-        RCC_PLL_SOURCE, HSE_FREQUENCY, RCC_PLL_M_FACTOR, RCC_PLL_N_FACTOR, RCC_PLL_P_FACTOR, RCC_PLL_Q_FACTOR);
+    rcc::configure_main_pll(RCC_PLL_SOURCE, HSE_FREQUENCY, RCC_PLL_M_FACTOR, RCC_PLL_N_FACTOR, RCC_PLL_P_FACTOR, RCC_PLL_Q_FACTOR);
 
     // Enable the phase locked loop
-    reset_control_clock.set_control_register(RCCRegister::main_pll_on, 0x01);
+    rcc::set_control_register(rcc::control_register::main_pll_on, 0x01);
 
     // Wait for the phase locked loop to stabilize
     volatile bool pll_ready = false;
     do {
-        pll_ready = static_cast<bool>(reset_control_clock.get_control_register(RCCRegister::main_pll_ready));
+        pll_ready = static_cast<bool>(rcc::get_control_register(rcc::control_register::main_pll_ready));
     } while ( pll_ready == false );
 
     // Configure Flash prefetch, Instruction cache, Data cache and wait state
@@ -76,9 +75,9 @@ extern "C" void __system_startup() {
     flash::set_access_control_register_bit(FLASH, flash::access_control_register::latency, 0x05);
 
     // set the system clock source
-    reset_control_clock.set_system_clock_source(SystemClockSource::phase_locked_loop);
+    rcc::set_system_clock_source(rcc::system_clock_source::phase_locked_loop);
 
     // Setup the scheduler clock ticks
-    uint32_t sys_clock = reset_control_clock.get_clock_speed(Clocks::AHB1);
+    uint32_t sys_clock = rcc::get_clock_speed(rcc::clocks::AHB1);
     os::kernel::set_systick_frequency(sys_clock / 1000);
 }
