@@ -52,11 +52,11 @@ LoopFillZerobss:
   cmp  r2, r3
   bcc  FillZerobss
 
-// Call the HAL startup code
-    bl __system_startup
-
 // Call static constructors
    bl __libc_init_array
+
+// Call the HAL startup code
+   bl __system_startup
 
 // Call the application's entry point
   bl  main
