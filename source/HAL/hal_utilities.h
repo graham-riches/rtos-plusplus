@@ -44,7 +44,6 @@ void clear_bits(volatile T1& reg, T2 bits) {
     reg = reg & ~static_cast<uint32_t>(bits);
 }
 
-
 /**
  * \brief Checks if a bit is set in a register
  * 
@@ -59,6 +58,5 @@ bool is_bit_set(RegisterType&& reg, BitType mask) {
     static_assert(std::is_integral_v<BitType>, "Must be an integral type");
     return (static_cast<BitType>(reg) & mask) == mask;
 }
-
 
 };

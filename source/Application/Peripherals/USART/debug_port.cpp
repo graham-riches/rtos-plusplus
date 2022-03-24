@@ -62,23 +62,23 @@ void DebugPort::initialize(void) {
     reset_control_clock.set_apb_clock(apb1_clocks::usart_3, true);
 
     /* configure the usart with the application specific settings */
-    write_control_register(USARTControlRegister1::parity_selection, 0x00);
-    write_control_register(USARTControlRegister1::word_length, 0x00);
-    write_control_register(USARTControlRegister2::stop_bits, 0x00);
-    write_control_register(USARTControlRegister3::cts_enable, 0x00);
-    write_control_register(USARTControlRegister3::rts_enable, 0x00);
+    write_control_register(control_register_1::parity_selection, 0x00);
+    write_control_register(control_register_1::word_length, 0x00);
+    write_control_register(control_register_2::stop_bits, 0x00);
+    write_control_register(control_register_3::cts_enable, 0x00);
+    write_control_register(control_register_3::rts_enable, 0x00);
     set_baudrate(clocks::APB1, 115200);
 
     /* enable the usart and interrupts */
-    write_control_register(USARTControlRegister1::receiver_enable, 0x01);
-    write_control_register(USARTControlRegister1::transmitter_enable, 0x01);
-    write_control_register(USARTControlRegister1::receive_interrupt_enable, 0x01);
+    write_control_register(control_register_1::receiver_enable, 0x01);
+    write_control_register(control_register_1::transmitter_enable, 0x01);
+    write_control_register(control_register_1::receive_interrupt_enable, 0x01);
 
     /* register the interrupt in the hal interrupts table */
     interrupt_manager.register_callback(InterruptName::usart_3, this, 0, isr_preemption_priority::level_2);
 
     /* enable the UART */
-    write_control_register(USARTControlRegister1::usart_enable, 0x01);
+    write_control_register(control_register_1::usart_enable, 0x01);
 }
 
 /**

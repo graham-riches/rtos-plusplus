@@ -15,16 +15,13 @@
 #include "stm32f4xx.h"
 #include <cstdint>
 
-namespace HAL
+namespace HAL::usart
 {
-
-/*********************************** Consts ********************************************/
-
 /************************************ Types ********************************************/
 /**
  * \brief bit offsets for USART status register
  */
-enum class USARTStatusRegister : unsigned {
+enum class status_register : unsigned {
     parity_error = 0,
     framing_error = 1,
     noise_detected = 2,
@@ -40,7 +37,7 @@ enum class USARTStatusRegister : unsigned {
 /**
  * \brief bit offsets for USART control register one
  */
-enum class USARTControlRegister1 : unsigned {
+enum class control_register_1 : unsigned {
     send_break = 0,
     receiver_wakeup = 1,
     receiver_enable = 2,
@@ -61,7 +58,7 @@ enum class USARTControlRegister1 : unsigned {
 /**
  * \brief bit offsets for USART control register two
  */
-enum class USARTControlRegister2 : unsigned {
+enum class control_register_2 : unsigned {
     address = 0,
     line_break_detection_length = 5,
     line_break_interrupt_enable = 6,
@@ -76,7 +73,7 @@ enum class USARTControlRegister2 : unsigned {
 /**
  * \brief bit offsets for USART control register three
  */
-enum class USARTControlRegister3 : unsigned {
+enum class control_register_3 : unsigned {
     error_interrupt_enable = 0,
     irda_mode_enable = 1,
     irda_low_power_mode = 2,
@@ -92,27 +89,98 @@ enum class USARTControlRegister3 : unsigned {
 };
 
 /**
- * \brief base class for uart peripherals
+ * \brief Base class for uart peripherals
  */
-class USARTBase {
-  protected:
-    USART_TypeDef* peripheral;
+class usart_base {
+    public:
+    /**
+     * \brief Construct a new usart base object
+     * 
+     * \param usart Peripheral address
+     */
+    explicit usart_base(USART_TypeDef* usart);
 
-  public:
-    USARTBase(USART_TypeDef* usart);
+    //!< Delete copies and default construction
+    usart_base(const usart_base&) = delete;
+    usart_base& operator=(const usart_base&) = delete;
+    usart_base() = delete;
 
-    /* virtual methods for derived classes */
-    virtual void initialize(){};
+    //!< Allow moves
+    usart_base(usart_base&&) = default;    
+    usart_base& operator=(usart_base&&) = default;
 
-    /* common methods for all derived classes */
-    uint8_t read_status_register(USARTStatusRegister reg);
-    void write_control_register(USARTControlRegister1 reg, uint8_t value);
-    void write_control_register(USARTControlRegister2 reg, uint8_t value);
-    void write_control_register(USARTControlRegister3 reg, uint8_t value);
-    uint8_t read_control_register(USARTControlRegister1 reg);
-    uint8_t read_control_register(USARTControlRegister2 reg);
-    uint8_t read_control_register(USARTControlRegister3 reg);
+
+    /**
+     * \brief Interface method to initialize the peripheral
+     */
+    virtual void initialize() = 0;
+
+    /**
+     * \brief Read the status register
+     * 
+     * \param reg Register to read
+     * \return uint8_t Register valu
+     */
+    uint8_t read_status_register(status_register reg);
+
+    /**
+     * \brief Write to CR1
+     * 
+     * \param reg Register to write
+     * \param value Value to write
+     */
+    void write_control_register(control_register_1 reg, uint8_t value);
+
+    /**
+     * \brief Write to CR2
+     * 
+     * \param reg Register to write
+     * \param value Value to write
+     */
+    void write_control_register(control_register_2 reg, uint8_t value);
+
+    /**
+     * \brief Write to CR3
+     * 
+     * \param reg Register to write
+     * \param value Value to write
+     */
+    void write_control_register(control_register_3 reg, uint8_t value);
+
+    /**
+     * \brief Read CR1
+     * 
+     * \param reg Register to read
+     * \return uint8_t Register value
+     */
+    uint8_t read_control_register(control_register_1 reg);
+
+    /**
+     * \brief Read CR2
+     * 
+     * \param reg Register to read
+     * \return uint8_t Register value
+     */
+    uint8_t read_control_register(control_register_2 reg);
+
+    /**
+     * \brief Read CR3
+     * 
+     * \param reg Register to read
+     * \return uint8_t Register value
+     */
+    uint8_t read_control_register(control_register_3 reg);
+
+    /**
+     * \brief Set the baudrate obje
+     * 
+     * \param clock RCC clock to use (depends on peripheral)
+     * \param baudrate Baudrate to use in bps
+     */
     void set_baudrate(rcc::clocks clock, uint32_t baudrate);
+
+    protected:
+    USART_TypeDef* m_peripheral;
 };
 
 };  // namespace HAL
