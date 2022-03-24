@@ -42,7 +42,7 @@ class system_clock_impl {
      */
     void update(uint32_t ticks) {
         if ( running ) {
-            elapsed_ticks += ticks;
+            elapsed_ticks = elapsed_ticks + ticks;
         }
     }
 

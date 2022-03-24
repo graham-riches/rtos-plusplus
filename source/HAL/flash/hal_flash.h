@@ -36,6 +36,6 @@ enum class access_control_register : unsigned {
  * \param bit Bit to set
  * \param value Bit set high or low
  */
-void set_access_control_register_bit(FLASH_TypeDef* flash, access_control_register bit, uint8_t value);
+void set_access_control_register_bit(access_control_register bit, uint8_t value);
 
 };  // namespace HAL::flash

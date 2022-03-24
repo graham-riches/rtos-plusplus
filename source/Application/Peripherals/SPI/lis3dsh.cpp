@@ -10,7 +10,7 @@
 #include "lis3dsh.h"
 #include "board.h"
 #include "hal_exti.h"
-#include "hal_interrupt.h"
+#include "hal_nvic.h"
 #include "hal_rcc.h"
 #include <map>
 

@@ -211,7 +211,6 @@ enum class apb2_clocks : unsigned {
 };
 
 /****************************** Function Declarations ************************************/
-
 /**
  * \brief Get a control register value
  * 

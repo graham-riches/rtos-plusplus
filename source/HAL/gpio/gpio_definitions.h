@@ -96,4 +96,22 @@ enum class pin_id : unsigned {
     pin_15 = 0x8000,
     all = 0xFFFF
 };
+
+/**
+ * \brief Gpio ports
+ * \note All pin numbers with the same number (i.e. PA0, PB0) share a single
+ *       interrupt line to the processor
+ */
+enum class port : unsigned {
+    port_a = 0,
+    port_b,
+    port_c,
+    port_d,
+    port_e,
+    port_f,
+    port_g,
+    port_h,
+    port_i,
+};
+
 };  // namespace HAL::gpio

@@ -9,7 +9,7 @@
 /********************************** Includes *******************************************/
 #include "debug_port.h"
 #include "hal_gpio.h"
-#include "hal_interrupt.h"
+#include "hal_nvic.h"
 #include "hal_rcc.h"
 #include <cstdio>
 #include <cstring>

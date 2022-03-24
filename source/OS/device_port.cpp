@@ -12,14 +12,9 @@
 /********************************** Includes *******************************************/
 #include "device_port.h"
 #include "stm32f4xx.h"
-#include "board.h"
-#include "common.h"
 #include "thread_impl.h"
 #include "os.h"
-#include "hal_interrupt.h"
-
-/******************************* Global Variables **************************************/
-HAL::interrupt_manager<stm32f4_irq> interrupt_manager;
+#include "hal_nvic.h"
 
 /************************************ Types ********************************************/
 /**

@@ -10,8 +10,7 @@
 
 /********************************** Includes *******************************************/
 #include "hal_gpio.h"
-#include "hal_interrupt.h"
-#include "ring_buffer.h"
+#include "hal_nvic.h"
 #include "stm32f4xx.h"
 
 namespace HAL

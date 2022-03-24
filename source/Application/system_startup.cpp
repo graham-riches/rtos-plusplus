@@ -11,7 +11,7 @@
 
 /********************************** Includes *******************************************/
 #include "hal_flash.h"
-#include "hal_interrupt.h"
+#include "hal_nvic.h"
 #include "hal_power.h"
 #include "hal_rcc.h"
 #include "hal_utilities.h"
@@ -35,8 +35,12 @@ extern "C" void __system_startup() {
 
     // Enable FPU if defined
 #if ( __FPU_PRESENT == 1 ) && (__FPU_USED == 1)
-    SCB->CPACR |= ((3UL << 10 * 2) | (3UL << 11 * 2)); /* set CP10 and CP11 Full Access */
+    // Set CP10/11 for full access to FPU
+    set_bits(SCB->CPACR, (3UL << 10 * 2) | (3UL << 11 * 2));    
 #endif
+
+    // Setup NVIC Defaults
+    nvic::initialize();
 
     // Enable high speed external
     rcc::set_control_register(rcc::control_register::hse_on, 0x01);
@@ -49,7 +53,7 @@ extern "C" void __system_startup() {
 
     // Select regulator voltage output Scale 1 mode
     rcc::set_apb_clock(rcc::apb1_clocks::power_management, true);
-    power_management.set_control_register(PowerManagementControlRegister::voltage_output_selection, 0x03);
+    power_management::set_control_register(power_management::control_register::voltage_output_selection, 0x03);
 
     // Setup the clock prescalers
     rcc::configure_ahb_clock(rcc::ahb_prescaler::prescaler_none);
@@ -69,10 +73,10 @@ extern "C" void __system_startup() {
     } while ( pll_ready == false );
 
     // Configure Flash prefetch, Instruction cache, Data cache and wait state
-    flash::set_access_control_register_bit(FLASH, flash::access_control_register::prefetch_enable, 0x01);
-    flash::set_access_control_register_bit(FLASH, flash::access_control_register::instruction_cache_enable, 0x01);
-    flash::set_access_control_register_bit(FLASH, flash::access_control_register::data_cache_enable, 0x01);
-    flash::set_access_control_register_bit(FLASH, flash::access_control_register::latency, 0x05);
+    flash::set_access_control_register_bit(flash::access_control_register::prefetch_enable, 0x01);
+    flash::set_access_control_register_bit(flash::access_control_register::instruction_cache_enable, 0x01);
+    flash::set_access_control_register_bit(flash::access_control_register::data_cache_enable, 0x01);
+    flash::set_access_control_register_bit(flash::access_control_register::latency, 0x05);
 
     // set the system clock source
     rcc::set_system_clock_source(rcc::system_clock_source::phase_locked_loop);

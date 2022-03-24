@@ -9,7 +9,7 @@
 /********************************** Includes *******************************************/
 #include "peripherals.h"
 #include "hal_flash.h"
-#include "hal_interrupt.h"
+#include "hal_nvic.h"
 #include "hal_power.h"
 #include "hal_rcc.h"
 #include "os.h"

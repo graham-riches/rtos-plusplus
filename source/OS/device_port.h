@@ -12,7 +12,7 @@
 #pragma once
 
 /********************************** Includes *******************************************/
-#include "hal_interrupt.h"
+#include "hal_nvic.h"
 #include <cstdint>
 
 /********************************** Macros *******************************************/
@@ -142,8 +142,3 @@ enum class stm32f4_irq : unsigned {
 
 //!< Helper alias for maximum interrupt number
 constexpr std::size_t STM32F4_TOTAL_ISR = static_cast<std::size_t>(stm32f4_irq::floating_point_unit);
-
-
-/********************************** Globals *******************************************/
-//!< Global interrupt manager
-extern HAL::interrupt_manager<stm32f4_irq> interrupt_manager;

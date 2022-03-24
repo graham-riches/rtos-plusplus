@@ -16,21 +16,14 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Set the device name which is used to find device specific HAL/OS port
-set(DEVICE_PORT_NAME stm32f4)
+
+
+# Add HAL subdirectory
+add_subdirectory(${CMAKE_SOURCE_DIR}/source/HAL)
 
 
 # Set which source files to compile for the project
 set(APP_SOURCES 		      
-    # HAL++ source files    
-    source/HAL/hal_rcc.cpp
-    source/HAL/hal_flash.cpp
-    source/HAL/hal_power.cpp
-    source/HAL/hal_usart.cpp    
-    source/HAL/hal_spi.cpp
-    source/HAL/hal_exti.cpp
-    source/HAL/${DEVICE_PORT_NAME}/device_port.cpp
-
     # Application Source Files
     source/Application/system_startup.cpp
     source/Application/main.cpp
@@ -42,6 +35,7 @@ set(APP_SOURCES
     source/OS/thread/thread_impl.cpp
     source/OS/system_clock/system_clock.cpp    
     source/OS/os.cpp    
+    source/OS/device_port.cpp
 
 
     # Start Up File
@@ -60,14 +54,11 @@ target_compile_definitions(${BINARY} PRIVATE
     -DSTM32F407xx
     -D__FPU_PRESENT
     -D__FPU_USED
-    )
+)
 
 # Set source include directories
 target_include_directories(${BINARY} PRIVATE
     source
-    source/HAL
-    source/HAL/gpio
-    source/HAL/${DEVICE_PORT_NAME}      
     source/Application
     #source/Application/Accelerometer      
     #source/Application/Audio
@@ -86,9 +77,9 @@ target_include_directories(${BINARY} PRIVATE
     source/Application/Peripherals			
     source/Application/Peripherals/USART
     source/Application/Peripherals/SPI
-    )
+)
 
-# Set compiler flags - switch to -03 here for optimization*
+# Set compiler flags - switch to -02 here for optimization
 target_compile_options(${BINARY} PRIVATE    
     -mcpu=cortex-m4
     -mthumb
@@ -102,7 +93,7 @@ target_compile_options(${BINARY} PRIVATE
     -Wall
     -Wextra
     -fmessage-length=0        
-    )
+)
 
 # Set the linker options
 target_link_options(${BINARY} PRIVATE
@@ -118,21 +109,25 @@ target_link_options(${BINARY} PRIVATE
     -Wl,-Map=${PROJECT_NAME}.map,--cref
     -Wl,--gc-sections
     --no-exceptions
-    )
+)
+
+target_link_libraries(${BINARY} hal_library)
 
 # Print executable size
 add_custom_command(TARGET ${BINARY}
     POST_BUILD
-    COMMAND arm-none-eabi-size ${BINARY})
+    COMMAND arm-none-eabi-size ${BINARY}
+)
 
 # Create hex file
 add_custom_command(TARGET ${BINARY}
     POST_BUILD
     COMMAND arm-none-eabi-objcopy -O ihex ${BINARY} ${PROJECT_NAME}.hex
     COMMAND arm-none-eabi-objcopy -O binary ${BINARY} ${PROJECT_NAME}.bin
-    )
+)
 
 # Create disassembly
 add_custom_command( TARGET ${BINARY}
     POST_BUILD
-    COMMAND arm-none-eabi-objdump -d ${BINARY} > ${PROJECT_NAME}_dasm.txt)
+    COMMAND arm-none-eabi-objdump -d ${BINARY} > ${PROJECT_NAME}_dasm.txt
+)

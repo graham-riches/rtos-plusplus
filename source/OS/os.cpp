@@ -1,4 +1,4 @@
-/*! \file kernel.c
+/*! \file os.cpp
 *
 *  \brief contains the main kernel functions for running the operating system.
 *
@@ -8,9 +8,9 @@
 
 /********************************** Includes *******************************************/
 #include "os.h"
-#include "hal_interrupt.h"
-#include "stm32f4xx.h"
 #include "device_port.h"
+#include "hal_nvic.h"
+#include "stm32f4xx.h"
 
 
 namespace os
@@ -19,31 +19,29 @@ namespace os
 scheduler::TaskControlBlock* system_active_task;
 scheduler::TaskControlBlock* system_pending_task;
 
-/********************************** Local Objects and Variables *******************************************/
-
 /********************************** Function Definitions *******************************************/
 
 namespace kernel
 {
 /**
- * \brief initialize the kernel
+ * \brief Initialize the kernel
  */
 void setup(void) {
     DISABLE_INTERRUPTS();
 
-    //!< initialize the task pointers to initialize the kernel
+    // Initialize the task pointers to initialize the kernel
     system_active_task = scheduler::get_active_task_control_block();
     system_pending_task = scheduler::get_pending_task_control_block();
 
-    //!< activate the first task
+    // Activate the first task
     system_active_task->thread_ptr->set_status(thread::status::active);
 
-    //!< start the system clock
+    // Start the system clock
     system_clock::initialize();
 
-    //!< setup core interrupt priorities
-    interrupt_manager.set_priority(stm32f4_irq::systick_handler, HAL::isr_preemption_priority::level_16);
-    interrupt_manager.set_priority(stm32f4_irq::pendsv_handler, HAL::isr_preemption_priority::level_16);
+    // Setup core interrupt priorities
+    HAL::nvic::set_priority(stm32f4_irq::systick_handler, HAL::nvic::isr_preemption_priority::level_16);
+    HAL::nvic::set_priority(stm32f4_irq::pendsv_handler, HAL::nvic::isr_preemption_priority::level_16);
 
     ENABLE_INTERRUPTS();
 }
