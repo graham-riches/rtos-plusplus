@@ -9,8 +9,8 @@
  * 
  */
 
-#include "spi_base.h"
-#include "hal_utilities.h"
+#include "spi_base.hpp"
+#include "hal_utilities.hpp"
 
 namespace HAL::spi
 {

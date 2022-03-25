@@ -5,12 +5,12 @@
 */
 
 /********************************** Includes *******************************************/
-#include "board.h"
-#include "common.h"
-#include "debug_port.h"
-#include "peripherals.h"
+#include "board.hpp"
+#include "common.hpp"
+#include "debug_port.hpp"
+#include "peripherals.hpp"
 #include "stm32f4xx.h"
-#include "os.h"
+#include "os.hpp"
 #include <stdio.h>
 #include <string.h>
 

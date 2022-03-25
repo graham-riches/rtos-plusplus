@@ -10,7 +10,7 @@
  */
 
 /********************************** Includes *******************************************/
-#include "system_clock.h"
+#include "system_clock.hpp"
 
 namespace os
 {

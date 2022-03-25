@@ -10,11 +10,11 @@
  */
 
 /********************************** Includes *******************************************/
-#include "device_port.h"
+#include "device_port.hpp"
 #include "stm32f4xx.h"
-#include "thread_impl.h"
-#include "os.h"
-#include "hal_nvic.h"
+#include "thread_impl.hpp"
+#include "os.hpp"
+#include "hal_nvic.hpp"
 
 /************************************ Types ********************************************/
 /**

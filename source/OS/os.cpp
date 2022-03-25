@@ -7,9 +7,9 @@
 */
 
 /********************************** Includes *******************************************/
-#include "os.h"
-#include "device_port.h"
-#include "hal_nvic.h"
+#include "os.hpp"
+#include "device_port.hpp"
+#include "hal_nvic.hpp"
 #include "stm32f4xx.h"
 
 

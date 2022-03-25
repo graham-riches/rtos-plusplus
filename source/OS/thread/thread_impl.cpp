@@ -7,7 +7,7 @@
 */
 
 /********************************** Includes *******************************************/
-#include "thread_impl.h"
+#include "thread_impl.hpp"
 #include <cassert>
 #include <cstdint>
 

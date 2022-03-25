@@ -7,9 +7,9 @@
 */
 
 /********************************** Includes *******************************************/
-#include "hal_exti.h"
-#include "hal_rcc.h"
-#include "hal_utilities.h"
+#include "hal_exti.hpp"
+#include "hal_rcc.hpp"
+#include "hal_utilities.hpp"
 
 namespace HAL::exti
 {

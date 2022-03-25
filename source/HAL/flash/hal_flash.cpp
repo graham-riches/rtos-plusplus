@@ -7,8 +7,8 @@
 */
 
 /********************************** Includes *******************************************/
-#include "hal_flash.h"
-#include "hal_utilities.h"
+#include "hal_flash.hpp"
+#include "hal_utilities.hpp"
 
 namespace HAL::flash
 {

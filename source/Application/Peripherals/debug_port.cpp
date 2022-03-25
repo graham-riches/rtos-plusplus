@@ -7,10 +7,10 @@
 */
 
 /********************************** Includes *******************************************/
-#include "debug_port.h"
-#include "hal_gpio.h"
-#include "hal_nvic.h"
-#include "hal_rcc.h"
+#include "debug_port.hpp"
+#include "hal_gpio.hpp"
+#include "hal_nvic.hpp"
+#include "hal_rcc.hpp"
 
 /******************************* Global Variables **************************************/
 using namespace HAL::gpio;

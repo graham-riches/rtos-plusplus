@@ -9,8 +9,8 @@
  * 
  */
 
-#include "hal_usart.h"
-#include "hal_utilities.h"
+#include "hal_usart.hpp"
+#include "hal_utilities.hpp"
 #include <utility>
 
 namespace HAL::usart

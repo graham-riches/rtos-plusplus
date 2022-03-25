@@ -10,7 +10,7 @@
  */
 
 /********************************** Includes *******************************************/
-#include "spi_polling.h"
+#include "spi_polling.hpp"
 
 namespace HAL::spi
 {

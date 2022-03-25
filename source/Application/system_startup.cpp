@@ -10,12 +10,12 @@
  */
 
 /********************************** Includes *******************************************/
-#include "hal_flash.h"
-#include "hal_nvic.h"
-#include "hal_power.h"
-#include "hal_rcc.h"
-#include "hal_utilities.h"
-#include "os.h"
+#include "hal_flash.hpp"
+#include "hal_nvic.hpp"
+#include "hal_power.hpp"
+#include "hal_rcc.hpp"
+#include "hal_utilities.hpp"
+#include "os.hpp"
 
 /*********************************** Consts ********************************************/
 constexpr uint32_t HSE_FREQUENCY = 8000000;

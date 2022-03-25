@@ -7,12 +7,12 @@
 */
 
 /********************************** Includes *******************************************/
-#include "peripherals.h"
-#include "hal_flash.h"
-#include "hal_nvic.h"
-#include "hal_power.h"
-#include "hal_rcc.h"
-#include "os.h"
+#include "peripherals.hpp"
+#include "hal_flash.hpp"
+#include "hal_nvic.hpp"
+#include "hal_power.hpp"
+#include "hal_rcc.hpp"
+#include "os.hpp"
 
 /******************************* Global Variables **************************************/
 using namespace HAL;

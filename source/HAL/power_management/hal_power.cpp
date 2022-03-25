@@ -7,8 +7,8 @@
 */
 
 /********************************** Includes *******************************************/
-#include "hal_power.h"
-#include "hal_utilities.h"
+#include "hal_power.hpp"
+#include "hal_utilities.hpp"
 
 namespace HAL::power_management
 {

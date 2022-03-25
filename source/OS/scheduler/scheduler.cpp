@@ -10,10 +10,10 @@
  */
 
 /********************************** Includes *******************************************/
-#include "scheduler.h"
-#include "device_port.h"
-#include "system_clock.h"
-#include "thread_impl.h"
+#include "scheduler.hpp"
+#include "device_port.hpp"
+#include "system_clock.hpp"
+#include "thread_impl.hpp"
 
 namespace os
 {

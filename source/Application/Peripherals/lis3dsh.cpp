@@ -7,11 +7,11 @@
 */
 
 /********************************** Includes *******************************************/
-#include "lis3dsh.h"
-#include "board.h"
-#include "hal_exti.h"
-#include "hal_nvic.h"
-#include "hal_rcc.h"
+#include "lis3dsh.hpp"
+#include "board.hpp"
+#include "hal_exti.hpp"
+#include "hal_nvic.hpp"
+#include "hal_rcc.hpp"
 #include <map>
 
 /*********************************** Consts ********************************************/
