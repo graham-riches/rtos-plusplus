@@ -10,8 +10,9 @@ set(HAL_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/flash/hal_flash.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/power_management/hal_power.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/rcc/hal_rcc.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/spi/hal_spi.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/usart/hal_usart.cpp    
+    ${CMAKE_CURRENT_SOURCE_DIR}/spi/spi_base.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/spi/spi_polling.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/usart/usart_base.cpp    
 )
 
 # Create a new library target

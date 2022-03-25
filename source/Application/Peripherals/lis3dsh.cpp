@@ -129,21 +129,21 @@ void LIS3DSH::initialize(void) {
     reset_control_clock.set_apb_clock(apb2_clocks::spi_1, true);
 
     // Setup the SPI control register settings
-    write_control_register(SPIControlRegister1::master_select, 0x01);
-    write_control_register(SPIControlRegister1::clock_polarity, 0x01);
-    write_control_register(SPIControlRegister1::clock_phase, 0x01);
-    write_control_register(SPIControlRegister2::slave_select_output_enable, 0x01);
-    set_baudrate(SPIBaudratePrescaler::prescaler_16);  //!< 84MHz / 16 = 5.25 MHz
+    write_control_register(control_register_1::master_select, 0x01);
+    write_control_register(control_register_1::clock_polarity, 0x01);
+    write_control_register(control_register_1::clock_phase, 0x01);
+    write_control_register(control_register_2::slave_select_output_enable, 0x01);
+    set_baudrate(baudrate_prescaler::prescaler_16);  //!< 84MHz / 16 = 5.25 MHz
 
     // Register the SPI interrupt
     interrupt_manager.register_callback(
         InterruptName::spi_1, this, static_cast<uint8_t>(InterruptType::spi_interrupt), isr_preemption_priority::level_2);
 
     // Enable the interrupt
-    write_control_register(SPIControlRegister2::receive_interrupt_enable, 0x01);
+    write_control_register(control_register_2::receive_interrupt_enable, 0x01);
 
     // Enable the peripheral
-    write_control_register(SPIControlRegister1::spi_enable, 0x01);
+    write_control_register(control_register_1::spi_enable, 0x01);
 
     // Register the external interrupts
     register_external_interrupt(EXTIPort::gpio_port_e, pin_id::pin_0, EXTITrigger::rising);
@@ -217,7 +217,7 @@ void LIS3DSH::spi_irq_handler(void) {
 
     while ( !tx_buffer.empty() ) {
         // Wait for the transmit buffer to clear
-        while ( read_status_register(HAL::SPIStatusRegister::transmit_data_empty) == false ) {
+        while ( read_status_register(HAL::status_register::transmit_data_empty) == false ) {
         }
 
         // Put data outgoing into the data register
@@ -227,14 +227,14 @@ void LIS3DSH::spi_irq_handler(void) {
         }
 
         // Wait for the receive buffer to clear
-        while ( read_status_register(HAL::SPIStatusRegister::receive_data_available) == false ) {
+        while ( read_status_register(HAL::status_register::receive_data_available) == false ) {
         }
 
         // Receive data into the rx buffer
         rx_buffer.push_back(static_cast<uint8_t>(peripheral->DR));
     }
 
-    write_control_register(HAL::SPIControlRegister2::transmit_interrupt_enable, 0x00);
+    write_control_register(HAL::control_register_2::transmit_interrupt_enable, 0x00);
     chip_select.set(true);
 }
 

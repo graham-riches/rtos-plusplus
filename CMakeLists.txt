@@ -27,7 +27,7 @@ set(APP_SOURCES
     # Application Source Files
     source/Application/system_startup.cpp
     source/Application/main.cpp
-    #source/Application/Peripherals/USART/debug_port.cpp
+    source/Application/Peripherals/debug_port.cpp
     source/Application/Peripherals/peripherals.cpp
 
     # OS files
@@ -62,7 +62,7 @@ target_include_directories(${BINARY} PRIVATE
     source/Application
     #source/Application/Accelerometer      
     #source/Application/Audio
-    #source/Application/Debug
+    source/Application/Debug
     source/Application/Utilities
 
     source/OS

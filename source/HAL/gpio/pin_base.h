@@ -75,12 +75,14 @@ class pin_base {
         }
     }
 
-    //!< Disable moves, copies, and default construction
-    pin_base() = delete;
+    //!< Disable copies
     pin_base(const pin_base&) = delete;
-    pin_base(pin_base&&) = delete;
     pin_base& operator=(const pin_base&) = delete;
-    pin_base& operator=(pin_base&&) = delete;
+
+    //!< Allow default construction and moves
+    pin_base() = default;
+    pin_base(pin_base&&) = default;
+    pin_base& operator=(pin_base&&) = default;
 
     //!< Default destructor
     ~pin_base() = default;

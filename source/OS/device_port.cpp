@@ -77,7 +77,7 @@ bool is_context_switch_pending() {
 /**
  * \brief Default interrupt handler for peripherals if no interrupt is found
  */
-extern "C" void isr_default_handler()
+void isr_default_handler()
 {
     while ( 1 ) {
         HALT_IF_DEBUGGING();
@@ -93,45 +93,45 @@ extern "C" void isr_reset_handler();
 /**
  * \brief This function handles Non-maskable interrupt
  */
-extern "C" void isr_nmi_handler() { }
+void isr_nmi_handler() { }
 
 /**
  * \brief This function handles Hard fault interrupt.
  */
-extern "C" void isr_hard_fault_handler() {
+void isr_hard_fault_handler() {
     HANDLE_FAULT();
 }
 
 /**
  * \brief This function handles Memory management fault.
  */
-extern "C" void isr_mem_manager_handler() {
+void isr_mem_manager_handler() {
     HANDLE_FAULT();
 }
 
 /**
  * \brief This function handles Pre-fetch fault, memory access fault.
  */
-extern "C" void isr_bus_fault_handler() {
+void isr_bus_fault_handler() {
     HANDLE_FAULT();
 }
 
 /**
  * \brief This function handles Undefined instruction or illegal state.
  */
-extern "C" void isr_usage_fault_handler() {
+void isr_usage_fault_handler() {
     HANDLE_FAULT();
 }
 
 /**
  * \brief This function handles System service call via SWI instruction.
  */
-extern "C" void isr_svc_handler() { }
+void isr_svc_handler() { }
 
 /**
  * \brief This function handles Debug monitor.
  */
-extern "C" void isr_debug_mon_handler() { }
+void isr_debug_mon_handler() { }
 
 /**
  * \brief Handling threading context switches which are triggered by the scheduler as pending
@@ -139,7 +139,7 @@ extern "C" void isr_debug_mon_handler() { }
  *        context switching can be handled at a lower level.
  */
 // clang-format off 
-extern "C" __attribute__((naked)) void isr_pend_sv_handler() {   
+__attribute__((naked)) void isr_pend_sv_handler() {   
     using namespace os;
 
     __asm(
@@ -166,7 +166,7 @@ extern "C" __attribute__((naked)) void isr_pend_sv_handler() {
  *        The scheduler will raise a PendSV interrupt flag if any thread context switches are 
  *        required.
  */
-extern "C" void isr_systick_handler() {
+void isr_systick_handler() {
     DISABLE_INTERRUPTS();
     os::system_clock::update_sytem_ticks(1);
     os::scheduler::update();
@@ -185,7 +185,6 @@ __attribute__((optimize("O0"))) void fault_handler(StackContext* context) {
 }
 
 
-
 /****************************** Vector Table ************************************/
 // Initial stack top that is the first entry in the vector table. This is set in the linker script to the
 // top of the user stack space
@@ -196,7 +195,6 @@ extern "C" void _estack();
 using isr_handler_function = void (*)();
 
 // Device Vector Table
-extern "C" {
 __attribute__((used, section(".vectors"))) isr_handler_function vectors[STM32F4_TOTAL_ISR + 1] = {
     // Initial stack pointer
     &_estack, 
@@ -219,7 +217,6 @@ __attribute__((used, section(".vectors"))) isr_handler_function vectors[STM32F4_
     isr_systick_handler,
 
     // STM32 Peripheral Interrupts
-
     isr_default_handler, // window_watchdog
     isr_default_handler, // power_voltage_detection
     isr_default_handler, // time_stamp
@@ -303,4 +300,3 @@ __attribute__((used, section(".vectors"))) isr_handler_function vectors[STM32F4_
     isr_default_handler, // hash_random_number
     isr_default_handler, // floating_point_unit
 };
-}

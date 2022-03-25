@@ -1,21 +1,25 @@
-/*! \file hal_usart.c
-*
-*  \brief HAL++ implementation of the STM32 USART peripherals.
-*
-*
-*  \author Graham Riches
-*/
+/**
+ * \file usart_base.cpp
+ * \author Graham Riches
+ * \brief Definitions for base USART driver
+ * \version 0.1
+ * \date 2022-03-25
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 
-/********************************** Includes *******************************************/
 #include "hal_usart.h"
 #include "hal_utilities.h"
+#include <utility>
 
 namespace HAL::usart
 {
-/****************************** Function Definitions ***********************************/
 // Constructor
-usart_base::usart_base(USART_TypeDef* usart)
-    : m_peripheral(usart) { }
+usart_base::usart_base(USART_TypeDef* usart, HAL::gpio::alternate_mode_pin&& tx_pin, HAL::gpio::alternate_mode_pin&& rx_pin)
+    : m_peripheral(usart)
+    , m_tx_pin(std::move(tx_pin))
+    , m_rx_pin(std::move(rx_pin)) { }
 
 // Read the static register
 uint8_t usart_base::read_status_register(status_register reg) {

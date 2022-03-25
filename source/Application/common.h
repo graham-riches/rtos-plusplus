@@ -1,19 +1,18 @@
-/*! \file common.h
-*
-*  \brief common module includes
-*
-*
-*  \author Graham Riches
-*/
+/**
+ * \file common.h
+ * \author Graham Riches
+ * \brief Common includes/definitions
+ * \version 0.1
+ * \date 2022-03-25
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 
 #pragma once
 
 /********************************** Includes *******************************************/
 #include <cstdint>
-
-/*********************************** Consts ********************************************/
-
-/************************************ Types ********************************************/
 
 /*********************************** Macros ********************************************/
 #define PARAMETER_NOT_USED(X) (void)(X)
@@ -22,7 +21,6 @@
 #    define NULL ((void*)0)
 #endif
 
-/* setup arm math */
 #ifndef ARM_MATH_CM4
 #    define ARM_MATH_CM4
 #endif

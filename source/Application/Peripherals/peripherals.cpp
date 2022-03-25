@@ -49,13 +49,7 @@ gpio::output_pin blue_led(GPIOD,
                           gpio::output_mode::push_pull);
 
 /****************************** Function Definitions ***********************************/
-/**
-* \brief    setup all of the peripherals
-*
-* \param    None
-* \retval   None
-*/
-void initialize_peripherals(void) {
+void initialize_peripherals() {
     /* initialize the debug UART and print a welcome banner */
     //debug_port.initialize();
 
