@@ -52,7 +52,6 @@ class DebugPort : protected HAL::usart::usart_base {
         write_control_register(HAL::usart::control_register_1::transmitter_enable, 0x01);
         write_control_register(HAL::usart::control_register_1::receive_interrupt_enable, 0x01);
 
-
         // Set the interrupt priority
         HAL::nvic::set_priority(stm32f4_irq::usart_3, HAL::nvic::isr_preemption_priority::level_2);        
 
@@ -69,24 +68,27 @@ class DebugPort : protected HAL::usart::usart_base {
     void log_message(const char* message, ...) {
         va_list args;
         va_start(args, message);
-        auto bytes_to_write = vsnprintf(m_print_buffer, PrintBufferSize, message, args);
+        auto bytes_to_write = vsnprintf(m_print_buffer, PrintBufferSize, message, args);                
         va_end(args);
+        if (bytes_to_write < 0 ) {
+            return;
+        }
+
         // Push into the ring buffer
-        for (unsigned i = 0; i < bytes_to_write; ++i) {
-            m_rb.push_back(m_print_buffer[i]);
+        for (unsigned i = 0; i < static_cast<unsigned>(bytes_to_write); ++i) {
+            m_tx_buffer.push_back(m_print_buffer[i]);
         }
         // Set TX interrupt flag
         write_control_register(HAL::usart::control_register_1::transmit_interrupt_enable, 0x01);
     }
 
   private:
-    ring_buffer<char, PrintBufferSize> m_rb;
+    ring_buffer<char, PrintBufferSize> m_tx_buffer;
+    ring_buffer<char, PrintBufferSize> m_rx_buffer;
     char m_print_buffer[PrintBufferSize];
-
-
-    // TODO: add interrupt handler routine for this peripheral here
-
+    
+    friend void usart3_irqn();
 };
 
 /******************************* Global Variables **************************************/
-extern DebugPort<128> debug_port;
+extern DebugPort<256> debug_port;

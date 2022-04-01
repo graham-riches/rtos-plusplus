@@ -50,8 +50,9 @@ target_compile_options(${HAL_LIBRARY} PRIVATE
     -fno-data-sections
     -fno-function-sections
     -fno-exceptions
-    -O2
-    -g0
+    -fno-rtti
+    -O0
+    -g3
     -Wall
     -Wextra
     -fmessage-length=0        

@@ -6,7 +6,7 @@
    "configurations": [
       {
          "cwd": "${workspaceRoot}",
-         "executable": "Build/bare_metal_os.elf",
+         "executable": "build/bare_metal_os.elf",
          "name": "STM32",
          "request": "launch",
          "type": "cortex-debug",

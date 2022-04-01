@@ -19,20 +19,6 @@
 #define DISABLE_INTERRUPTS() __asm("CPSID I\n");
 #define ENABLE_INTERRUPTS()  __asm("CPSIE I\n");
 
-/********************************** Function Declarations *******************************************/
-/**
- * \brief Set a pending context switch interrupt (platform dependent)
- * 
- */
-void set_pending_context_switch();
-
-/**
- * \brief check if a context switch is pending (platform dependent)
- * 
- * \retval true/false
- */
-bool is_context_switch_pending();
-
 /********************************** Types *******************************************/
 /**
  * \brief enumeration of all interrupts for STM32F4xx
@@ -142,3 +128,20 @@ enum class stm32f4_irq : unsigned {
 
 //!< Helper alias for maximum interrupt number
 constexpr std::size_t STM32F4_TOTAL_ISR = static_cast<std::size_t>(stm32f4_irq::floating_point_unit);
+
+/********************************** Function Declarations *******************************************/
+/**
+ * \brief Set a pending context switch interrupt (platform dependent)
+ * 
+ */
+void set_pending_context_switch();
+
+/**
+ * \brief check if a context switch is pending (platform dependent)
+ * 
+ * \retval true/false
+ */
+bool is_context_switch_pending();
+
+/********************************** Used Interrupts *******************************************/
+void usart3_irqn();

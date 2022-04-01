@@ -111,7 +111,7 @@ class usart_base {
     void set_baudrate(rcc::clocks clock, uint32_t baudrate);
 
     protected:
-    USART_TypeDef* m_peripheral;
+    volatile USART_TypeDef* m_peripheral;
     HAL::gpio::alternate_mode_pin m_tx_pin;
     HAL::gpio::alternate_mode_pin m_rx_pin;
 };

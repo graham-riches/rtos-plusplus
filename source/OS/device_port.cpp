@@ -256,7 +256,7 @@ __attribute__((used, section(".vectors"))) isr_handler_function vectors[STM32F4_
     isr_default_handler, // spi_2
     isr_default_handler, // usart_1
     isr_default_handler, // usart_2
-    isr_default_handler, // usart_3
+    usart3_irqn,         // usart_3
     isr_default_handler, // exti_15_10
     isr_default_handler, // rtc_alarm
     isr_default_handler, // otg_fs_wakeup

@@ -13,6 +13,7 @@
 #include "hal_power.hpp"
 #include "hal_rcc.hpp"
 #include "os.hpp"
+#include "debug_port.hpp"
 
 /******************************* Global Variables **************************************/
 using namespace HAL;
@@ -50,17 +51,14 @@ gpio::output_pin blue_led(GPIOD,
 
 /****************************** Function Definitions ***********************************/
 void initialize_peripherals() {
-    /* initialize the debug UART and print a welcome banner */
-    //debug_port.initialize();
+    debug_port.initialize();    
+    //debug_port.log_message("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+    //debug_port.log_message("STM32F407 Debug Terminal \n");
+    //debug_port.log_message("   Author: Graham Riches \n");
+    //debug_port.log_message("   Date: November 1, 2020 \n");
+    //debug_port.log_message("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 
-    /* print out a splash screen */
-    //debug_port.send("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
-    //debug_port.send("STM32F407 Debug Terminal \n");
-    //debug_port.send("   Author: Graham Riches \n");
-    //debug_port.send("   Date: November 1, 2020 \n");
-    //debug_port.send("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
-
-    /* turn on the LEDs for status indication */
+    // Turn on LEDs
     green_led.set(true);
     orange_led.set(false);
     red_led.set(true);

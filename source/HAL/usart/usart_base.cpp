@@ -21,9 +21,9 @@ usart_base::usart_base(USART_TypeDef* usart, HAL::gpio::alternate_mode_pin&& tx_
     , m_tx_pin(std::move(tx_pin))
     , m_rx_pin(std::move(rx_pin)) { }
 
-// Read the static register
+// Read the status register
 uint8_t usart_base::read_status_register(status_register reg) {
-    return static_cast<uint8_t>(m_peripheral->SR & (0x01u << static_cast<uint8_t>(reg)));
+    return static_cast<uint8_t>(m_peripheral->SR & (0x01u << static_cast<uint8_t>(reg)));    
 }
 
 // Write CR1
