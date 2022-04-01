@@ -88,6 +88,7 @@ target_compile_options(${BINARY} PRIVATE
     -fno-data-sections
     -fno-function-sections
     -fno-exceptions
+    -fno-rtti
     -O0
     -g3
     -Wall

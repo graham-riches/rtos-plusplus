@@ -17,6 +17,7 @@
 #include "stm32f4xx.h"
 #include "ring_buffer.hpp"
 #include <cstdarg>
+#include <cstring>
 #include <utility>
 
 /************************************ Types ********************************************/
@@ -65,18 +66,21 @@ class DebugPort : protected HAL::usart::usart_base {
      * \param message The message to log
      * \param ... Variadic arguments
      */
-    void log_message(const char* message, ...) {
-        va_list args;
-        va_start(args, message);
-        auto bytes_to_write = vsnprintf(m_print_buffer, PrintBufferSize, message, args);                
-        va_end(args);
-        if (bytes_to_write < 0 ) {
-            return;
-        }
+    void log_message(const char* message, ...) {        
+        char* string = "test123\r\n";
+        // va_list args;
+        // va_start(args, message);
+        // auto bytes_to_write = vsnprintf(m_print_buffer, PrintBufferSize, message, args);                
+        // va_end(args);
+        // if (bytes_to_write < 0 ) {
+        //     return;
+        // }
 
         // Push into the ring buffer
+        auto bytes_to_write = strlen(string);        
         for (unsigned i = 0; i < static_cast<unsigned>(bytes_to_write); ++i) {
-            m_tx_buffer.push_back(m_print_buffer[i]);
+            //m_tx_buffer.push_back(m_print_buffer[i]);
+            m_tx_buffer.push_back(*string++);
         }
         // Set TX interrupt flag
         write_control_register(HAL::usart::control_register_1::transmit_interrupt_enable, 0x01);
