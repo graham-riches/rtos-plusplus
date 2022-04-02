@@ -51,20 +51,15 @@ gpio::output_pin blue_led(GPIOD,
 
 /****************************** Function Definitions ***********************************/
 void initialize_peripherals() {
-    debug_port.initialize();    
-    debug_port.log_message("test\n");
-    //debug_port.log_message("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
-    //debug_port.log_message("STM32F407 Debug Terminal \n");
-    //debug_port.log_message("   Author: Graham Riches \n");
-    //debug_port.log_message("   Date: November 1, 2020 \n");
-    //debug_port.log_message("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+    debug_port.initialize();        
+    debug_port.log_message("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\n");
+    debug_port.log_message("STM32F407 Debug Terminal \r\n");
+    debug_port.log_message("   Author: Graham Riches \r\n");    
+    debug_port.log_message("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\n");
 
     // Turn on LEDs
     green_led.set(true);
     orange_led.set(false);
     red_led.set(true);
     blue_led.set(false);
-
-    /* initialize the accelerometer */
-    //accelerometer.initialize();
 }

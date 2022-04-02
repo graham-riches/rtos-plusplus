@@ -57,9 +57,7 @@ target_compile_definitions(${BINARY} PRIVATE
 # Set source include directories
 target_include_directories(${BINARY} PRIVATE
     source
-    source/Application
-    #source/Application/Accelerometer      
-    #source/Application/Audio
+    source/Application    
     source/Application/Debug
     source/Application/Utilities
 
