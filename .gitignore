@@ -64,3 +64,4 @@ tests/build/**
 # Vscode files
 .settings/**
 .vscode/**
+.vscode/.cortex-debug.peripherals.state.json

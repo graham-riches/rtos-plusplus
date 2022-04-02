@@ -34,7 +34,7 @@ extern "C" void __system_startup() {
     using namespace HAL;
 
     // Enable FPU if defined
-#if ( __FPU_PRESENT == 1 ) && (__FPU_USED == 1)
+#if defined(__FPU_PRESENT) && defined(__FPU_USED)
     // Set CP10/11 for full access to FPU
     set_bits(SCB->CPACR, (3UL << 10 * 2) | (3UL << 11 * 2));    
 #endif

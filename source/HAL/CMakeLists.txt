@@ -38,7 +38,8 @@ target_compile_definitions(${HAL_LIBRARY} PRIVATE
     -DARM_MATH_CM4
     -DSTM32F40XX
     -DSTM32F407xx
-    -D__FPU_PRESENT    
+    -D__FPU_PRESENT 
+    -D__FPU_USED   
 )
 
 # Compile options for HAL library

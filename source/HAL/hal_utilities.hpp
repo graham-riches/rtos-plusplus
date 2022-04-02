@@ -13,6 +13,7 @@
 
 #include <cstdint>
 #include <type_traits>
+#include <concepts>
 
 namespace HAL {
 
