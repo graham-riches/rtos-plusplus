@@ -9,7 +9,6 @@
  * \date 2021-05-01
  * 
  * @copyright Copyright (c) 2021
- * 
  */
 
 #pragma once
@@ -25,7 +24,6 @@
 #include <cstdint>
 #include <type_traits>
 #include <algorithm>
-
 
 namespace os
 {
@@ -161,5 +159,9 @@ class counting_semaphore {
     ring_buffer<task_control_block*, MAX_THREAD_COUNT> m_suspended_threads;
     uint32_t m_count;
 };
+
+// Alias a binary sempahore as a specialization of counting_semaphore
+using binary_semaphore = counting_semaphore<1>;
+
 
 };  // namespace os

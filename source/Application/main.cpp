@@ -23,7 +23,7 @@ static void thread_two_task();
 /*********************************** Local Variables ********************************************/
 static uint32_t thread_one_stack[thread_stack_size] = {0};
 static uint32_t thread_two_stack[thread_stack_size] = {0};
-static os::counting_semaphore<1> sem(0);
+static os::binary_semaphore sem(0);
 
 /*********************************** Function Definitions ********************************************/
 /**
