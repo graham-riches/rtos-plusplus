@@ -13,6 +13,7 @@
 
 /********************************** Includes *******************************************/
 #include "scheduler.hpp"
+#include "task_control_block.hpp"
 #include "system_clock.hpp"
 
 namespace os
@@ -20,8 +21,8 @@ namespace os
 
 extern "C" {
 /********************************** Global Objects and Variables *******************************************/
-extern scheduler::TaskControlBlock* system_active_task;
-extern scheduler::TaskControlBlock* system_pending_task;
+extern task_control_block* system_active_task;
+extern task_control_block* system_pending_task;
 }
 
 /********************************** Function Definitions *******************************************/

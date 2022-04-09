@@ -12,7 +12,8 @@
 /********************************** Includes *******************************************/
 #include "device_port.hpp"
 #include "stm32f4xx.h"
-#include "thread_impl.hpp"
+#include "thread.hpp"
+#include "interrupt_lock_guard.hpp"
 #include "os.hpp"
 #include "hal_nvic.hpp"
 
@@ -167,10 +168,9 @@ __attribute__((naked)) void isr_pend_sv_handler() {
  *        required.
  */
 void isr_systick_handler() {
-    DISABLE_INTERRUPTS();
-    os::system_clock::update_sytem_ticks(1);
-    os::scheduler::update();
-    ENABLE_INTERRUPTS();  
+    os::interrupt_guard guard;
+    os::system_clock::update_system_ticks(1);
+    os::scheduler::update();    
 }
 
 /**

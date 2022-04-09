@@ -16,8 +16,8 @@
 namespace os
 {
 /********************************** Global Objects and Variables *******************************************/
-scheduler::TaskControlBlock* system_active_task;
-scheduler::TaskControlBlock* system_pending_task;
+task_control_block* system_active_task;
+task_control_block* system_pending_task;
 
 /********************************** Function Definitions *******************************************/
 

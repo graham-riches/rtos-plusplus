@@ -13,62 +13,66 @@
 
 /********************************** Includes *******************************************/
 #include "scheduler_impl.hpp"
-#include "thread_impl.hpp"
-
+#include "thread.hpp"
 
 namespace os
 {
 
 /**
- * \brief singleton accessor for the scheduler
+ * \brief Singleton accessor for the scheduler
  */
 class scheduler : public scheduler_impl {
   public:
     /**
-     * \brief singleton accessor for the scheduler
+     * \brief Singleton accessor for the scheduler
      * 
-     * \retval scheduler& reference to the scheduler
+     * \retval scheduler& Reference to the scheduler
      */
     static scheduler& get();
 
     /**
-     * \brief run method for the scheduler     
+     * \brief Run method for the scheduler     
      */
     static void update();
 
     /**
-     * \brief register a new thread with the scheduler     
+     * \brief Register a new thread with the scheduler     
      */
     static void register_new_thread(thread* thread);
 
     /**
-     * \brief sleep the calling thead for a number of ticks
+     * \brief Sleep the calling thead for a number of ticks
      * 
-     * \param ticks 
+     * \param ticks Number of ticks to sleep
      */
     static void sleep(uint32_t ticks);
 
     /**
      * \brief Get the active task control block
      * 
-     * \retval TaskControlBlock* currently active task block
+     * \retval task_control_block* Currently active task block
      */
-    static TaskControlBlock* get_active_task_control_block();
+    static task_control_block* get_active_task_control_block();
 
     /**
      * \brief Get the pending task control block
      * 
-     * \retval TaskControlBlock* next task control block 
+     * \retval task_control_block* Next task control block 
      */
-    static TaskControlBlock* get_pending_task_control_block();
+    static task_control_block* get_pending_task_control_block();
 
     /**
-     * \brief lock the scheduler to perform atomic operations without interrupting
+     * \brief Suspends the calling thread indefinitely
+     */
+    static void suspend_calling_thread();
+
+    /**
+     * \brief Lock the scheduler to perform atomic operations without interrupting
      */
     static void lock();
 
     /**
-     * \brief unlock the scheduler
+     * \brief Unlock the scheduler
      */
     static void unlock();
 
@@ -79,7 +83,7 @@ class scheduler : public scheduler_impl {
      */
     scheduler();
 
-    bool locked;
+    bool m_locked;
 };
 
 };  // namespace os

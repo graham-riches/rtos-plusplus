@@ -13,7 +13,7 @@
 #include "scheduler.hpp"
 #include "device_port.hpp"
 #include "system_clock.hpp"
-#include "thread_impl.hpp"
+#include "thread.hpp"
 
 namespace os
 {
@@ -22,17 +22,17 @@ namespace os
 constexpr uint8_t internal_thread_stack_size = 128;
 
 /********************************** Function Declarations *******************************************/
-static void internal_thread_task(void* arguments);
+static void internal_thread_task();
 
 /********************************** Local Variables *******************************************/
 static uint32_t internal_thread_stack[internal_thread_stack_size] = {0};
-static os::thread internal_thread(internal_thread_task, nullptr, 0xFFFF, internal_thread_stack, internal_thread_stack_size);
+static os::thread internal_thread(internal_thread_task, 0xFFFF, internal_thread_stack, internal_thread_stack_size);
 
 /********************************** Function Definitions *******************************************/
 //!> default construct the scheduler
 scheduler::scheduler()
     : scheduler_impl(system_clock::get(), MAX_THREAD_COUNT, set_pending_context_switch, is_context_switch_pending)
-    , locked(false) {
+    , m_locked(false) {
     set_internal_task(&internal_thread);
 }
 
@@ -45,7 +45,7 @@ scheduler& scheduler::get() {
 //!< run the scheduler algorithm
 void scheduler::update() {
     auto& self = get();
-    if ( !self.locked ) {        
+    if ( !self.m_locked ) {        
         self.run();
     }
 }
@@ -65,22 +65,28 @@ void scheduler::sleep(uint32_t ticks) {
 }
 
 //!< get the active task control block
-scheduler::TaskControlBlock* scheduler::get_active_task_control_block() {
+task_control_block* scheduler::get_active_task_control_block() {
     auto& self = get();
     return self.get_active_tcb_ptr();
 }
 
 //!< get the pending task control block
-scheduler::TaskControlBlock* scheduler::get_pending_task_control_block() {
+task_control_block* scheduler::get_pending_task_control_block() {
     auto& self = get();
     return self.get_pending_tcb_ptr();
+}
+
+//!< Suspend the calling thread indefinitely
+void scheduler::suspend_calling_thread() {
+    auto& self = get();
+    self.suspend_thread();
 }
 
 //!< lock the scheduler
 void scheduler::lock() {    
     DISABLE_INTERRUPTS();
     auto& self = get();
-    self.locked = true;
+    self.m_locked = true;
     ENABLE_INTERRUPTS();
 }
 
@@ -88,17 +94,14 @@ void scheduler::lock() {
 void scheduler::unlock() {
     DISABLE_INTERRUPTS();
     auto& self = get();
-    self.locked = false;
+    self.m_locked = false;
     ENABLE_INTERRUPTS();
 }
 
 /**
- * \brief empty internal thread task to run when all other threads are sleeping
- * 
- * \param arguments 
+ * \brief empty internal thread task to run when all other threads are sleeping  
  */
-static void internal_thread_task(void* arguments) {
-    PARAMETER_NOT_USED(arguments);
+static void internal_thread_task() {    
     while ( true ) {
     }
 }

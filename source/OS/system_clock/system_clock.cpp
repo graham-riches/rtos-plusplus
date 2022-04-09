@@ -32,7 +32,7 @@ uint32_t system_clock::get_elapsed_ticks(void) {
 }
 
 //!< update the clock with elapsed ticks
-void system_clock::update_sytem_ticks(uint32_t ticks) {
+void system_clock::update_system_ticks(uint32_t ticks) {
     auto& self = get();
     self.update(ticks);
 }

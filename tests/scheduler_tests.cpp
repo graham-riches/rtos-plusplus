@@ -97,7 +97,7 @@ public:
 /************************************ Tests ********************************************/
 TEST_F(SchedulerTests, test_initialization) {
     ASSERT_EQ(0, scheduler->get_registered_thread_count());
-    os::scheduler_impl::TaskControlBlock* tcb = scheduler->get_active_tcb_ptr();
+    os::scheduler_impl::task_control_block* tcb = scheduler->get_active_tcb_ptr();
     ASSERT_EQ(nullptr, tcb->active_stack_pointer);
     ASSERT_EQ(nullptr, tcb->next);
     ASSERT_EQ(nullptr, tcb->thread_ptr);
@@ -108,7 +108,7 @@ TEST_F(SchedulerTests, test_registering_thread) {
     std::unique_ptr<os::thread> thread = create_thread(reinterpret_cast<os::thread::task_pointer>(&thread_task), nullptr, 1, stack, thread_stack_size);
     ASSERT_TRUE(scheduler->register_thread(thread.get()));
     ASSERT_EQ(1, scheduler->get_registered_thread_count());
-    os::scheduler_impl::TaskControlBlock* tcb = scheduler->get_active_tcb_ptr();
+    os::scheduler_impl::task_control_block* tcb = scheduler->get_active_tcb_ptr();
     ASSERT_EQ(tcb->thread_ptr, thread.get());
     ASSERT_EQ(nullptr, tcb->next);
 }
@@ -120,8 +120,8 @@ TEST_F(SchedulerTests, test_registering_multiple_threads){
     scheduler->register_thread(thread_one.get());
     ASSERT_TRUE(scheduler->register_thread(thread_two.get()));
     ASSERT_EQ(2, scheduler->get_registered_thread_count());
-    os::scheduler_impl::TaskControlBlock* tcb = scheduler->get_active_tcb_ptr();
-    os::scheduler_impl::TaskControlBlock* tcb_next = tcb->next;
+    os::scheduler_impl::task_control_block* tcb = scheduler->get_active_tcb_ptr();
+    os::scheduler_impl::task_control_block* tcb_next = tcb->next;
     ASSERT_EQ(tcb_next->thread_ptr, thread_two.get());
     ASSERT_EQ(tcb, tcb_next->next);  //!< linked list is circular
     ASSERT_EQ(2, tcb_next->thread_ptr->get_id());
@@ -135,7 +135,7 @@ TEST_F(SchedulerTests, test_filling_tcb_buffer) {
     scheduler->register_thread(thread.get());
     ASSERT_TRUE(scheduler->register_thread(thread.get()));
     ASSERT_EQ(3, scheduler->get_registered_thread_count());
-    os::scheduler_impl::TaskControlBlock* tcb = scheduler->get_active_tcb_ptr();
+    os::scheduler_impl::task_control_block* tcb = scheduler->get_active_tcb_ptr();
     ASSERT_TRUE(tcb->next->next != tcb);
 }
 

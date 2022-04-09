@@ -30,7 +30,7 @@ set(APP_SOURCES
 
     # OS files
     source/OS/scheduler/scheduler.cpp
-    source/OS/thread/thread_impl.cpp
+    source/OS/thread/thread.cpp
     source/OS/system_clock/system_clock.cpp    
     source/OS/os.cpp    
     source/OS/device_port.cpp
@@ -66,7 +66,9 @@ target_include_directories(${BINARY} PRIVATE
     source/OS/sempahore
     source/OS/thread
     source/OS/mutex
+    source/OS/semaphore
     source/OS/system_clock
+    source/OS/utilities
     source/Utilities
     source/HW_Port
 

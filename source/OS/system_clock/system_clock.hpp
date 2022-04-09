@@ -42,7 +42,7 @@ class system_clock : public system_clock_impl {
      * 
      * \param ticks number of elapsed ticks since last update
      */
-    static void update_sytem_ticks(uint32_t ticks);
+    static void update_system_ticks(uint32_t ticks);
 
     /**
      * \brief initialize the system clock

@@ -11,10 +11,11 @@
 /********************************** Includes *******************************************/
 #include "common.hpp"
 #include "system_clock.hpp"
-#include "thread_impl.hpp"
-
+#include "task_control_block.hpp"
+#include "thread.hpp"
 #include <memory>
 #include <optional>
+
 
 namespace os
 {
@@ -22,58 +23,51 @@ namespace os
 class scheduler_impl {
   public:
     /**
-     * \brief task control block for thread management 
-     */
-    struct TaskControlBlock {
-        uint32_t* active_stack_pointer;
-        TaskControlBlock* next;
-        thread* thread_ptr;
-        int32_t suspended_ticks_remaining;
-    };
-
-    /**
-    * \brief function pointer for setting a pending interrupt with the scheduler. This injects
+    * \brief Function pointer for setting a pending interrupt with the scheduler. This injects
     *        the HW dependency into the scheduler at run-time so that it can be tested more easily.
     */
-    typedef void (*SetPendingInterrupt)(void);
+    using set_pending_interrupt = void (*)();
 
     /**
-    * \brief function pointer to call a function that checks if an interrupt for a context switch is already pending
+    * \brief Function pointer to call a function that checks if an interrupt for a context switch is already pending
     *        so that another request is not able to clobber it
     */
-    typedef bool (*IsInterruptPending)(void);
+    using is_interrupt_pending = bool (*)();
 
     /**
      * \brief Construct a new scheduler
      * 
-     * \param clock_source system clock source for running the scheduler
-     * \param max_thread_count max number of threads to allow
-     * \param set_pending function pointer to the function to set a pending context switch interrupt
-     * \param check_pending function pointer to check if an interrupt is already pending
+     * \param clock_source System clock source for running the scheduler
+     * \param max_thread_count Max number of threads to allow
+     * \param set_pending Function pointer to the function to set a pending context switch interrupt
+     * \param check_pending Function pointer to check if an interrupt is already pending
      */
-    scheduler_impl(system_clock_impl& clock_source, uint8_t max_thread_count, SetPendingInterrupt set_pending, IsInterruptPending check_pending)
+    scheduler_impl(system_clock_impl& clock_source,
+                   unsigned max_thread_count,
+                   set_pending_interrupt set_pending,
+                   is_interrupt_pending check_pending)
         : m_clock(clock_source)
-        , max_thread_count(max_thread_count)
-        , set_pending(set_pending)
-        , check_pending(check_pending)
-        , last_tick(0)
-        , thread_count(0)
-        , task_control_blocks(std::make_unique<TaskControlBlock[]>(max_thread_count))
-        , active_task(&task_control_blocks[0])
-        , pending_task(nullptr)
-        , internal_task() { }
+        , m_max_thread_count(max_thread_count)
+        , m_set_pending(set_pending)
+        , m_check_pending(check_pending)
+        , m_last_tick(0)
+        , m_thread_count(0)
+        , m_task_control_blocks(std::make_unique<task_control_block[]>(m_max_thread_count))
+        , m_active_task(&m_task_control_blocks[0])
+        , m_pending_task(nullptr)
+        , m_internal_task() { }
 
     /**
-     * \brief run the scheduling algorithm and signal any context switches to the PendSV handler if required.
+     * \brief Run the scheduling algorithm and signal any context switches to the PendSV handler if required.
      */
-    void run(void) {
+    void run() {
         uint32_t current_tick{m_clock.get_ticks()};
-        uint32_t ticks{current_tick - last_tick};
+        uint32_t ticks{current_tick - m_last_tick};
 
-        for ( uint8_t thread = 0; thread < thread_count; thread++ ) {
-            auto tcb = &task_control_blocks[thread];
+        for ( uint8_t thread = 0; thread < m_thread_count; thread++ ) {
+            auto tcb = &m_task_control_blocks[thread];
 
-            //!< pick up any threads that are waking up from sleep
+            // Pick up any threads that are waking up from sleep
             if ( tcb->thread_ptr->get_status() == thread::status::sleeping ) {
                 tcb->suspended_ticks_remaining -= ticks;
                 if ( (tcb->suspended_ticks_remaining) <= 0 ) {
@@ -82,124 +76,124 @@ class scheduler_impl {
             }
         }
 
-        //!< pick up any pending tasks and context switch if required
-        if ( !check_pending() ) {
-            for ( uint8_t thread = 0; thread < thread_count; thread++ ) {
-                auto tcb = &task_control_blocks[thread];
+        // Pick up any pending tasks and context switch if required
+        if ( !m_check_pending() ) {
+            for ( uint8_t thread = 0; thread < m_thread_count; thread++ ) {
+                auto tcb = &m_task_control_blocks[thread];
                 if ( tcb->thread_ptr->get_status() == thread::status::pending ) {
-                    active_task->thread_ptr->set_status(thread::status::pending);
+                    m_active_task->thread_ptr->set_status(thread::status::pending);
                     context_switch_to(tcb);
                     break;
                 }
             }
         }
 
-        last_tick = current_tick;
+        m_last_tick = current_tick;
     }
 
     /**
-     * \brief sleep the active thread for a set number of ticks. This will trigger a context switch to the
+     * \brief Sleep the active thread for a set number of ticks. This will trigger a context switch to the
      *        next active thread as the current thread will be put to sleep!
      * 
-     * \param ticks how many ticks to sleep the active thread for
+     * \param ticks How many ticks to sleep the active thread for
      */
     void sleep_thread(uint32_t ticks) {
-        active_task->suspended_ticks_remaining = ticks;
-        active_task->thread_ptr->set_status(os::thread::status::sleeping);
+        m_active_task->suspended_ticks_remaining = ticks;
+        m_active_task->thread_ptr->set_status(os::thread::status::sleeping);
         jump_to_next_pending_task();
     }
 
     /**
-     * \brief suspends the calling thread and triggers a context switch to the next available thread
+     * \brief Suspends the calling thread and triggers a context switch to the next available thread
      */
     void suspend_thread() {
-        active_task->thread_ptr->set_status(os::thread::status::suspended);
+        m_active_task->thread_ptr->set_status(os::thread::status::suspended);
         jump_to_next_pending_task();
     }
 
     /**
-     * \brief register a thread with the scheduler
+     * \brief Register a thread with the scheduler
      * 
-     * \param thread the thread to register
-     * \retval returns true if the thread registration was successful
+     * \param thread The thread to register
+     * \retval Returns true if the thread registration was successful
      */
     bool register_thread(thread* thread) {
         bool retval{false};
-        if ( thread_count < max_thread_count ) {
-            /* add the the thread object and it's stack pointer to the next empty task control block */
-            task_control_blocks[thread_count].thread_ptr = thread;
-            task_control_blocks[thread_count].active_stack_pointer = thread->get_stack_ptr();
+        if ( m_thread_count < m_max_thread_count ) {
+            // Add the the thread object and its stack pointer to the next empty task control block
+            m_task_control_blocks[m_thread_count].thread_ptr = thread;
+            m_task_control_blocks[m_thread_count].active_stack_pointer = thread->get_stack_ptr();
 
-            /* setup the next pointers */
-            task_control_blocks[thread_count].next = (thread_count == 0) ? nullptr : &task_control_blocks[0];
+            // Setup the next pointers
+            m_task_control_blocks[m_thread_count].next = (m_thread_count == 0) ? nullptr : &m_task_control_blocks[0];
 
-            /* move the last task blocks next pointer to the current block */
-            if ( thread_count > 0 ) {
-                task_control_blocks[thread_count - 1].next = &task_control_blocks[thread_count];
+            // Move the last task blocks next pointer to the current block
+            if ( m_thread_count > 0 ) {
+                m_task_control_blocks[m_thread_count - 1].next = &m_task_control_blocks[m_thread_count];
             }
 
-            thread_count++;
+            m_thread_count++;
             retval = true;
         }
         return retval;
     }
 
     /**
-     * \brief register a thread as the internal OS thread that will run when all other threads are sleeping
-     * \param thread pointer to the thread to register
+     * \brief Register a thread as the internal OS thread that will run when all other threads are sleeping
+     * \param thread Pointer to the thread to register
      * \todo could maybe move this into the task constructor?
      */
     void set_internal_task(thread* thread) {
-        internal_task.thread_ptr = thread;
-        internal_task.active_stack_pointer = thread->get_stack_ptr();
-        internal_task.suspended_ticks_remaining = 0;
+        m_internal_task.thread_ptr = thread;
+        m_internal_task.active_stack_pointer = thread->get_stack_ptr();
+        m_internal_task.suspended_ticks_remaining = 0;
     }
 
     /**
-     * \brief get the number of registered threads in the system
+     * \brief Get the number of registered threads in the system
      * 
-     * \retval uint8_t number of threads
+     * \retval unsigned Number of registered threads
      */
-    uint8_t get_registered_thread_count(void) {
-        return thread_count;
+    unsigned get_registered_thread_count() const {
+        return m_thread_count;
     }
 
     /**
      * \brief Get the max thread count that the scheduler can support
      * 
-     * \retval uint8_t mas supported threads
+     * \retval unsigned Max supported threads
      */
-    uint8_t get_max_thread_count(void) {
-        return max_thread_count;
+    unsigned get_max_thread_count() const {
+        return m_max_thread_count;
     }
 
     /**
-     * \brief get the active task control block
+     * \brief Get the active task control block
      * 
-     * \retval TaskControlBlock
+     * \retval task_control_block Active task control block pointer
      */
-    TaskControlBlock* get_active_tcb_ptr(void) {
-        return active_task;
+    task_control_block* get_active_tcb_ptr() const {
+        return m_active_task;
     }
 
     /**
      * \brief Get the pending task pointer
      * 
-     * \retval TaskControlBlock* 
+     * \retval task_control_block* Pending task control block pointer
      */
-    TaskControlBlock* get_pending_tcb_ptr(void) {
-        return pending_task;
+    task_control_block* get_pending_tcb_ptr() const {
+        return m_pending_task;
     }
 
     /**
-     * \brief get a task control block by thread id
+     * \brief Get a task control block by thread id
      * 
-     * \param id the thread id
-     * \retval TaskControlBlock* pointer to the task control block     
+     * \param id The thread id
+     * \retval optional<task_control_block*> Maybe the thread pointer if the id exists
      */
-    std::optional<TaskControlBlock*> get_task_by_id(uint32_t id) {
-        for ( uint8_t thread = 0; thread < thread_count; thread++ ) {
-            auto tcb = &task_control_blocks[thread];
+    std::optional<task_control_block*> get_task_by_id(uint32_t id) {
+        for ( uint8_t thread = 0; thread < m_thread_count; thread++ ) {
+            auto tcb = &m_task_control_blocks[thread];
             auto thread_ptr = tcb->thread_ptr;
             if ( thread_ptr->get_id() == id ) {
                 return tcb;
@@ -214,42 +208,42 @@ class scheduler_impl {
      * 
      * \param tcb pointer to the task control block
      */
-    void context_switch_to(TaskControlBlock* tcb) {
-        pending_task = tcb;
+    void context_switch_to(task_control_block* tcb) {
+        m_pending_task = tcb;
         tcb->thread_ptr->set_status(thread::status::active);
-        active_task = pending_task;
-        set_pending();
+        m_active_task = m_pending_task;
+        m_set_pending();
     }
 
     /**
      * \brief jump to the next available task
      */
     void jump_to_next_pending_task() {
-        /* find the next active thread if a context switch is not already pending */
-        if ( !check_pending() ) {
-            for ( uint8_t thread = 0; thread < thread_count; thread++ ) {
-                auto tcb = &task_control_blocks[thread];
-                if ( (tcb->thread_ptr->get_status() == thread::status::pending) && (tcb != active_task) ) {
+        // Find the next active thread if a context switch is not already pending
+        if ( !m_check_pending() ) {
+            for ( uint8_t thread = 0; thread < m_thread_count; thread++ ) {
+                auto tcb = &m_task_control_blocks[thread];
+                if ( (tcb->thread_ptr->get_status() == thread::status::pending) && (tcb != m_active_task) ) {
                     context_switch_to(tcb);
                     return;
                 }
             }
         }
 
-        /* all threads are sleeping so context switch to the internal OS thread */
-        context_switch_to(&internal_task);
+        // All threads are sleeping so context switch to the internal OS thread
+        context_switch_to(&m_internal_task);
     }
 
     system_clock_impl& m_clock;
-    uint8_t max_thread_count;
-    SetPendingInterrupt set_pending;
-    IsInterruptPending check_pending;
-    uint32_t last_tick;
-    uint8_t thread_count;
-    std::unique_ptr<TaskControlBlock[]> task_control_blocks;
-    TaskControlBlock* active_task;
-    TaskControlBlock* pending_task;
-    TaskControlBlock internal_task;
+    unsigned m_max_thread_count;
+    set_pending_interrupt m_set_pending;
+    is_interrupt_pending m_check_pending;
+    uint32_t m_last_tick;
+    unsigned m_thread_count;
+    std::unique_ptr<task_control_block[]> m_task_control_blocks;
+    task_control_block* m_active_task;
+    task_control_block* m_pending_task;
+    task_control_block m_internal_task;
 };
 
 };  // namespace os

@@ -1,4 +1,4 @@
-/*! \file thread_impl.hpp
+/*! \file thread.hpp
 *
 *  \brief creation of OS threading primatives
 *
@@ -56,19 +56,18 @@ class thread {
     /**
      * \brief function pointer to the thread task
      */
-    using task_pointer = void (*)(void *arguments);
+    using task_pointer = void (*)();
 
     /**
      * \brief Construct a new Thread object
      * \todo I would like to make this more generic so that any invokable can be passed in like a lambda, etc.
      * 
-     * \param task_ptr function pointer to the main task function
-     * \param arguments arguments to bind to the task function
+     * \param task_ptr function pointer to the main task function     
      * \param id thread id
      * \param stack_ptr pointer to the thread stack
      * \param stack_size size of the threads stack
      */
-    thread(task_pointer task_ptr, void *arguments, uint32_t id, uint32_t* stack_ptr, uint32_t stack_size);
+    thread(task_pointer task_ptr, uint32_t id, uint32_t* stack_ptr, uint32_t stack_size);
 
     /**
      * \brief Set the thread's status
@@ -82,25 +81,24 @@ class thread {
      * 
      * \retval Status of the thread
      */
-    status get_status(void);
+    status get_status() const;
 
     /**
      * \brief Get the stack pointer for the thread
      * 
      * \retval uint32_t* pointer to the thread's stack
      */
-    uint32_t* get_stack_ptr(void);
+    uint32_t* get_stack_ptr();
 
     /**
      * \brief Get the thread id
      * 
      * \retval uint32_t thread id
      */
-    uint32_t get_id(void);
+    uint32_t get_id() const;
   
   private:
-    const task_pointer task_ptr;
-    void* task_arguments_ptr;
+    const task_pointer task_ptr;    
     const uint32_t id;
     uint32_t* const stack_top_ptr;
     uint32_t* stack_ptr;

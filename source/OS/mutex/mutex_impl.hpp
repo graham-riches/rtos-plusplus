@@ -42,7 +42,7 @@ class mutex_impl {
     private:
 
     bool locked;
-    ring_buffer<Scheduler::TaskControlBlock> waiting_on_lock;
+    ring_buffer<Scheduler::task_control_block> waiting_on_lock;
 };
 
 
