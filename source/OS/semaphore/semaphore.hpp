@@ -13,7 +13,6 @@
 
 #pragma once
 
-/********************************** Includes *******************************************/
 #include "device_port.hpp"
 #include "interrupt_lock_guard.hpp"
 #include "ring_buffer.hpp"
@@ -82,11 +81,14 @@ class counting_semaphore {
         } else {
             // Add the calling thread to the list of threads waiting on this semaphore to be woken up
             // when the resource becomes available
-            m_suspended_threads.push_back(m_scheduler->get_active_tcb_ptr());
+            auto *tcb = m_scheduler->get_active_tcb_ptr();
+            m_suspended_threads.push_back(tcb);
             ENABLE_INTERRUPTS();
             m_scheduler->suspend_thread();
+            DISABLE_INTERRUPTS();
             // Thread has now woken up, so decrement the counter and return
             m_count--;
+            ENABLE_INTERRUPTS();
             return;            
         }
     }

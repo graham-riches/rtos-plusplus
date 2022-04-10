@@ -108,6 +108,7 @@ target_link_options(${BINARY} PRIVATE
     -Wl,-Map=${PROJECT_NAME}.map,--cref
     -Wl,--gc-sections
     --no-exceptions
+    -u _printf_float
 )
 
 target_link_libraries(${BINARY} hal_library)

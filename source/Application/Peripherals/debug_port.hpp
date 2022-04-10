@@ -17,6 +17,8 @@
 #include "stm32f4xx.h"
 #include "ring_buffer.hpp"
 #include <cstring>
+#include <cstdarg>
+#include <cstdio>
 #include <utility>
 
 /************************************ Types ********************************************/
@@ -59,13 +61,29 @@ class DebugPort : protected HAL::usart::usart_base {
         write_control_register(HAL::usart::control_register_1::usart_enable, 0x01);
     }
     
-    void log_message(const char* message) { 
-        //!< TODO: strlen is blech                    
+    /**
+     * \brief Log a message over the debug port (printf style)
+     * 
+     * \param message The message/format string to log
+     * \param ... Variadic formatting arguments (printf style)
+     */
+    void log_message(const char* message, ...) {         
+        va_list args;
+        va_start(args, message);         
+        auto bytes_to_write = vsnprintf(m_print_buffer, PrintBufferSize, message, args);
+        va_end(args);        
+        for (unsigned i = 0; i < static_cast<unsigned>(bytes_to_write); ++i) {
+            m_tx_buffer.push_back(const_cast<char&>(m_print_buffer[i]));            
+        }
+        // Set TX interrupt flag
+        write_control_register(HAL::usart::control_register_1::transmit_interrupt_enable, 0x01);
+    }
+
+    void log_message_test(char* message) {
         auto bytes_to_write = strlen(message);
-        auto* ptr = message;
-        for (unsigned i = 0; i < bytes_to_write; ++i) {
-            m_tx_buffer.push_back(const_cast<char&>(*ptr));
-            ptr++;
+        char* ptr = message;
+        for (unsigned i = 0; i < static_cast<unsigned>(bytes_to_write); ++i) {
+            m_tx_buffer.push_back(const_cast<char&>(*ptr++));
         }
         // Set TX interrupt flag
         write_control_register(HAL::usart::control_register_1::transmit_interrupt_enable, 0x01);
@@ -76,6 +94,7 @@ class DebugPort : protected HAL::usart::usart_base {
     ring_buffer<char, PrintBufferSize> m_rx_buffer;
     char m_print_buffer[PrintBufferSize];
     
+    // ISR is a friend of this class so it can directly access the internal buffers
     friend void usart3_irqn();
 };
 

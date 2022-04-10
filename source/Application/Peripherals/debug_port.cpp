@@ -55,7 +55,7 @@ void usart3_irqn() {
             auto value = value_to_send.value();
             debug_port.m_peripheral->DR = value;            
         }
-
+        
         if (debug_port.m_tx_buffer.empty()) {            
             debug_port.write_control_register(HAL::usart::control_register_1::transmit_interrupt_enable, 0x00);
         }

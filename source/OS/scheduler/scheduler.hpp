@@ -14,6 +14,8 @@
 /********************************** Includes *******************************************/
 #include "scheduler_impl.hpp"
 #include "thread.hpp"
+#include <type_traits>
+#include <utility>
 
 namespace os
 {
@@ -76,7 +78,6 @@ class scheduler : public scheduler_impl {
      */
     static void unlock();
 
-
   private:
     /**
      * \brief Construct the os scheduler as a singleton instance
@@ -85,5 +86,21 @@ class scheduler : public scheduler_impl {
 
     bool m_locked;
 };
+
+namespace this_thread
+{
+
+/**
+ * \brief Helper function to make thread sleeps more inline with std::this_thread::sleep_for
+ * 
+ * @tparam Duration Integral constant
+ * \param duration_msec Duration of the sleep in milliseconds
+ */
+template <typename Duration>
+static inline void sleep_for_msec(Duration&& duration_msec) {
+    static_assert(std::is_convertible_v<uint32_t, Duration>, "Sleep interval must be convertible to integral constant");
+    os::scheduler::sleep(static_cast<uint32_t>(std::forward<Duration>(duration_msec)));
+}
+}  // namespace this_thread
 
 };  // namespace os

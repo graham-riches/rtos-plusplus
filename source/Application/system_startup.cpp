@@ -39,6 +39,12 @@ extern "C" void __system_startup() {
     set_bits(SCB->CPACR, (3UL << 10 * 2) | (3UL << 11 * 2));    
 #endif
 
+    // Enable various fault interrupts   
+    clear_bits(FPU->FPCCR, FPU_FPCCR_LSPEN_Msk); // disable lazy stacking
+    set_bits(SCB->SHCSR, SCB_SHCSR_MEMFAULTENA_Msk);
+    set_bits(SCB->SHCSR, SCB_SHCSR_BUSFAULTENA_Msk);
+    set_bits(SCB->SHCSR, SCB_SHCSR_USGFAULTENA_Msk);
+
     // Setup NVIC Defaults
     nvic::initialize();
 

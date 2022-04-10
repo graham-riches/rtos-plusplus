@@ -52,10 +52,6 @@ gpio::output_pin blue_led(GPIOD,
 /****************************** Function Definitions ***********************************/
 void initialize_peripherals() {
     debug_port.initialize();        
-    debug_port.log_message("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\n");
-    debug_port.log_message("STM32F407 Debug Terminal \r\n");
-    debug_port.log_message("   Author: Graham Riches \r\n");    
-    debug_port.log_message("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\n");
 
     // Turn on LEDs
     green_led.set(true);

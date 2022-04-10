@@ -100,6 +100,7 @@ void isr_nmi_handler() { }
  * \brief This function handles Hard fault interrupt.
  */
 void isr_hard_fault_handler() {
+    __asm("bkpt 1");
     HANDLE_FAULT();
 }
 
@@ -107,6 +108,7 @@ void isr_hard_fault_handler() {
  * \brief This function handles Memory management fault.
  */
 void isr_mem_manager_handler() {
+    __asm("bkpt 1");
     HANDLE_FAULT();
 }
 
@@ -114,6 +116,7 @@ void isr_mem_manager_handler() {
  * \brief This function handles Pre-fetch fault, memory access fault.
  */
 void isr_bus_fault_handler() {
+    __asm("bkpt 1");
     HANDLE_FAULT();
 }
 
@@ -121,6 +124,7 @@ void isr_bus_fault_handler() {
  * \brief This function handles Undefined instruction or illegal state.
  */
 void isr_usage_fault_handler() {
+    __asm("bkpt 1");
     HANDLE_FAULT();
 }
 

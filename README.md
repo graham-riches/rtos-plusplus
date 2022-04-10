@@ -35,6 +35,7 @@
         <li><a href="#building-and-running-unit-tests">Building and Running Unit Tests</a></li>
       </ul>
     </li>
+    <li><a href="#known-issues">Known Issues</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
   </ol>
@@ -63,42 +64,22 @@ This project contains a simple real-time operating system with a cooperative sch
 The following sample code shows off a bit of the syntax involved when using the OS:
 
 ```cpp
-constexpr uint8_t thread_stack_size = 128;
+constexpr std::size_t thread_stack_size = 128;
+static std::array<uint32_t, thread_stack_size> thread_one_stack = {0};
+static std::array<uint32_t, thread_stack_size> thread_two_stack = {0};
+static os::binary_semaphore sem{0};
 
-static void thread_one_task();
-static void thread_two_task();
-
-static uint32_t thread_one_stack[thread_stack_size] = {0};
-static uint32_t thread_two_stack[thread_stack_size] = {0};
-static os::binary_semaphore sem(0);
-
-int main(void) {
-    // Create two threads
-    os::thread thread_one(thread_one_task, 1, thread_one_stack, thread_stack_size);
-    os::thread thread_two(thread_two_task, 2, thread_two_stack, thread_stack_size);
-
-    // Configure peripherals
-    initialize_peripherals();
-
-    // Jump into the RTOS kernel
-    os::kernel::setup();
-    os::kernel::enter();
-
-    //!< NOTE: should never reach here!
-    return 0;
-}
-
-// First thread will blink to LEDs and signal the second task to wakeup via the shared semaphore
+// First task blinks two LEDS and then signals the second thread
 static void thread_one_task() {    
     while ( true ) {        
         green_led.toggle();
         blue_led.toggle();        
-        os::scheduler::sleep(1000);
+        os::this_thread::sleep_for_msec(1000);
         sem.release();
     }
 }
 
-// Second thread blinks the other two LEDs and logs a message
+// Second task blinks the other LEDs and logs a message
 static void thread_two_task() {    
     while ( true ) {
         sem.acquire();
@@ -106,6 +87,18 @@ static void thread_two_task() {
         red_led.toggle();
         orange_led.toggle();        
     }
+}
+
+int main(void) {    
+    os::thread thread_one(thread_one_task, 1, thread_one_stack.data(), thread_stack_size);
+    os::thread thread_two(thread_two_task, 2, thread_two_stack.data(), thread_stack_size);
+
+    // Jump into the RTOS kernel
+    os::kernel::setup();
+    os::kernel::enter();
+
+    //!< NOTE: should never reach here!
+    return 0;
 }
 ```
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -209,7 +202,13 @@ cd bin
 ./bare_metal_os_tests
 ```
 
-## Contributing
+# Known Issues
+The following is a loose list of known issues in the project to be fixed at some indeterminate date in the future:
+- Scheduling algorithm does not support thread priority
+- Mutex implementation does not support priority inheritance (see above)
+- Currently no implementations for recursive mutex, timed mutex, etc.
+
+# Contributing
 
 Any contributions are welcome! Please feel free to submit and new features or fixes through a pull request.
 
@@ -223,8 +222,7 @@ Any contributions are welcome! Please feel free to submit and new features or fi
 
 
 
-<!-- LICENSE -->
-## License
+# License
 
 Distributed under the GPL-3.0 License. See `LICENSE` for more information.
 
