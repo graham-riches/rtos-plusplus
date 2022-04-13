@@ -30,6 +30,7 @@ static void thread_one_task() {
     while ( true ) {        
         green_led.toggle();
         blue_led.toggle();                        
+        debug_port.log_message("test from 1\r\n");
         os::this_thread::sleep_for_msec(1000);        
         sem.release();
     }
@@ -40,7 +41,8 @@ static void thread_one_task() {
  */
 static void thread_two_task() {    
     while ( true ) {
-        sem.acquire();        
+        sem.acquire();
+        debug_port.log_message("test from 2\r\n");
         red_led.toggle();
         orange_led.toggle();        
     }

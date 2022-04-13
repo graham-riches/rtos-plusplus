@@ -82,7 +82,7 @@ target_compile_options(${BINARY} PRIVATE
     -mcpu=cortex-m4
     -mthumb
     -mfpu=fpv4-sp-d16
-    -mfloat-abi=hard
+    -mfloat-abi=soft
     -fno-data-sections
     -fno-function-sections
     -fno-exceptions
@@ -100,7 +100,7 @@ target_link_options(${BINARY} PRIVATE
     -mcpu=cortex-m4
     -mthumb
     -mfpu=fpv4-sp-d16
-    -mfloat-abi=hard
+    -mfloat-abi=soft
     -specs=nosys.specs
     -lc
     -lm
