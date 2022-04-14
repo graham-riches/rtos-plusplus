@@ -18,7 +18,6 @@
 #include "ring_buffer.hpp"
 #include "scheduler.hpp"
 #include "scheduler_impl.hpp"
-#include "system_clock.hpp"
 #include "task_control_block.hpp"
 #include <cstdint>
 #include <type_traits>
@@ -125,7 +124,7 @@ class counting_semaphore {
             m_suspended_threads.push_back(m_scheduler->get_active_tcb_ptr());
 
             // Wait in a loop for up to the total requested time while trying to acquire the resource
-            auto start_tick = system_clock::get_elapsed_ticks();
+            auto start_tick = m_scheduler->get_elapsed_ticks();
             uint32_t elapsed_ticks = 0;
             while ( elapsed_ticks <= rel_time_ms ) {
                 // Re-enable interrupts to allow a context switch
@@ -135,7 +134,7 @@ class counting_semaphore {
                 // Returned from sleep here via context switch. Either by elapsed time expiring, or from another thread releasing
                 // the resource
                 DISABLE_INTERRUPTS();
-                elapsed_ticks = system_clock::get_elapsed_ticks() - start_tick;
+                elapsed_ticks = m_scheduler->get_elapsed_ticks() - start_tick;
                 // Check again if we can acquire the resource
                 if ( try_acquire() ) {
                     ENABLE_INTERRUPTS();

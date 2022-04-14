@@ -148,20 +148,26 @@ __attribute__((naked)) void isr_pend_sv_handler() {
     using namespace os;
 
     __asm(
-        "CPSID      I                        \n" /* disable interrupts */
-        "PUSH       {R4-R11}                 \n" /* push the remaining core registers */
-        "LDR        R0, =system_active_task  \n" /* load the active task pointer into */
-        "LDR        R1, [R0]                 \n" /* dereference the pointer */
-        "MOV        R4, SP                   \n" /* stash the current stack pointer */
-        "STR        R4, [R1]                 \n" /* update the pointer to the current thread task with the current stack pointer */
-        "LDR        R1, =system_pending_task \n" /* get the next task pointer */
-        "LDR        R2, [R1]                 \n" /* dereference the pointer */
-        "STR        R2, [R0]                 \n" /* update the active thread to be the pending thread */        
-        "LDR        R4, [R2]                 \n" /* get the new stack pointer by dereferencing the original pointer */
-        "MOV        SP, R4                   \n" /* push it to the CPU stack pointer register */
-        "POP        {R4-R11}                 \n" /* pop the stored registers */
-        "CPSIE      I                        \n" /* re-enable interrupts */
-        "BX         LR                       \n" /* return */
+        "CPSID      I                        \n" // Disable interrupts
+        "PUSH       {R4-R11}                 \n" // Push the remaining core registers
+        "VPUSH      {D0-D15}                 \n" // Push floating point context  
+        "VMRS       R0,fpscr                 \n" // Get FPU status/control register
+        "PUSH       {R0}                     \n" // Push floating point control register
+        "LDR        R0, =system_active_task  \n" // Load the active task pointer into
+        "LDR        R1, [R0]                 \n" // Dereference the pointer
+        "MOV        R4, SP                   \n" // Stash the current stack pointer
+        "STR        R4, [R1]                 \n" // Update the pointer to the current thread task with the current stack pointer
+        "LDR        R1, =system_pending_task \n" // Get the next task pointer
+        "LDR        R2, [R1]                 \n" // Dereference the pointer
+        "STR        R2, [R0]                 \n" // Update the active thread to be the pending thread
+        "LDR        R4, [R2]                 \n" // Get the new stack pointer by dereferencing the original pointer
+        "MOV        SP, R4                   \n" // Push it to the CPU stack pointer register
+        "VPOP       {D0-D15}                 \n" // Restore floating point context                
+        "POP        {R0}                     \n" // Pop floating point status/control register
+        "VMSR       fpscr, R0                \n" // Restore floating point control register
+        "POP        {R4-R11}                 \n" // Pop the stored registers        
+        "CPSIE      I                        \n" // Re-enable interrupts
+        "BX         LR                       \n" // Return
     );
 }
 // clang-format on
@@ -173,7 +179,7 @@ __attribute__((naked)) void isr_pend_sv_handler() {
  */
 void isr_systick_handler() {
     os::interrupt_guard guard;
-    os::system_clock::update_system_ticks(1);
+    os::scheduler::update_system_ticks(1);
     os::scheduler::update();    
 }
 

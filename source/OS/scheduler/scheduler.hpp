@@ -69,6 +69,20 @@ class scheduler : public scheduler_impl {
     static void suspend_calling_thread();
 
     /**
+     * \brief get the elapsed system tick time
+     * 
+     * \retval uint32_t elapsed ticks
+     */
+    static uint32_t get_elapsed_ticks();
+
+    /**
+     * \brief update the system clock
+     * 
+     * \param ticks number of elapsed ticks since last update
+     */
+    static void update_system_ticks(uint32_t ticks);
+
+    /**
      * \brief Lock the scheduler to perform atomic operations without interrupting
      */
     static void lock();

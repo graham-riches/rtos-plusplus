@@ -36,9 +36,6 @@ void setup(void) {
     // Activate the first task
     system_active_task->thread_ptr->set_status(thread::status::active);
 
-    // Start the system clock
-    system_clock::initialize();
-
     // Setup core interrupt priorities
     HAL::nvic::set_priority(stm32f4_irq::systick_handler, HAL::nvic::isr_preemption_priority::level_16);
     HAL::nvic::set_priority(stm32f4_irq::pendsv_handler, HAL::nvic::isr_preemption_priority::level_16);
@@ -53,21 +50,23 @@ void setup(void) {
 __attribute__((naked))  void enter(void) {
     using namespace os;
 
-    __asm("CPSID      I                        \n" /* disable interrupts */
-        "LDR        R0, =system_active_task  \n" /* load the active task pointer into r0*/
-        "LDR        R1, [R0]                 \n" /* load the stack pointer from the contents of task into R1 */
-        "LDR        R4, [R1]                 \n" /* copy the saved stack pointer into R4 */
-        "MOV        SP, R4                   \n" /* update the stack pointer */
-        "POP        {R4-R11}                 \n" /* pop R4-R11 off the stack */
-        "POP        {R0-R3}                  \n" /* pop R0-R3 off the stack */
-        "POP        {R4}                     \n" /* pop the last Cortex-saved register */
-        "MOV        R12, R4                  \n" /* restore R12 */
-        "ADD        SP,SP,#4                 \n" /* skip over the saved LR as it is invalid on startup */
-        "POP        {R4}                     \n" /* grab the task function pointer */
-        "MOV        LR, R4                   \n" /* restore the LR state */
-        "ADD        SP,SP,#4                 \n" /* increment the stack pointer */
-        "CPSIE      I                        \n" /* re-enable interrupts */
-        "BX         LR                       \n" /* branch to the link register */
+    __asm(
+        "CPSID      I                        \n" // Disable interrupts
+        "LDR        R0, =system_active_task  \n" // Load the active task pointer into r0
+        "LDR        R1, [R0]                 \n" // Load the stack pointer from the contents of task into R1
+        "LDR        R4, [R1]                 \n" // Copy the saved stack pointer into R4
+        "MOV        SP, R4                   \n" // Update the stack pointer
+        "POP        {R4-R11}                 \n" // Pop R4-R11 off the stack
+        "VPOP       {D0-D15}                 \n" //             
+        "POP        {R0}                     \n" //
+        "VMSR       fpscr, r0                \n" //       
+        "POP        {R0, R1, R2, R3, R12}    \n" // Pop R0-R3 and R12 off the stack
+        "ADD        SP,SP,#4                 \n" // Skip over the saved LR as it is invalid on startup
+        "POP        {R4}                     \n" // Grab the task function pointer
+        "MOV        LR, R4                   \n" // Restore the LR state
+        "ADD        SP,SP,#4                 \n" // Increment the stack pointer
+        "CPSIE      I                        \n" // Re-enable interrupts
+        "BX         LR                       \n" // Branch to the link register
     );
 }
 // clang-format on

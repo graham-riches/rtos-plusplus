@@ -27,12 +27,14 @@ static std::array<uint32_t, thread_stack_size> thread_two_stack = {0};
  * \brief First task to blink two LEDs
  */
 static void thread_one_task() {    
-    while ( true ) {        
+    float counter = 0.0f;
+    while ( true ) {                
         green_led.toggle();
         blue_led.toggle();                        
-        debug_port.log_message("test from 1\r\n");
+        debug_port.log_message("test from 1: %.02f\r\n", counter);
         os::this_thread::sleep_for_msec(1000);        
         sem.release();
+        counter = counter + 1;
     }
 }
 

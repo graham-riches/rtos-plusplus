@@ -16,7 +16,6 @@
 #include "ring_buffer.hpp"
 #include "scheduler.hpp"
 #include "scheduler_impl.hpp"
-#include "system_clock.hpp"
 #include "task_control_block.hpp"
 #include <algorithm>
 #include <cstdint>

@@ -22,17 +22,16 @@ class system_clock_impl {
     /**
      * \brief default constructor for the system clock
      */
-    system_clock_impl(void)
-        : elapsed_ticks(0)
-        , running(false) { }
+    system_clock_impl()
+        : m_elapsed_ticks(0) { }
 
     /**
      * \brief get the elapsed system tick time
      * 
      * \retval uint32_t elapsed ticks
      */
-    uint32_t get_ticks(void) {
-        return elapsed_ticks;
+    uint32_t get_ticks() {
+        return m_elapsed_ticks;
     }
 
     /**
@@ -41,21 +40,11 @@ class system_clock_impl {
      * \param ticks number of elapsed ticks since last update
      */
     void update(uint32_t ticks) {
-        if ( running ) {
-            elapsed_ticks = elapsed_ticks + ticks;
-        }
-    }
-
-    /**
-     * \brief start the system clock
-     */
-    void start(void) {
-        running = true;
+        m_elapsed_ticks = m_elapsed_ticks + ticks;
     }
 
   private:
-    volatile uint32_t elapsed_ticks;
-    bool running;
+    volatile uint32_t m_elapsed_ticks;
 };
 
 };  // namespace os

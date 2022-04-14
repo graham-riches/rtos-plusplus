@@ -13,7 +13,7 @@
 namespace os
 {
 /*********************************** Consts ********************************************/
-constexpr uint32_t CONTEXT_STACK_SIZE  = 16ul;      //!< Number of default saved stack registers
+constexpr uint32_t CONTEXT_STACK_SIZE  = 49ul;       //!< Number of default saved stack registers
 constexpr uint32_t PSR_THUMB_MODE      = 0x01000000; //!< set PSR register to THUMB
 
 /****************************** Method Definitions ***********************************/
@@ -50,6 +50,9 @@ thread::thread(task_pointer task_ptr, uint32_t id, uint32_t* stack_ptr, uint32_t
     task_context->r10 = 10;
     task_context->r11 = 11;
     task_context->r12 = 12;
+    task_context->fpu[1] = 0x1234;
+    task_context->fpu[2] = 0x5678;
+    task_context->fpscr = 0x00;
 
     // Set the initial value of the active stack pointer to the fake context added above.
     // When the thread is unsuspended, the processor will restore the saved context     

@@ -14,7 +14,6 @@
 /********************************** Includes *******************************************/
 #include "scheduler.hpp"
 #include "task_control_block.hpp"
-#include "system_clock.hpp"
 
 namespace os
 {

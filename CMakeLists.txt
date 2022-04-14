@@ -30,8 +30,7 @@ set(APP_SOURCES
 
     # OS files
     source/OS/scheduler/scheduler.cpp
-    source/OS/thread/thread.cpp
-    source/OS/system_clock/system_clock.cpp    
+    source/OS/thread/thread.cpp    
     source/OS/os.cpp    
     source/OS/device_port.cpp
 
@@ -82,7 +81,7 @@ target_compile_options(${BINARY} PRIVATE
     -mcpu=cortex-m4
     -mthumb
     -mfpu=fpv4-sp-d16
-    -mfloat-abi=soft
+    -mfloat-abi=hard
     -fno-data-sections
     -fno-function-sections
     -fno-exceptions
@@ -100,7 +99,7 @@ target_link_options(${BINARY} PRIVATE
     -mcpu=cortex-m4
     -mthumb
     -mfpu=fpv4-sp-d16
-    -mfloat-abi=soft
+    -mfloat-abi=hard
     -specs=nosys.specs
     -lc
     -lm

@@ -12,7 +12,6 @@
 /********************************** Includes *******************************************/
 #include "scheduler.hpp"
 #include "device_port.hpp"
-#include "system_clock.hpp"
 #include "thread.hpp"
 
 namespace os
@@ -31,7 +30,7 @@ static os::thread internal_thread(internal_thread_task, 0xFFFF, internal_thread_
 /********************************** Function Definitions *******************************************/
 //!> default construct the scheduler
 scheduler::scheduler()
-    : scheduler_impl(system_clock::get(), MAX_THREAD_COUNT, set_pending_context_switch, is_context_switch_pending)
+    : scheduler_impl(MAX_THREAD_COUNT, set_pending_context_switch, is_context_switch_pending)
     , m_locked(false) {
     set_internal_task(&internal_thread);
 }
@@ -80,6 +79,22 @@ task_control_block* scheduler::get_pending_task_control_block() {
 void scheduler::suspend_calling_thread() {
     auto& self = get();
     self.suspend_thread();
+}
+
+//!< Get elapsed system tick count
+uint32_t scheduler::get_elapsed_ticks() {
+    auto& self = get();
+    return self.m_clock.get_ticks();
+}
+
+/**
+ * \brief update the system clock
+ * 
+ * \param ticks number of elapsed ticks since last update
+ */
+void scheduler::update_system_ticks(uint32_t ticks) {
+    auto &self = get();
+    self.m_clock.update(ticks);
 }
 
 //!< lock the scheduler

@@ -47,7 +47,7 @@ target_compile_options(${HAL_LIBRARY} PRIVATE
     -mcpu=cortex-m4
     -mthumb
     -mfpu=fpv4-sp-d16
-    -mfloat-abi=soft
+    -mfloat-abi=hard
     -fno-data-sections
     -fno-function-sections
     -fno-exceptions

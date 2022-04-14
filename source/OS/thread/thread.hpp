@@ -33,6 +33,8 @@ class thread {
         uint32_t r9;
         uint32_t r10;
         uint32_t r11;
+        uint32_t fpu[32];
+        uint32_t fpscr;
         uint32_t r0;
         uint32_t r1;
         uint32_t r2;

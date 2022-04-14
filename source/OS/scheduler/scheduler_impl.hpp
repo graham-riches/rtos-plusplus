@@ -10,9 +10,9 @@
 
 /********************************** Includes *******************************************/
 #include "common.hpp"
-#include "system_clock.hpp"
 #include "task_control_block.hpp"
 #include "thread.hpp"
+#include "system_clock_impl.hpp"
 #include <memory>
 #include <optional>
 
@@ -42,12 +42,10 @@ class scheduler_impl {
      * \param set_pending Function pointer to the function to set a pending context switch interrupt
      * \param check_pending Function pointer to check if an interrupt is already pending
      */
-    scheduler_impl(system_clock_impl& clock_source,
-                   unsigned max_thread_count,
+    scheduler_impl(unsigned max_thread_count,
                    set_pending_interrupt set_pending,
-                   is_interrupt_pending check_pending)
-        : m_clock(clock_source)
-        , m_max_thread_count(max_thread_count)
+                   is_interrupt_pending check_pending)        
+        : m_max_thread_count(max_thread_count)
         , m_set_pending(set_pending)
         , m_check_pending(check_pending)
         , m_last_tick(0)
@@ -64,7 +62,7 @@ class scheduler_impl {
         uint32_t current_tick{m_clock.get_ticks()};
         uint32_t ticks{current_tick - m_last_tick};
 
-        for ( uint8_t thread = 0; thread < m_thread_count; thread++ ) {
+        for ( unsigned thread = 0; thread < m_thread_count; thread++ ) {
             auto tcb = &m_task_control_blocks[thread];
 
             // Pick up any threads that are waking up from sleep
@@ -78,7 +76,7 @@ class scheduler_impl {
 
         // Pick up any pending tasks and context switch if required
         if ( !m_check_pending() ) {
-            for ( uint8_t thread = 0; thread < m_thread_count; thread++ ) {
+            for ( unsigned thread = 0; thread < m_thread_count; thread++ ) {
                 auto tcb = &m_task_control_blocks[thread];
                 if ( tcb->thread_ptr->get_status() == thread::status::pending ) {
                     m_active_task->thread_ptr->set_status(thread::status::pending);
@@ -131,6 +129,11 @@ class scheduler_impl {
             if ( m_thread_count > 0 ) {
                 m_task_control_blocks[m_thread_count - 1].next = &m_task_control_blocks[m_thread_count];
             }
+
+            // If there is no pending thread, assign this thread as pending
+            // if (m_pending_task == nullptr) {
+            //     m_pending_task = &m_task_control_blocks[m_thread_count];
+            // }
 
             m_thread_count++;
             retval = true;
@@ -192,7 +195,7 @@ class scheduler_impl {
      * \retval optional<task_control_block*> Maybe the thread pointer if the id exists
      */
     std::optional<task_control_block*> get_task_by_id(uint32_t id) {
-        for ( uint8_t thread = 0; thread < m_thread_count; thread++ ) {
+        for ( unsigned thread = 0; thread < m_thread_count; thread++ ) {
             auto tcb = &m_task_control_blocks[thread];
             auto thread_ptr = tcb->thread_ptr;
             if ( thread_ptr->get_id() == id ) {
@@ -202,7 +205,25 @@ class scheduler_impl {
         return {};
     }
 
-  private:
+    /**
+     * \brief get the elapsed system tick time
+     * 
+     * \retval uint32_t elapsed ticks
+     */
+    uint32_t get_elapsed_ticks() {
+        return m_clock.get_ticks();
+    }
+
+    /**
+     * \brief update the system clock
+     * 
+     * \param ticks number of elapsed ticks since last update
+     */
+    void update_system_ticks(uint32_t ticks) {
+        m_clock.update(ticks);
+    }
+
+  protected:
     /**
      * \brief trigger a context switch to the thread pointer to by the task control block
      * 
@@ -221,7 +242,7 @@ class scheduler_impl {
     void jump_to_next_pending_task() {
         // Find the next active thread if a context switch is not already pending
         if ( !m_check_pending() ) {
-            for ( uint8_t thread = 0; thread < m_thread_count; thread++ ) {
+            for ( unsigned thread = 0; thread < m_thread_count; thread++ ) {
                 auto tcb = &m_task_control_blocks[thread];
                 if ( (tcb->thread_ptr->get_status() == thread::status::pending) && (tcb != m_active_task) ) {
                     context_switch_to(tcb);
@@ -234,7 +255,7 @@ class scheduler_impl {
         context_switch_to(&m_internal_task);
     }
 
-    system_clock_impl& m_clock;
+    system_clock_impl m_clock;
     unsigned m_max_thread_count;
     set_pending_interrupt m_set_pending;
     is_interrupt_pending m_check_pending;

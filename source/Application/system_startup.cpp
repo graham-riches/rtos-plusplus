@@ -41,6 +41,7 @@ extern "C" void __system_startup() {
 
     // Enable various fault interrupts   
     clear_bits(FPU->FPCCR, FPU_FPCCR_LSPEN_Msk); // disable lazy stacking
+    clear_bits(FPU->FPCCR, FPU_FPCCR_ASPEN_Msk);
     set_bits(SCB->SHCSR, SCB_SHCSR_MEMFAULTENA_Msk);
     set_bits(SCB->SHCSR, SCB_SHCSR_BUSFAULTENA_Msk);
     set_bits(SCB->SHCSR, SCB_SHCSR_USGFAULTENA_Msk);
