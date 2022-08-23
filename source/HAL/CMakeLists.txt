@@ -56,5 +56,5 @@ target_compile_options(${HAL_LIBRARY} PRIVATE
     -g3
     -Wall
     -Wextra
-    -fmessage-length=0        
+    -fmessage-length=0            
 )

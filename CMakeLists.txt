@@ -29,11 +29,10 @@ set(APP_SOURCES
     source/Application/Peripherals/peripherals.cpp
 
     # OS files
-    source/OS/scheduler/scheduler.cpp
-    source/OS/thread/thread.cpp    
+    source/OS/scheduler.cpp
+    source/OS/thread.cpp    
     source/OS/os.cpp    
     source/OS/device_port.cpp
-
 
     # Start Up File
     startup/startup_stm32f407xx.s
@@ -61,13 +60,6 @@ target_include_directories(${BINARY} PRIVATE
     source/Application/Utilities
 
     source/OS
-    source/OS/scheduler
-    source/OS/sempahore
-    source/OS/thread
-    source/OS/mutex
-    source/OS/semaphore
-    source/OS/system_clock
-    source/OS/utilities
     source/Utilities
     source/HW_Port
 
@@ -106,8 +98,9 @@ target_link_options(${BINARY} PRIVATE
     -lnosys
     -Wl,-Map=${PROJECT_NAME}.map,--cref
     -Wl,--gc-sections
-    --no-exceptions
-    -u _printf_float
+    --no-exceptions  
+    -Wl,--undefined,_printf_float
+    -Wl,--undefined,_scanf_float  
 )
 
 target_link_libraries(${BINARY} hal_library)
