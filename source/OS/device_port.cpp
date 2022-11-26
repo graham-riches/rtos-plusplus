@@ -99,10 +99,6 @@ void isr_default_handler()
 }
 
 /**
- * \brief Handles the system startup/restart interrupt
- */
-//!< TODO: Port startup code from ASM to here
-/**
  * \brief Reset handler to start up the processor
  *  - initializes stack
  *  - initializes heap
@@ -112,7 +108,7 @@ void isr_default_handler()
  *  - system init
  *  - main
  */
-extern "C" void __attribute__((__interrupt__, naked)) isr_reset_handler() {
+extern "C" void __attribute__((naked)) isr_reset_handler() {
     uint32_t* p_dest;
     uint32_t* p_src;
 
