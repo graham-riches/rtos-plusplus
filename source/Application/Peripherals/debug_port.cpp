@@ -37,7 +37,7 @@ DebugPort<256> debug_port(USART3,
 /**
  * \brief Interrupt handler for the USART3 peripheral, which is used as the debug port
  */
-void usart3_irqn() {    
+void isr_usart3_handler() {    
     // Handle RX Interrupt    
     auto rx_data_available = debug_port.read_status_register(HAL::usart::status_register::receive_data_available) > 0;
     auto rx_interrupt_enabled = debug_port.read_control_register(HAL::usart::control_register_1::receive_interrupt_enable) > 0;

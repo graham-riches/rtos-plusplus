@@ -144,4 +144,4 @@ void set_pending_context_switch();
 bool is_context_switch_pending();
 
 /********************************** Used Interrupts *******************************************/
-void usart3_irqn();
+void isr_usart3_handler();

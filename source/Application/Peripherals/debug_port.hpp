@@ -95,7 +95,7 @@ class DebugPort : protected HAL::usart::usart_base {
     char m_print_buffer[PrintBufferSize];
     
     // ISR is a friend of this class so it can directly access the internal buffers
-    friend void usart3_irqn();
+    friend void isr_usart3_handler();
 };
 
 /******************************* Global Variables **************************************/
