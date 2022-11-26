@@ -53,7 +53,7 @@ static void thread_two_task() {
 /**
   * \brief  Main application function  
   */
-int main() {        
+extern "C" int main() {        
     // Create two threads
     os::thread thread_one(thread_one_task, 1, thread_one_stack.data(), thread_stack_size);
     os::thread thread_two(thread_two_task, 2, thread_two_stack.data(), thread_stack_size);

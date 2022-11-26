@@ -47,6 +47,7 @@ SECTIONS
   .rodata :
   {
     . = ALIGN(4);
+    PROVIDE( _flash_data = . );
     *(.rodata)         /* .rodata sections (constants, strings, etc.) */
     *(.rodata*)        /* .rodata* sections (constants, strings, etc.) */
     . = ALIGN(4);
@@ -137,8 +138,12 @@ SECTIONS
     . = ALIGN(8);
     PROVIDE ( end = . );
     PROVIDE ( _end = . );
+    PROVIDE( _user_heap_stack = .);
     . = . + _Min_Heap_Size;
+    PROVIDE( _euser_heap_stack = .);
+    PROVIDE( _stack = . );
     . = . + _Min_Stack_Size;
+    PROVIDE( _estack = .);
     . = ALIGN(8);
   } >RAM
 

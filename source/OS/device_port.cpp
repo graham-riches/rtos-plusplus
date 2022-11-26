@@ -17,6 +17,19 @@
 #include "os.hpp"
 #include "hal_nvic.hpp"
 
+/********************************** Global Variables *******************************************/
+//!< Extern variables exposed in linker script
+extern uint32_t _sidata;            // Start of data segment in flash
+extern uint32_t _sdata;             // Start address for the .data section. defined in linker script
+extern uint32_t _edata;             // End address for the .data section. defined in linker script
+extern uint32_t _sbss;              // Start address for the .bss section. defined in linker script
+extern uint32_t _ebss;              // End address for the .bss section. defined in linker script
+
+/********************************** Global Functions *******************************************/
+extern "C" void __libc_init_array();
+extern "C" void __system_startup();
+extern "C" int main();
+
 /************************************ Types ********************************************/
 /**
  * \brief struct for storing stack context during a crash
@@ -89,7 +102,40 @@ void isr_default_handler()
  * \brief Handles the system startup/restart interrupt
  */
 //!< TODO: Port startup code from ASM to here
-extern "C" void isr_reset_handler();
+/**
+ * \brief Reset handler to start up the processor
+ *  - initializes stack
+ *  - initializes heap
+ *  - copy data segment from flash to ram
+ *  - zero .bss
+ *  - libc init
+ *  - system init
+ *  - main
+ */
+extern "C" void __attribute__((__interrupt__, naked)) isr_reset_handler() {
+    uint32_t* p_dest;
+    uint32_t* p_src;
+
+    // Copy data segment from flash to RAM
+    p_src = &_sidata;
+    for ( p_dest = &_sdata; p_dest < &_edata; ) {
+        *p_dest++ = *p_src++;
+    }
+
+    // Zero .bss
+    for ( p_dest = &_sbss; p_dest < &_ebss; ) {
+        *p_dest++ = 0;
+    }
+
+    // Init libc
+    __libc_init_array();
+
+    // MCU startup
+    __system_startup();
+
+    // Jump to main
+    main();
+}
 
 /**
  * \brief This function handles Non-maskable interrupt

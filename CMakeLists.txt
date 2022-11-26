@@ -33,10 +33,7 @@ set(APP_SOURCES
     source/OS/thread.cpp    
     source/OS/os.cpp    
     source/OS/device_port.cpp
-
-    # Start Up File
-    startup/startup_stm32f407xx.s
-    )
+)
 
 # Set the target to build
 set(BINARY ${PROJECT_NAME}.elf)
@@ -74,8 +71,8 @@ target_compile_options(${BINARY} PRIVATE
     -mthumb
     -mfpu=fpv4-sp-d16
     -mfloat-abi=hard
-    -fno-data-sections
-    -fno-function-sections
+    -fdata-sections
+    -ffunction-sections
     -fno-exceptions
     -fno-rtti
     -O0
@@ -93,12 +90,13 @@ target_link_options(${BINARY} PRIVATE
     -mfpu=fpv4-sp-d16
     -mfloat-abi=hard
     -specs=nosys.specs
+    -specs=nano.specs
     -lc
     -lm
     -lnosys
     -Wl,-Map=${PROJECT_NAME}.map,--cref
     -Wl,--gc-sections
-    --no-exceptions  
+    --no-exceptions
     -Wl,--undefined,_printf_float
     -Wl,--undefined,_scanf_float  
 )

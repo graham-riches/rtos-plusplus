@@ -48,8 +48,8 @@ target_compile_options(${HAL_LIBRARY} PRIVATE
     -mthumb
     -mfpu=fpv4-sp-d16
     -mfloat-abi=hard
-    -fno-data-sections
-    -fno-function-sections
+    -fdata-sections
+    -ffunction-sections
     -fno-exceptions
     -fno-rtti
     -O0
