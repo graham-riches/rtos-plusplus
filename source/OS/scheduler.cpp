@@ -1,13 +1,5 @@
-/**
- * \file scheduler.cpp
- * \author Graham Riches (graham.riches@live.com)
- * \brief contains the singleton implementation of the os scheduler
- * \version 0.1
- * \date 2021-05-09
- * 
- * @copyright Copyright (c) 2021
- * 
- */
+// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-FileCopyrightText: 2023 Graham Riches
 
 /********************************** Includes *******************************************/
 #include "scheduler.hpp"

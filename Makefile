@@ -1,7 +1,7 @@
 .DEFAULT_GOAL:=help
 CMAKE:=cmake
 NINJA:=ninja
-TOOLCHAIN:=toolchain.cmake
+TOOLCHAIN:=arm-none-eabi-gcc.cmake
 BUILD_DIR:=build
 TEST_DIR:=tests
 TEST_BUILD_DIR:=tests/build
@@ -10,7 +10,7 @@ BINARY:=bare_metal_os.bin
 help:                                       ## Show this help.
 	@echo "Available Targets to Build"
 	@echo "-------------------------------------------------------------------------------"
-	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
+	@grep -F -h "##" $(MAKEFILE_LIST) | grep -F -v grep -F | sed -e 's/\\$$//' | sed -e 's/##//'
 
 $(BUILD_DIR)/CMakeCache.txt:
 	$(CMAKE) -B $(BUILD_DIR) -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=$(TOOLCHAIN) -DCMAKE_EXPORT_COMPILE_COMMANDS=1

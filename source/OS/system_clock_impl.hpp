@@ -1,10 +1,5 @@
-/*! \file system_clock_impl.h
-*
-*  \brief manages the OS time monitoring and clocking
-*
-*
-*  \author Graham Riches
-*/
+// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-FileCopyrightText: 2023 Graham Riches
 
 #pragma once
 

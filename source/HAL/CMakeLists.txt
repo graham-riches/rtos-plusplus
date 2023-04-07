@@ -19,8 +19,7 @@ set(HAL_SOURCES
 add_library(${HAL_LIBRARY} ${HAL_SOURCES})
 
 # Include directories of HAL
-target_include_directories(${HAL_LIBRARY} PUBLIC
-    ${CMAKE_SOURCE_DIR}/source/HW_Port
+target_include_directories(${HAL_LIBRARY} PUBLIC    
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/exti
     ${CMAKE_CURRENT_SOURCE_DIR}/flash
@@ -29,7 +28,11 @@ target_include_directories(${HAL_LIBRARY} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/power_management
     ${CMAKE_CURRENT_SOURCE_DIR}/rcc
     ${CMAKE_CURRENT_SOURCE_DIR}/spi
-    ${CMAKE_CURRENT_SOURCE_DIR}/usart        
+    ${CMAKE_CURRENT_SOURCE_DIR}/usart
+    
+    # TODO: this is a hack as the HAL is not currently very well setup for different targets
+    ${CMAKE_SOURCE_DIR}/source/OS/Port/stm32f407/
+    ${CMAKE_SOURCE_DIR}/source/OS/Port/stm32f407/include
     
 )
 
@@ -52,8 +55,10 @@ target_compile_options(${HAL_LIBRARY} PRIVATE
     -ffunction-sections
     -fno-exceptions
     -fno-rtti
-    -O0
-    -g3
+    $<$<CONFIG:DEBUG>:-O0>
+    $<$<CONFIG:RELEASE>:-O2>
+    $<$<CONFIG:DEBUG>:-g3>
+    $<$<CONFIG:RELEASE>:-g0> 
     -Wall
     -Wextra
     -fmessage-length=0            

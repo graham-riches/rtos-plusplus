@@ -1,10 +1,5 @@
-/*! \file thread.cpp
-*
-*  \brief OS threading module.
-*
-*
-*  \author Graham Riches
-*/
+// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-FileCopyrightText: 2023 Graham Riches
 
 /********************************** Includes *******************************************/
 #include "thread.hpp"

@@ -12,9 +12,9 @@
 #include "common.hpp"
 #include "hal_gpio.hpp"
 #include "hal_usart.hpp"
+#include "hal_nvic.hpp"
 #include "hal_rcc.hpp"
 #include "device_port.hpp"
-#include "stm32f4xx.h"
 #include "ring_buffer.hpp"
 #include <cstring>
 #include <cstdarg>

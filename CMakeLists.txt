@@ -1,12 +1,12 @@
+#-------------------------------------------------------------------------------
+# Project Setup
 cmake_minimum_required(VERSION 3.15.3)
-set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
-set(CMAKE_SYSTEM_NAME Generic)
-
-# Set the project name
 project(bare_metal_os)
 set(CMAKE_VERBOSE_MAKEFILE off)
 
-# Set the language standards used
+
+#-------------------------------------------------------------------------------
+# Language Standards
 enable_language(C CXX ASM)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -17,31 +17,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 
-# Add Submodules
+#-------------------------------------------------------------------------------
+# Add submodules/subdirectories
 add_subdirectory(${CMAKE_SOURCE_DIR}/source/HAL)
+add_subdirectory(${CMAKE_SOURCE_DIR}/source/OS)
 
-# Set which source files to compile for the project
-set(APP_SOURCES 		      
-    # Application Source Files
-    source/Application/system_startup.cpp
-    source/Application/main.cpp
-    source/Application/Peripherals/debug_port.cpp
-    source/Application/Peripherals/peripherals.cpp
 
-    # OS files
-    source/OS/scheduler.cpp
-    source/OS/thread.cpp    
-    source/OS/os.cpp    
-    source/OS/device_port.cpp
-)
-
-# Set the target to build
-set(BINARY ${PROJECT_NAME}.elf)
-add_executable(${BINARY} ${APP_SOURCES})
-
-# Add compile time definitions
-target_compile_definitions(${BINARY} PRIVATE
-    -DMAX_THREAD_COUNT=8
+#-------------------------------------------------------------------------------
+# Pre-Processor Compile Definitions
+set(COMPILE_DEFINITIONS
     -DARM_MATH_CM4
     -DSTM32F40XX
     -DSTM32F407xx
@@ -49,23 +33,54 @@ target_compile_definitions(${BINARY} PRIVATE
     -D__FPU_USED
 )
 
-# Set source include directories
+#-------------------------------------------------------------------------------
+# Configure RTOS layer
+set(MAX_THREAD_COUNT 8)
+configure_rtos_libraries(stm32f407 ${MAX_THREAD_COUNT})
+
+
+#-------------------------------------------------------------------------------
+# Set files to compile for the application
+set(SOURCES 		      
+    # Application Source Files
+    source/Application/system_startup.cpp
+    source/Application/main.cpp
+    source/Application/Peripherals/debug_port.cpp
+    source/Application/Peripherals/peripherals.cpp
+)
+
+
+#-------------------------------------------------------------------------------
+# Setup the Build Target
+set(BINARY ${PROJECT_NAME}.elf)
+add_executable(${BINARY} ${SOURCES})
+
+target_compile_definitions(${BINARY} PRIVATE
+    ${COMPILE_DEFINITIONS}
+)
+
+
+#-------------------------------------------------------------------------------
+# Include Directories
 target_include_directories(${BINARY} PRIVATE
     source
     source/Application    
     source/Application/Debug
     source/Application/Utilities
-
-    source/OS
-    source/Utilities
-    source/HW_Port
-
     source/Application/Peripherals			
     source/Application/Peripherals/USART
     source/Application/Peripherals/SPI
+    source/Utilities
 )
 
-# Set compiler flags - switch to -02 here for optimization
+
+#-------------------------------------------------------------------------------
+# Link Libraries
+target_link_libraries(${BINARY} PUBLIC rtos++ hal_library)
+
+
+#-------------------------------------------------------------------------------
+# Compile Options/Flags and Linker Options
 target_compile_options(${BINARY} PRIVATE    
     -mcpu=cortex-m4
     -mthumb
@@ -75,8 +90,10 @@ target_compile_options(${BINARY} PRIVATE
     -ffunction-sections
     -fno-exceptions
     -fno-rtti
-    -O0
-    -g3
+    $<$<CONFIG:DEBUG>:-O0>
+    $<$<CONFIG:RELEASE>:-O2>
+    $<$<CONFIG:DEBUG>:-g3>
+    $<$<CONFIG:RELEASE>:-g0> 
     -Wall
     -Wextra
     -fmessage-length=0        
@@ -84,7 +101,7 @@ target_compile_options(${BINARY} PRIVATE
 
 # Set the linker options
 target_link_options(${BINARY} PRIVATE
-    -T${CMAKE_SOURCE_DIR}/STM32F407VGTx_FLASH.ld
+    -T${OS_LINKER_SCRIPT}
     -mcpu=cortex-m4
     -mthumb
     -mfpu=fpv4-sp-d16
@@ -101,7 +118,9 @@ target_link_options(${BINARY} PRIVATE
     -Wl,--undefined,_scanf_float  
 )
 
-target_link_libraries(${BINARY} hal_library)
+
+#-------------------------------------------------------------------------------
+# Post-Build Steps
 
 # Print executable size
 add_custom_command(TARGET ${BINARY}

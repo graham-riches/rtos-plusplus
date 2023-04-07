@@ -1,16 +1,9 @@
-/*! \file os.cpp
-*
-*  \brief contains the main kernel functions for running the operating system.
-*
-*
-*  \author Graham Riches
-*/
+// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-FileCopyrightText: 2023 Graham Riches
 
 /********************************** Includes *******************************************/
 #include "os.hpp"
 #include "device_port.hpp"
-#include "hal_nvic.hpp"
-#include "stm32f4xx.h"
 
 
 namespace os
@@ -37,8 +30,7 @@ void setup(void) {
     system_active_task->thread_ptr->set_status(thread::status::active);
 
     // Setup core interrupt priorities
-    HAL::nvic::set_priority(stm32f4_irq::systick_handler, HAL::nvic::isr_preemption_priority::level_16);
-    HAL::nvic::set_priority(stm32f4_irq::pendsv_handler, HAL::nvic::isr_preemption_priority::level_16);
+    bootstrap_device_port();    
 
     ENABLE_INTERRUPTS();
 }

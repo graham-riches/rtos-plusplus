@@ -1,13 +1,5 @@
-/**
- * \file interrupt_lock_guard.hpp
- * \author Graham Riches
- * \brief RAII Container for managing interrupt enable/disable
- * \version 0.1
- * \date 2022-04-09
- * 
- * @copyright Copyright (c) 2022
- * 
- */
+// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-FileCopyrightText: 2023 Graham Riches
 
 #pragma once
 

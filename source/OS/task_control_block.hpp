@@ -1,18 +1,8 @@
-/**
- * \file task_control_block.hpp
- * \author Graham Riches
- * \brief Contains the definition of a task control block for the scheduler
- * \version 0.1
- * \date 2022-04-06
- * 
- * @copyright Copyright (c) 2022
- * 
- */
+// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-FileCopyrightText: 2023 Graham Riches
 
 #pragma once
 
-/********************************** Includes *******************************************/
-#include "common.hpp"
 #include "thread.hpp"
 
 namespace os
@@ -27,4 +17,4 @@ struct task_control_block {
     thread* thread_ptr;
     int32_t suspended_ticks_remaining;
 };
-};
+};  // namespace os

@@ -1,13 +1,5 @@
-/**
- * \file mutex.hpp
- * \author Graham Riches
- * \brief Basic mutex implementation
- * \version 0.1
- * \date 2022-04-10
- * 
- * @copyright Copyright (c) 2022
- * 
- */
+// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-FileCopyrightText: 2023 Graham Riches
 
 #pragma once
 

@@ -1,15 +1,5 @@
-/**
- * \file semaphore.hpp
- * \author Graham Riches (graham.riches@live.com)
- * \brief CortexM4 implementation of a semaphore. Uses a 32-bit integer count internally as this
- *        is the native size of the processor registers and aligns with exclusive access instructions.
- * \note This is designed to follow a very similar API to the std::counting_semaphore that is native to the C++20
- *       standard library: https://en.cppreference.com/w/cpp/thread/counting_semaphore
- * \version 0.1
- * \date 2021-05-01
- * 
- * @copyright Copyright (c) 2021
- */
+// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-FileCopyrightText: 2023 Graham Riches
 
 #pragma once
 

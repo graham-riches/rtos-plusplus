@@ -1,15 +1,9 @@
-/*! \file scheduler_impl.hpp
-*
-*  \brief simple cooperative scheduler for multi-tasking implementation
-*
-*
-*  \author Graham Riches
-*/
+// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-FileCopyrightText: 2023 Graham Riches
 
 #pragma once
 
 /********************************** Includes *******************************************/
-#include "common.hpp"
 #include "task_control_block.hpp"
 #include "thread.hpp"
 #include "system_clock_impl.hpp"

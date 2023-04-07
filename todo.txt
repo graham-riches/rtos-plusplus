@@ -1,0 +1,13 @@
+- elegant auto FPU stack preservation through ISRs
+- sort out unit tests directory
+- standardize doxygen formatting + copyrights?
+- start cleaning up
+- implement more features!
+    - perhaps a CLI?
+- possible to perfectly know thread-count via constexpr?
+- overall project build system is a mess
+    - needs better cmake structure
+    - better test setup
+    - configurable ports
+- update copyrights on file headers
+- cleanup code
