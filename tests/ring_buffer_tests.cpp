@@ -1,16 +1,8 @@
-/**
- * \file ring_buffer_tests.cpp
- * \author Graham Riches (graham.riches@live.com)
- * \brief unit tests for the ring buffer class
- * \version 0.1
- * \date 2021-05-02
- * 
- * @copyright Copyright (c) 2021
- * 
- */
+// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-FileCopyrightText: 2023 Graham Riches
 
 /********************************** Includes *******************************************/
-#include "ring_buffer.h"
+#include "ring_buffer.hpp"
 #include "gtest/gtest.h"
 #include <array>
 #include <vector>

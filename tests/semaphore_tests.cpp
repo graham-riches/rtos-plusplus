@@ -1,13 +1,5 @@
-/**
- * \file semaphore_tests.cpp
- * \author Graham Riches (graham.riches@live.com)
- * \brief unit tests for the OS semaphore mechanism
- * \version 0.1
- * \date 2021-05-10
- * 
- * @copyright Copyright (c) 2021
- * 
- */
+// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-FileCopyrightText: 2023 Graham Riches
 
 
 /********************************** Includes *******************************************/

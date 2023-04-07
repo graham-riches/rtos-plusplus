@@ -1,15 +1,9 @@
-/*! \file events_tests.cpp
-*
-*  \brief Unit tests for the event flags group.
-*
-*
-*  \author Graham Riches
-*/
+// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-FileCopyrightText: 2023 Graham Riches
 
 /********************************** Includes *******************************************/
 #include "gtest/gtest.h"
-#include "system_clock.h"
-#include "common.h"
+#include "system_clock.hpp"
 #include <iostream>
 #include <memory>
 
@@ -23,7 +17,7 @@
 */
 class SystemClockTests : public ::testing::Test {
   protected:
-    static void thread_task(void *arguments){ PARAMETER_NOT_USED(arguments); };    
+    static void thread_task(void *arguments){ (void)(arguments); };    
 
     void SetUp(void) override {        
         
@@ -32,8 +26,6 @@ class SystemClockTests : public ::testing::Test {
   public:
       os::system_clock clock;    
 };
-
-
 
 /************************************ Tests ********************************************/
 TEST_F(SystemClockTests, clock_initializes_ticks_to_zero) {
@@ -45,8 +37,7 @@ TEST_F(SystemClockTests, test_update_clock_ticks_not_running_fails){
     ASSERT_EQ(0, clock.get_ticks());
 }
 
-TEST_F(SystemClockTests, test_update_clock_running_passes) {
-    clock.start();
+TEST_F(SystemClockTests, test_update_clock_running_passes) {    
     clock.update(1);
     ASSERT_EQ(1, clock.get_ticks());
 }

@@ -43,28 +43,24 @@ add_subdirectory(googletest)
 # set the binary and add custom sources as needed
 set(BINARY bare-metal-os-tests)
 set(SOURCES
-    # add unit tests here
-    #events_tests.cpp
+    # add unit tests here    
     scheduler_tests.cpp
     threading_tests.cpp
     system_clock_tests.cpp
     ring_buffer_tests.cpp    
 
     # add each application file to test here
-    ${PARENT_DIR}/source/OS/thread/thread_impl.cpp    
-    )
+    ${PARENT_DIR}/source/OS/thread.cpp        
+)
 
 add_executable(${BINARY} ${SOURCES})
 
 # include the project source files
 target_include_directories(${BINARY} PUBLIC
     ${PARENT_DIR}/source
-    ${PARENT_DIR}/source/Utilities
-    ${PARENT_DIR}/source/HW_Port
+    ${PARENT_DIR}/source/Utilities    
     ${PARENT_DIR}/source/HAL      
     ${PARENT_DIR}/source/Application
-    ${PARENT_DIR}/source/Application/Accelerometer      
-    ${PARENT_DIR}/source/Application/Audio
     ${PARENT_DIR}/source/Application/Debug
     ${PARENT_DIR}/source/Application/Utilities
     ${PARENT_DIR}/source/OS/
