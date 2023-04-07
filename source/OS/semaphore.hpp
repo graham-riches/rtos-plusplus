@@ -75,8 +75,7 @@ class counting_semaphore {
         if ( m_count > 0 ) {
             //!< TODO: look into figuring this out with exclusive access instructions
             m_count--;
-            ENABLE_INTERRUPTS();
-            return;
+            ENABLE_INTERRUPTS();            
         } else {
             // Add the calling thread to the list of threads waiting on this semaphore to be woken up
             // when the resource becomes available
@@ -87,8 +86,7 @@ class counting_semaphore {
             DISABLE_INTERRUPTS();
             // Thread has now woken up, so decrement the counter and return
             m_count--;
-            ENABLE_INTERRUPTS();
-            return;            
+            ENABLE_INTERRUPTS();            
         }
     }
 

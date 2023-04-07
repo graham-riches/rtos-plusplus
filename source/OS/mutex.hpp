@@ -52,8 +52,7 @@ class mutex {
         DISABLE_INTERRUPTS();
         if ( !m_locked ) {
             m_locked = true;
-            ENABLE_INTERRUPTS();
-            return;
+            ENABLE_INTERRUPTS();            
         } else {
             // Suspend the calling thread on the mutex
             m_suspended_threads.push_back(m_scheduler->get_active_tcb_ptr());
@@ -62,8 +61,7 @@ class mutex {
             // Thread has now worken up and can now take the lock
             DISABLE_INTERRUPTS();
             m_locked = true;
-            ENABLE_INTERRUPTS();
-            return;
+            ENABLE_INTERRUPTS();            
         }
     }
 
@@ -86,9 +84,8 @@ class mutex {
      */
     void unlock() {
         os::interrupt_guard guard;
-        m_locked = false;
-        auto pending = m_suspended_threads.pop_back();
-        if ( pending.has_value() ) {
+        m_locked = false;        
+        if ( auto pending = m_suspended_threads.pop_back() ) {
             auto* tcb = pending.value();
             tcb->thread_ptr->set_status(thread::status::pending);
         }

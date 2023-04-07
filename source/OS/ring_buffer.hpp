@@ -165,7 +165,7 @@ struct reverse_iterator {
 };  // namespace detail
 
 /**
- * \brief template cla  ss for a STL-like re-usable ring buffer with no dynamic allocation
+ * \brief template class for a STL-like re-usable ring buffer with no dynamic allocation
  * 
  * \tparam T parameter type
  */
