@@ -3,20 +3,19 @@
 
 #pragma once
 
-/********************************** Includes *******************************************/
 #include "scheduler.hpp"
 #include "task_control_block.hpp"
 
 namespace os
 {
 
-extern "C" {
-/********************************** Global Objects and Variables *******************************************/
+extern "C"
+{
+//!< Globals available in ASM interrupts that manage context switches
 extern task_control_block* system_active_task;
 extern task_control_block* system_pending_task;
 }
 
-/********************************** Function Definitions *******************************************/
 namespace kernel
 {
 /**

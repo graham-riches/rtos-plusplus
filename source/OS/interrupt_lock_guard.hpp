@@ -3,7 +3,6 @@
 
 #pragma once
 
-/********************************** Includes *******************************************/
 #include "device_port.hpp"
 
 namespace os

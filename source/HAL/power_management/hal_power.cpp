@@ -1,10 +1,5 @@
-/*! \file hal_power.cpp
-*
-*  \brief HAL++ imlementation of the STM32 power management.
-*
-*
-*  \author Graham Riches
-*/
+// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-FileCopyrightText: 2023 Graham Riches
 
 /********************************** Includes *******************************************/
 #include "hal_power.hpp"

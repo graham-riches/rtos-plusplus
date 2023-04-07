@@ -1,13 +1,5 @@
-/**
- * \file usart_base.cpp
- * \author Graham Riches
- * \brief Definitions for base USART driver
- * \version 0.1
- * \date 2022-03-25
- * 
- * @copyright Copyright (c) 2022
- * 
- */
+// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-FileCopyrightText: 2023 Graham Riches
 
 #include "hal_usart.hpp"
 #include "hal_utilities.hpp"

@@ -1,10 +1,5 @@
-/*! \file hal_power.hpp
-*
-*  \brief Power management module
-*
-*
-*  \author Graham Riches
-*/
+// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-FileCopyrightText: 2023 Graham Riches
 
 #pragma once
 

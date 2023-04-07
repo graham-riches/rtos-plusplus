@@ -1,13 +1,5 @@
-/**
- * \file pin_base.h
- * \author Graham Riches
- * \brief GPIO pin base class
- * \version 0.1
- * \date 2022-03-18
- * 
- * @copyright Copyright (c) 2022
- * 
- */
+// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-FileCopyrightText: 2023 Graham Riches
 
 #pragma once
 

@@ -1,13 +1,5 @@
-/**
- * \file peripherals.hpp
- * \author Graham Riches
- * \brief Setup any peripheral devices
- * \version 0.1
- * \date 2022-03-25
- * 
- * @copyright Copyright (c) 2022
- * 
- */
+// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-FileCopyrightText: 2023 Graham Riches
 
 #pragma once
 

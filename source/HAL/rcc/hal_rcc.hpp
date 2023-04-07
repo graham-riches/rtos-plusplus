@@ -1,10 +1,5 @@
-/*! \file hal_rcc.h
-*
-*  \brief HAL++ library implementation of STM32F4 cortex M4 reset and control clock
-*
-*
-*  \author Graham Riches
-*/
+// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-FileCopyrightText: 2023 Graham Riches
 
 #pragma once
 

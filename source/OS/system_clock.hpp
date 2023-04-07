@@ -3,21 +3,19 @@
 
 #pragma once
 
-/********************************** Includes *******************************************/
 #include <cstdint>
 
 namespace os
 {
-/********************************** Types *******************************************/
 /**
- * \brief system clock class for managing task timing
+ * \brief System clock class for managing task timing
  */
-class system_clock_impl {
+class system_clock {
   public:
     /**
      * \brief default constructor for the system clock
      */
-    system_clock_impl()
+    system_clock()
         : m_elapsed_ticks(0) { }
 
     /**

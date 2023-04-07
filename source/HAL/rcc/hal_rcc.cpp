@@ -1,10 +1,5 @@
-/*! \file hal_rcc.cpp
-*
-*  \brief HAL++ reset and control clock abstration layer
-*
-*
-*  \author Graham Riches
-*/
+// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-FileCopyrightText: 2023 Graham Riches
 
 /********************************** Includes *******************************************/
 #include "hal_rcc.hpp"

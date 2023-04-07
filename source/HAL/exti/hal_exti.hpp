@@ -1,10 +1,5 @@
-/*! \file hal_exti.hpp
-*
-*  \brief external interrupts management for GPIO lines
-*
-*
-*  \author Graham Riches
-*/
+// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-FileCopyrightText: 2023 Graham Riches
 
 #pragma once
 

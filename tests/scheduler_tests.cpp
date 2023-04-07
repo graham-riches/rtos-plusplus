@@ -9,7 +9,7 @@
 /********************************** Includes *******************************************/
 #include "gtest/gtest.h"
 #include "thread_impl.h"
-#include "system_clock_impl.h"
+#include "system_clock.h"
 #include "scheduler_impl.h"
 #include "common.h"
 #include <iostream>
@@ -60,7 +60,7 @@ public:
     uint32_t internal_stack[thread_stack_size] = {0};
     std::unique_ptr<os::thread> internal_thread;
     std::unique_ptr<os::scheduler_impl> scheduler;
-    os::system_clock_impl clock;
+    os::system_clock clock;
         
     std::unique_ptr<os::thread> create_thread(os::thread::task_pointer task_ptr, void *args, uint32_t thread_id, uint32_t *stack_ptr, uint32_t stack_size) {
         return std::make_unique<os::thread>(task_ptr, args, thread_id, stack_ptr, stack_size);

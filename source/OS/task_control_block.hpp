@@ -9,7 +9,7 @@ namespace os
 {
 
 /**
- * \brief task control block for thread management 
+ * \brief Task control block structure
  */
 struct task_control_block {
     uint32_t* active_stack_pointer;

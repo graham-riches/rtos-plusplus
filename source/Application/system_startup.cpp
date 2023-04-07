@@ -1,13 +1,5 @@
-/**
- * \file system_startup.cpp
- * \author Graham Riches
- * \brief Default system startup code
- * \version 0.1
- * \date 2022-03-21
- * 6
- * @copyright Copyright (c) 2022
- * 
- */
+// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-FileCopyrightText: 2023 Graham Riches
 
 /********************************** Includes *******************************************/
 #include "hal_flash.hpp"

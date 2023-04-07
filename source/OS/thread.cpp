@@ -1,17 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // SPDX-FileCopyrightText: 2023 Graham Riches
 
-/********************************** Includes *******************************************/
+
 #include "thread.hpp"
 #include "scheduler.hpp"
 
 namespace os
 {
-/*********************************** Consts ********************************************/
 constexpr uint32_t CONTEXT_STACK_SIZE  = 49ul;       //!< Number of default saved stack registers
 constexpr uint32_t PSR_THUMB_MODE      = 0x01000000; //!< set PSR register to THUMB
 
-/****************************** Method Definitions ***********************************/
 
 thread::thread(task_pointer task_ptr, uint32_t id, uint32_t* stack_ptr, uint32_t stack_size) 
 : task_ptr(task_ptr)
@@ -20,8 +18,6 @@ thread::thread(task_pointer task_ptr, uint32_t id, uint32_t* stack_ptr, uint32_t
 , stack_ptr(stack_ptr)
 , stack_size(stack_size)
 , task_status(status::pending) {
-    // TODO: static assert pointers?    
-
     // Initialize the threads stack with some setup values
     register_context* task_context = reinterpret_cast<register_context*>(&stack_ptr[stack_size - CONTEXT_STACK_SIZE]);
 
@@ -58,7 +54,7 @@ thread::thread(task_pointer task_ptr, uint32_t id, uint32_t* stack_ptr, uint32_t
 
 //!< Update the threads state
 void thread::set_status(thread::status status) {
-    this->task_status = status;
+    task_status = status;
 }
 
 // Get the threads state

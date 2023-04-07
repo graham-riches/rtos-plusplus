@@ -3,19 +3,15 @@
 
 #pragma once
 
-/********************************** Includes *******************************************/
 #include <cstdint>
 
 namespace os
 {
-/************************************ Types ********************************************/
-/**
- * \brief class for system threads
- */
+
 class thread {
   public:
     /**
-     * \brief contains the packed ordering of the processor register state during context switches.
+     * \brief Contains the packed ordering of the processor register state during context switches.
      *        This is super helpful for debugging as you can pre-fill a thread's context with a custom
      *        default register state.
      */
@@ -40,9 +36,7 @@ class thread {
         uint32_t psr;
     };
 
-    /**
-     * \brief enumeration of possible thread states
-     */
+    
     enum class status : unsigned {
         active = 0,
         suspended,
@@ -50,9 +44,6 @@ class thread {
         pending,
     };    
 
-    /**
-     * \brief function pointer to the thread task
-     */
     using task_pointer = void (*)();
 
     /**

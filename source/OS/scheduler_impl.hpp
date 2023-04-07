@@ -6,7 +6,7 @@
 /********************************** Includes *******************************************/
 #include "task_control_block.hpp"
 #include "thread.hpp"
-#include "system_clock_impl.hpp"
+#include "system_clock.hpp"
 #include <memory>
 #include <optional>
 
@@ -249,7 +249,7 @@ class scheduler_impl {
         context_switch_to(&m_internal_task);
     }
 
-    system_clock_impl m_clock;
+    system_clock m_clock;
     unsigned m_max_thread_count;
     set_pending_interrupt m_set_pending;
     is_interrupt_pending m_check_pending;

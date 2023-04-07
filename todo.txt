@@ -2,12 +2,10 @@
 - sort out unit tests directory
 - standardize doxygen formatting + copyrights?
 - start cleaning up
-- implement more features!
+- implement more features!- cleanup code
     - perhaps a CLI?
 - possible to perfectly know thread-count via constexpr?
-- overall project build system is a mess
-    - needs better cmake structure
+- overall project build system is a mess    
     - better test setup
-    - configurable ports
+    - configurable ports - WIP
 - update copyrights on file headers
-- cleanup code

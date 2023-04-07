@@ -1,18 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // SPDX-FileCopyrightText: 2023 Graham Riches
 
-/********************************** Includes *******************************************/
 #include "os.hpp"
 #include "device_port.hpp"
 
-
 namespace os
 {
-/********************************** Global Objects and Variables *******************************************/
+
 task_control_block* system_active_task;
 task_control_block* system_pending_task;
-
-/********************************** Function Definitions *******************************************/
 
 namespace kernel
 {
@@ -30,7 +26,7 @@ void setup(void) {
     system_active_task->thread_ptr->set_status(thread::status::active);
 
     // Setup core interrupt priorities
-    bootstrap_device_port();    
+    bootstrap_device_port();
 
     ENABLE_INTERRUPTS();
 }

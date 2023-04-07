@@ -7,7 +7,6 @@
 #include "interrupt_lock_guard.hpp"
 #include "ring_buffer.hpp"
 #include "scheduler.hpp"
-#include "scheduler_impl.hpp"
 #include "task_control_block.hpp"
 #include <cstdint>
 #include <type_traits>

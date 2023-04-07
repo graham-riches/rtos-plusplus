@@ -1,10 +1,5 @@
-/*! \file debug_port.h
-*
-*  \brief debug_port module functions and variables declarations.
-*
-*
-*  \author Graham Riches
-*/
+// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-FileCopyrightText: 2023 Graham Riches
 
 #pragma once
 

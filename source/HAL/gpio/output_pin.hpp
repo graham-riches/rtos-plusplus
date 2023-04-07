@@ -1,13 +1,5 @@
-/**
- * \file output_pin.hpp
- * \author Graham Riches
- * \brief GPIO output pin
- * \version 0.1
- * \date 2022-03-18
- * 
- * @copyright Copyright (c) 2022
- * 
- */
+// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-FileCopyrightText: 2023 Graham Riches
 
 #pragma once
 

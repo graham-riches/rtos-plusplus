@@ -1,10 +1,5 @@
-/*! \file hal_exti.c
-*
-*  \brief hal external interrupts management for GPIO lines.
-*
-*
-*  \author Graham Riches
-*/
+// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-FileCopyrightText: 2023 Graham Riches
 
 /********************************** Includes *******************************************/
 #include "hal_exti.hpp"
